@@ -21,7 +21,7 @@
 #include "sqstdmath.h"
 #include "sqstdio.h"
 
-#include "bindings/bindings.h"
+#include "bindings.h"
 
 #include "scripthost.h"
 #include "audioengine.h"

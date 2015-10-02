@@ -1,15 +1,15 @@
 
-message(STATUS "CMAKE_GENERATOR : ${CMAKE_GENERATOR}")
 message(STATUS "CMAKE_CURRENT_SOURCE_DIR : ${CMAKE_CURRENT_SOURCE_DIR}")
+message(STATUS "CMAKE_GENERATOR : ${CMAKE_GENERATOR}")
 
 project(bipscript)
 cmake_minimum_required(VERSION 2.8)
 
-aux_source_directory(. SRC_LIST)
+aux_source_directory("src" SRC_LIST)
 aux_source_directory("bindings" SRC_LIST)
-#aux_source_directory("squirrel" SRC_LIST)
 
-include_directories(".")
+include_directories("src")
+include_directories("bindings")
 include_directories("squirrel")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
