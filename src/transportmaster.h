@@ -21,6 +21,7 @@
 
 class TransportMaster
 {
+    double lastTick;
     float beatsPerBar;
     float beatUnit;
     double ticksPerBeat;

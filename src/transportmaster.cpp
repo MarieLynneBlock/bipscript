@@ -17,40 +17,40 @@
 
 #include "transportmaster.h"
 
+#include <cmath>
+
 void TransportMaster::setTime(jack_transport_state_t state, jack_nframes_t nframes, jack_position_t *pos, int new_pos)
 {
+
+    pos->valid = JackPositionBBT;
+    pos->beats_per_bar = beatsPerBar;
+    pos->beat_type = beatUnit;
+    pos->ticks_per_beat = ticksPerBeat;
+    pos->beats_per_minute = bpm;
+
     if (new_pos) {
+        long tick = ticksPerBeat * bpm * pos->frame / ((double) pos->frame_rate * 60.0);
+        long beat = tick / ticksPerBeat;
 
-        pos->valid = JackPositionBBT;
-        pos->beats_per_bar = beatsPerBar;
-        pos->beat_type = beatUnit;
-        pos->ticks_per_beat = ticksPerBeat;
-        pos->beats_per_minute = bpm;
-
-        // simple calculation from examples
-        double min = pos->frame / ((double) pos->frame_rate * 60.0);
-        long  tick = min * pos->beats_per_minute * pos->ticks_per_beat;
-        long beat = tick / pos->ticks_per_beat;
-
-        pos->bar = beat / pos->beats_per_bar;
-        pos->beat = beat - (pos->bar * pos->beats_per_bar) + 1;
-        pos->tick = tick - (beat * pos->ticks_per_beat);
-        pos->bar_start_tick = pos->bar * pos->beats_per_bar * pos->ticks_per_beat;
+        pos->bar = beat / beatsPerBar;
+        pos->beat = beat - (pos->bar * beatsPerBar) + 1;
+        pos->tick = tick - (beat * ticksPerBeat);
+        pos->bar_start_tick = pos->bar * beatsPerBar * ticksPerBeat;
 
         pos->bar++; // bar is 1-based
-
+        lastTick = tick;
     } else {
 
-        // from examples: compute based on previous period
-        pos->tick += (nframes * pos->ticks_per_beat *
-                  pos->beats_per_minute / (pos->frame_rate * 60));
+        lastTick += ticksPerBeat * bpm * nframes / ((double) pos->frame_rate * 60);
+        pos->tick = std::lround(lastTick);
 
-        while (pos->tick >= pos->ticks_per_beat) {
-            pos->tick -= pos->ticks_per_beat;
-            if (++pos->beat > pos->beats_per_bar) {
+        while (pos->tick >= ticksPerBeat) {
+            pos->tick -= ticksPerBeat;
+            lastTick -= ticksPerBeat;
+            if (++pos->beat > beatsPerBar) {
                 pos->beat = 1;
-                ++pos->bar;
-                pos->bar_start_tick += (pos->beats_per_bar * pos->ticks_per_beat);
+                pos->bar++;
+                pos->bar_start_tick += (beatsPerBar * ticksPerBeat);
             }
         }
     }
