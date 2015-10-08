@@ -1,0 +1,96 @@
+#
+# This file is part of Bipscript.
+#
+# Bipscript is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Bipscript is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Bipscript.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+name : Lv2
+
+classes :
+
+    - name: Plugin
+      super:
+        - AudioSource
+        - EventSource
+      cppname: Lv2Plugin
+      include: lv2plugin
+      ctor:
+        - parameters:
+            - {name: uri, type: string}
+            - {name: preset, type: string, optional: true}
+          expression: Lv2PluginCache::instance().getPlugin
+        - parameters:
+            - {name: uri, type: string}
+            - {name: state, type: Lv2.State, optional: true}
+          expression: Lv2PluginCache::instance().getPlugin
+
+      methods:
+        - name: connect
+          parameters:
+            - {name: source, type: AudioSource}
+
+        - name: connectMidi
+          parameters:
+            - {name: source, type: EventSource}
+
+        - name: setMidiChannel
+          cppname: setDefaultChannel
+          parameters:
+            - {name: channel, type: integer }
+
+        - name: setControl
+          cppname: setControlValue
+          parameters:
+            - {name: control, type: string}
+            - {name: value, type: float}
+
+        - name: scheduleControl
+          parameters:
+            - {name: control, type: string}
+            - {name: value, type: float}
+            - {name: bar, type: integer}
+            - {name: position, type: integer}
+            - {name: division, type: integer}
+
+        - name: schedule
+          parameters:
+            - {name: note, type: Midi.Note}
+            - {name: bar, type: integer}
+            - {name: position, type: integer}
+            - {name: division, type: integer}
+            - {name: channel, type: integer, optional: true }
+
+        - name: schedule
+          parameters:
+            - {name: pattern, type: Midi.Pattern}
+            - {name: bar, type: integer}
+            - {name: position, type: integer, optional: true }
+            - {name: division, type: integer, optional: true }
+            - {name: channel, type: integer, optional: true }
+
+        - name: addController
+          parameters:
+            - {name: source, type: EventSource}
+            - {name: cc, type: integer}
+            - {name: symbol, type: string}
+            - {name: mininum, type: integer, optional: true}
+            - {name: maximum, type: integer, optional: true}
+
+    - name: State
+      cppname: Lv2State
+      ctor:
+        - parameters:
+            - {name: state, type: table}
+        - parameters:
+            - {name: file, type: string}

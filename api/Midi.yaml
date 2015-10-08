@@ -1,0 +1,101 @@
+#
+# This file is part of Bipscript.
+#
+# Bipscript is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Bipscript is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Bipscript.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+name : Midi
+
+classes :
+
+    - name: Input
+      cppname: MidiInputPort
+      super: EventSource
+      include:
+        - midiport
+      ctor:
+        parameters: {name: name, type: string}
+      ctor:
+        parameters:
+          - {name: name, type: string}
+          - {name: connection, type: string, optional: true}
+        expression: MidiInputPortCache::instance().getMidiInputPort
+
+    - name: Note
+      include: module_midi
+      ctor:
+        parameters:
+          - {name: pitch, type: integer}
+          - {name: velocity, type: integer}
+          - {name: duration, type: integer}
+          - {name: division, type: integer}
+
+    - name: Control
+      ctor:
+        parameters:
+          - {name: control, type: integer}
+          - {name: value, type: integer}
+
+
+    - name: Pattern
+      ctor:
+        parameters:
+        - { name: other, type: Midi.Pattern, optional: true}
+      methods:
+        - name: add
+          parameters:
+            - {name: note, type: Midi.Note}
+            - {name: bar, type: integer}
+            - {name: position, type: integer}
+            - {name: division, type: integer}
+          cppname: addNote
+        #- name: get
+          #parameters: {name: index, type: integer}
+        - name: getSize
+        - name: print
+
+    - name: Output
+      cppname: MidiOutputPort
+      ctor:
+        parameters:
+          - { name: name, type: string }
+          - { name: connection, type: string }
+        expression: MidiOutputPortCache::instance().getMidiOutputPort
+      methods:
+      - name: setDefaultChannel
+        parameters: {name: channel, type: integer}
+      - name: schedule
+        parameters:
+          - {name: note, type: Midi.Note}
+          - {name: bar, type: integer}
+          - {name: position, type: integer}
+          - {name: division, type: integer}
+      - name: schedule
+        parameters:
+          - {name: pattern, type: Midi.Pattern}
+          - {name: bar, type: integer}
+      - name: schedule
+        parameters:
+          - {name: control, type: Midi.Control}
+          - {name: bar, type: integer}
+          - {name: position, type: integer}
+          - {name: division, type: integer}
+
+    - name: DrumTabReader
+      include: drumtabreader
+      methods:
+      - name: read
+        returns: Midi.Pattern
+        parameters: {name: tab, type: string}
+

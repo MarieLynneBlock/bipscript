@@ -1,0 +1,88 @@
+#
+# This file is part of Bipscript.
+#
+# Bipscript is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Bipscript is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Bipscript.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+name : Audio
+
+classes :
+
+    - name: Mixer
+      super:
+        - AudioSource
+      include: mixer
+      ctor:
+        parameters:
+          - {name: inputs, type: integer}
+          - {name: outputs, type: integer}
+        expression: MixerCache::instance().getMixer
+      methods:
+        - name: addGainController
+          parameters:
+            - { name: source, type: EventSource }
+            - { name: control, type: integer }
+            - { name: input, type: integer }
+            - { name: output, type: integer }
+
+        - name: nextAudioInput
+          parameters: {name: source, type: AudioSource}
+
+        - name: nextStereoInput
+          parameters: {name: source, type: AudioSource}
+
+        - name: scheduleGain
+          parameters:
+            - { name: input, type: integer }
+            - { name: output, type: integer }
+            - { name: gain, type: float}
+            - { name: bar, type: integer}
+            - { name: position, type: integer}
+            - { name: division, type: integer}
+
+
+    - name: Output
+      cppname: AudioOutputPort
+      include:
+        - audioport
+        - audioengine
+      ctor:
+        parameters:
+        - { name: name, type: string }
+        - { name: connection, type: string }
+        expression: AudioOutputPortCache::instance().getAudioOutputPort
+
+    - name: Input
+      super:
+        - AudioSource
+      cppname: AudioInputPort
+      include:
+        - audioport
+      ctor:
+        parameters:
+        - { name: name, type: string }
+        - { name: connection, type: string }
+        expression: AudioInputPortCache::instance().getAudioInputPort
+
+    - name: StereoOutput
+      include: stereoport
+      ctor:
+        parameters:
+          - { name: name, type: string }
+          - { name: connectLeft, type: string }
+          - { name: connectRight, type: string }
+      methods:
+        - name: connect
+          parameters:
+            - { name: source, type: AudioSource }

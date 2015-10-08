@@ -1,0 +1,58 @@
+#
+# This file is part of Bipscript.
+#
+# Bipscript is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Bipscript is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Bipscript.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+name : Time
+
+methods:
+    - name: schedule
+      include: timepackage
+      parameters:
+        - {name: function, type: function}
+        - {name: bar, type: integer}
+        - {name: position, type: integer, optional: true }
+        - {name: division, type: integer, optional: true }
+
+    - name: start
+      include: audioengine
+      expression: AudioEngine::instance().transportStart
+
+    - name: stop
+      expression: AudioEngine::instance().transportStop
+
+    # name: now
+    #  returns: Position
+
+classes :
+
+    - name: Position
+      #include: position
+      #ctor:
+        #parameters:
+          #- {name: bar, type: integer}
+          #- {name: position, type: integer}
+          #- {name: division, type: integer}
+
+      #methods:
+        #- name: getBar
+          #returns: integer
+
+    - name: TransportMaster
+      include: transportmaster
+      ctor:
+        parameters: { name: bpm, type: integer }
+        expression: AudioEngine::instance().getTransportMaster
+
