@@ -30,6 +30,7 @@
 #include "mixer.h"
 #include "midiinputbuffer.h"
 #include "audioport.h"
+#include "transportmaster.h"
 
 void signal_handler(int sig)
 {
@@ -55,9 +56,10 @@ int main(int argc, char **argv)
                             &MixerCache::instance(),
                             &Lv2PluginCache::instance(),
                             &MidiOutputPortCache::instance(),
-                            &MidiInputBufferCache::instance()
+                            &MidiInputBufferCache::instance(),
+                            &TransportMasterCache::instance()
                             };
-    host.setObjectCaches(5, caches);
+    host.setObjectCaches(6, caches);
 
     // create and  start audioengine
     AudioEngine &audioEngine = AudioEngine::instance();

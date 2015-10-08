@@ -124,6 +124,12 @@ TransportMaster *AudioEngine::getTransportMaster(double bpm)
     return transportMaster;
 }
 
+void AudioEngine::releaseTransportMaster()
+{    
+    jack_release_timebase(client);
+    transportMaster = 0;
+}
+
 // from the API docs: TRUE (non-zero) when ready to roll
 int AudioEngine::sync(jack_transport_state_t state, jack_position_t *pos)
 {

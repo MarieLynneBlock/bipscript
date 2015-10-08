@@ -16,8 +16,14 @@
  */
 
 #include "transportmaster.h"
+#include "audioengine.h"
 
 #include <cmath>
+
+TransportMaster::~TransportMaster()
+{
+    AudioEngine::instance().releaseTransportMaster();
+}
 
 void TransportMaster::setTime(jack_transport_state_t state, jack_nframes_t nframes, jack_position_t *pos, int new_pos)
 {
@@ -54,5 +60,45 @@ void TransportMaster::setTime(jack_transport_state_t state, jack_nframes_t nfram
             }
         }
     }
+}
+
+/**
+ * runs in script thread
+ */
+TransportMaster *TransportMasterCache::getTransportMaster(float bpm)
+{
+    TransportMaster *cached = cachedMaster.load();
+    if(cached) {
+        cached->setBpm(bpm);
+    } else {
+        cached = AudioEngine::instance().getTransportMaster(bpm);
+        cachedMaster.store(cached);
+    }
+    active = true;
+    return cached;
+}
+
+/**
+ * runs in process thread
+ */
+void TransportMasterCache::reposition()
+{
+    TransportMaster *cached = cachedMaster.load();
+    if(cached) {
+        cached->reposition();
+    }
+}
+
+/**
+ * runs in script thread
+ */
+void TransportMasterCache::scriptComplete()
+{
+    TransportMaster *cached = cachedMaster.load();
+    if(cached && !active) {
+        cachedMaster.store(0);
+        delete cached;
+    }
+    active = false;
 }
 

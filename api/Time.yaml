@@ -54,5 +54,5 @@ classes :
       include: transportmaster
       ctor:
         parameters: { name: bpm, type: integer }
-        expression: AudioEngine::instance().getTransportMaster
+        expression: TransportMasterCache::instance().getTransportMaster
 

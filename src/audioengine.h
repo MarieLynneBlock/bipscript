@@ -98,6 +98,7 @@ public:
         jack_transport_start(client);
     }
     TransportMaster *getTransportMaster(double bpm);
+    void releaseTransportMaster();
 };
 
 #endif // AUDIOENGINE_H

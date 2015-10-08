@@ -152,7 +152,7 @@ SQInteger TimeTransportMasterCtor(HSQUIRRELVM vm)
     TransportMaster *obj;
     // call the implementation
     try {
-        obj = AudioEngine::instance().getTransportMaster(bpm);
+        obj = TransportMasterCache::instance().getTransportMaster(bpm);
     }
     catch(std::exception const& e) {
         return sq_throwerror(vm, e.what());
