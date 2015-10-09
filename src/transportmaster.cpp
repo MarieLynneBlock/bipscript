@@ -92,7 +92,7 @@ void TransportMasterCache::reposition()
 /**
  * runs in script thread
  */
-void TransportMasterCache::scriptComplete()
+bool TransportMasterCache::scriptComplete()
 {
     TransportMaster *cached = cachedMaster.load();
     if(cached && !active) {
@@ -100,5 +100,6 @@ void TransportMasterCache::scriptComplete()
         delete cached;
     }
     active = false;
+    return false;
 }
 

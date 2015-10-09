@@ -38,7 +38,7 @@ public:
      *
      * Runs in the script thread.
      */
-    virtual void scriptComplete() = 0;
+    virtual bool scriptComplete() = 0;
     /**
      * Called when a reposition has been requested so objects can flush/recycle queued events.
      *
@@ -109,7 +109,8 @@ public:
       * Runs in script thread.
       *
       */
-    void scriptComplete() {
+    bool scriptComplete() {
+        bool activeObjects = false;
         // loop over cached ports
         for(auto iterator = instanceMap.begin(); iterator != instanceMap.end();) {
             T *obj = iterator->second;
@@ -118,6 +119,7 @@ public:
             if(it != activeScriptObjects.end()) {
                 std::cout << typeid(T).name() << " was used in the last run: " << iterator->first << std::endl;
                 activeScriptObjects.erase(it);
+                activeObjects = true;
                 iterator++;
             } else {
                 // remove port from map and audio engine
@@ -127,6 +129,7 @@ public:
             }
         }
         scriptReset();
+        return activeObjects;
     }
 
     void reposition()

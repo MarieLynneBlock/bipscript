@@ -70,7 +70,6 @@ public:
     }
     int run();
     void schedule(HSQOBJECT &function, unsigned int bar, unsigned int position, unsigned int division);
-    void shutdown();
     // for AE
     void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
     bool reposition(uint16_t attempt);
@@ -79,7 +78,7 @@ private:
     void objectReposition(bool final);
     void bindModules(HSQUIRRELVM vm);
     bool waitUntil(Position &pos);
-    void waitForRestart();
+    bool waitForRestart();
 };
 
 #endif // SCRIPTHOST_H
