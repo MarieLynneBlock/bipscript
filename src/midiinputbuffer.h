@@ -44,7 +44,7 @@ public:
     ~MidiInputBuffer();
 //    MidiEvent *getEvents(int bar, int position, int division, int *numEvents);
 //    MidiEvent *getEvents(int bar, Position &start, Position &end, int *numEvents);
-    unsigned int getLastControl(int control);
+    unsigned int lastControlValue(int control);
     void processAll(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
     void reposition() {}
 };

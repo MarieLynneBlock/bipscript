@@ -21,6 +21,7 @@
 
 #include "midiport.h"
 #include "module_midi.h"
+#include "midiinputbuffer.h"
 #include "drumtabreader.h"
 
 namespace binding {
@@ -29,6 +30,7 @@ namespace binding {
 HSQOBJECT MidiInputObject;
 HSQOBJECT MidiNoteObject;
 HSQOBJECT MidiControlObject;
+HSQOBJECT MidiInputBufferObject;
 HSQOBJECT MidiPatternObject;
 HSQOBJECT MidiOutputObject;
 HSQOBJECT MidiDrumTabReaderObject;
@@ -154,6 +156,68 @@ SQInteger MidiControlCtor(HSQUIRRELVM vm)
     // return pointer to new object
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
     //sq_setreleasehook(vm, 1, release_hook);
+    return 1;
+}
+
+//
+// Midi.InputBuffer class
+//
+SQInteger MidiInputBufferCtor(HSQUIRRELVM vm)
+{
+    // get parameter 1 "source" as EventSource
+    SQUserPointer sourceTypeTag, sourcePtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, 0))) {
+        return sq_throwerror(vm, "argument 1 is not an object of type EventSource");
+    }
+    sq_gettypetag(vm, 2, &sourceTypeTag);
+    EventSource *source = getEventSource(sourcePtr, sourceTypeTag);
+    if(source == 0) {
+        return sq_throwerror(vm, "argument 1 is not of type EventSource");
+    }
+
+    MidiInputBuffer *obj;
+    // call the implementation
+    try {
+        obj = MidiInputBufferCache::instance().getMidiInputBuffer(*source);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // return pointer to new object
+    sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
+    //sq_setreleasehook(vm, 1, release_hook);
+    return 1;
+}
+
+//
+// Midi.InputBuffer lastControlValue
+//
+SQInteger MidiInputBufferlastControlValue(HSQUIRRELVM vm)
+{
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    sq_getinstanceup(vm, 1, &userPtr, 0);
+    MidiInputBuffer *obj = static_cast<MidiInputBuffer*>(userPtr);
+
+    // get parameter 1 "control" as integer
+    SQInteger control;
+    if (SQ_FAILED(sq_getinteger(vm, 2, &control))){
+        return sq_throwerror(vm, "argument 1 is not of type integer");
+    }
+
+    // return value
+    SQInteger ret;
+    // call the implementation
+    try {
+        ret = obj->lastControlValue(control);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushinteger(vm, ret);
     return 1;
 }
 
@@ -581,6 +645,25 @@ void bindMidi(HSQUIRRELVM vm)
 
     // methods for class Control
     // push Control to Midi package table
+    sq_newslot(vm, -3, false);
+
+    // create class Midi.InputBuffer
+    sq_pushstring(vm, "InputBuffer", -1);
+    sq_newclass(vm, false);
+    sq_getstackobj(vm, -1, &MidiInputBufferObject);
+    sq_settypetag(vm, -1, &MidiInputBufferObject);
+
+    // ctor for class InputBuffer
+    sq_pushstring(vm, _SC("constructor"), -1);
+    sq_newclosure(vm, &MidiInputBufferCtor, 0);
+    sq_newslot(vm, -3, false);
+
+    // methods for class InputBuffer
+    sq_pushstring(vm, _SC("lastControlValue"), -1);
+    sq_newclosure(vm, &MidiInputBufferlastControlValue, 0);
+    sq_newslot(vm, -3, false);
+
+    // push InputBuffer to Midi package table
     sq_newslot(vm, -3, false);
 
     // create class Midi.Pattern
