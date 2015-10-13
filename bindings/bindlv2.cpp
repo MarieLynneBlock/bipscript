@@ -454,7 +454,7 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
     }
 
     // 4 parameters passed in
-    if(numargs == 5) {
+    else if(numargs == 5) {
 
         // get parameter 3 "position" as integer
         SQInteger position;
@@ -478,7 +478,7 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
     }
 
     // 5 parameters passed in
-    if(numargs == 6) {
+    else if(numargs == 6) {
 
         // get parameter 3 "position" as integer
         SQInteger position;
@@ -579,7 +579,7 @@ SQInteger Lv2PluginaddController(HSQUIRRELVM vm)
     }
 
     // 5 parameters passed in
-    if(numargs == 6) {
+    else if(numargs == 6) {
 
         // get parameter 4 "mininum" as integer
         SQInteger mininum;
