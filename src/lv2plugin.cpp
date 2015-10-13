@@ -665,7 +665,6 @@ Lv2Plugin *Lv2PluginCache::getPlugin(const char *uri, const char *preset, Lv2Sta
 
     // return cached plugin instance if available
     std::string key = keyString + ":" + std::to_string(count);
-    std::cout << " key is " << key << std::endl;
     Lv2Plugin *cachedPlugin = findObject(key);
     if(cachedPlugin) {
         cachedPlugin->restore();

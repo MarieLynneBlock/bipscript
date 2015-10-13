@@ -117,13 +117,13 @@ public:
             // port was used in the last script run?
             auto it = activeScriptObjects.find(obj);
             if(it != activeScriptObjects.end()) {
-                std::cout << typeid(T).name() << " was used in the last run: " << iterator->first << std::endl;
+                // std::cout << typeid(T).name() << " was used in the last run: " << iterator->first << std::endl;
                 activeScriptObjects.erase(it);
                 activeObjects = true;
                 iterator++;
             } else {
                 // remove port from map and audio engine
-                std::cout << typeid(T).name() << " NOT used in the last run: " << iterator->first << std::endl;
+                // std::cout << typeid(T).name() << " NOT used in the last run: " << iterator->first << std::endl;
                 iterator = instanceMap.erase(iterator);
                 while(!deletedObjects.push(obj));
             }
