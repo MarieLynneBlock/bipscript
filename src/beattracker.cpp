@@ -88,7 +88,7 @@ void BeatTrackerCache::reposition()
 /**
  * runs in script thread
  */
-void BeatTrackerCache::scriptComplete()
+bool BeatTrackerCache::scriptComplete()
 {
     BeatTracker *cached = cachedTracker.load();
     if(cached && !active) {
@@ -96,5 +96,6 @@ void BeatTrackerCache::scriptComplete()
         delete cached;
     }
     active = false;
+    return false;
 }
 

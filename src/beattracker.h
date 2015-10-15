@@ -59,7 +59,7 @@ public:
     // object cache interface
     void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
     void reposition();
-    void scriptComplete();
+    bool scriptComplete();
 };
 
 #endif // BEATTRACKER_H
