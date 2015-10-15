@@ -737,7 +737,11 @@ Lv2Plugin *Lv2PluginCache::getPlugin(const char *uri, const char *preset, Lv2Sta
     else if(state) {
         LV2_State_Interface* iState = (LV2_State_Interface*)lilv_instance_get_extension_data(instance, LV2_STATE__interface);
         if (iState) {
-            iState->restore(instance->lv2_handle, &stateRetrieve, (LV2_State_Handle)state, 0, NULL);
+            LV2_State_Status status = iState->restore(instance->lv2_handle, &stateRetrieve,
+                                                      (LV2_State_Handle)state, 0, NULL);
+            if(status != LV2_STATE_SUCCESS) {
+                throw std::logic_error(std::string("Plugin ") + uriString + " error setting state");
+            }
         }
     }
 
