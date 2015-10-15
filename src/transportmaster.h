@@ -56,7 +56,7 @@ public:
     // object cache interface
     void process(bool, jack_position_t &, jack_nframes_t, jack_nframes_t) {}
     void reposition();
-    void scriptComplete();
+    bool scriptComplete();
 };
 
 #endif // TRANSPORT_H

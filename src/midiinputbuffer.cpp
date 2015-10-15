@@ -107,7 +107,7 @@ MidiInputBuffer::~MidiInputBuffer()
 //    return pattern;
 //}
 
-unsigned int MidiInputBuffer::getLastControl(int control)
+unsigned int MidiInputBuffer::lastControlValue(int control)
 {
 //    // wait for critical section
 //    int error = pthread_mutex_lock(&activeMutex);
@@ -143,7 +143,7 @@ void MidiInputBuffer::processAll(bool rolling, jack_position_t &pos, jack_nframe
     uint32_t numEvents = connection->getEventCount();
     for(uint32_t i = 0; i < numEvents; i++) {
         MidiEvent *evt = connection->getEvent(i);
-        std::cout << "incoming event: " << *evt << std::endl;
+        // std::cout << "incoming event: " << *evt << std::endl;
         if(rolling) {
             int position = pos.tick + ((pos.beat - 1) * pos.ticks_per_beat);
             int division = pos.ticks_per_beat * pos.beats_per_bar;

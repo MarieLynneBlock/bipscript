@@ -47,6 +47,18 @@ classes :
           - {name: control, type: integer}
           - {name: value, type: integer}
 
+    - name: InputBuffer
+      cppname: MidiInputBuffer
+      include: midiinputbuffer
+      ctor:
+        parameters: {name: source, type: EventSource}
+        expression: MidiInputBufferCache::instance().getMidiInputBuffer
+
+      methods:
+        - name: lastControlValue
+          returns: integer
+          parameters:
+            - {name: control, type: integer}
 
     - name: Pattern
       ctor:

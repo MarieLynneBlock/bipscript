@@ -22,7 +22,6 @@
 namespace binding
 {
 // object references to types in this package
-extern HSQOBJECT ExpInputBufferObject;
 }
 
 #endif // BINDEXP_H

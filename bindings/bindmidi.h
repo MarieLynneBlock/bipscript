@@ -25,6 +25,7 @@ namespace binding
 extern HSQOBJECT MidiInputObject;
 extern HSQOBJECT MidiNoteObject;
 extern HSQOBJECT MidiControlObject;
+extern HSQOBJECT MidiInputBufferObject;
 extern HSQOBJECT MidiPatternObject;
 extern HSQOBJECT MidiOutputObject;
 extern HSQOBJECT MidiDrumTabReaderObject;

@@ -27,11 +27,6 @@
 #include "audioengine.h"
 #include "objectcollector.h"
 
-
-void ScriptHost::shutdown() { // TODO: is this even used
-    sq_close(vm);
-}
-
 void ScriptHost::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
 {
     for(uint16_t i = 0; i < objectCacheCount; i++) {
@@ -110,17 +105,23 @@ bool ScriptHost::waitUntil(Position &pos)
 }
 
 
-void ScriptHost::waitForRestart()
+bool ScriptHost::waitForRestart()
 {
     running.store(false);
+    bool activeObjects = false;
     for(uint16_t i = 0; i < objectCacheCount; i++) {
-        objectCacheList[i]->scriptComplete();
+        if(objectCacheList[i]->scriptComplete()) {
+            activeObjects = true;
+        }
+    }
+    if(!activeObjects) {
+        return false;
     }
     while(true) {
         if(restart.load()) {
             restart.store(false);
             running.store(true);
-            return;
+            return true;
         }
         // free collected objects
         ObjectCollector::instance()->free();
@@ -130,6 +131,7 @@ void ScriptHost::waitForRestart()
             continue;
         }
     }
+    return true;
 }
 
 int ScriptHost::run() {
@@ -153,7 +155,8 @@ int ScriptHost::run() {
     // pop root table
     sq_pop(vm, 1);
 
-    while(true) {
+    bool rerun = true;
+    while(rerun) {
         // fresh run table
         HSQOBJECT freshRunTable;
         sq_newtable(vm);
@@ -162,7 +165,6 @@ int ScriptHost::run() {
         if(!SQ_SUCCEEDED(sqstd_dofile(vm, filename, 0, SQTrue))) {
             return 1;
         }
-        std::cout << "main script finished successful: " << filename << std::endl;
         // pop fresh run table
         sq_pop(vm, 1);
 
@@ -209,8 +211,9 @@ int ScriptHost::run() {
         // release fresh run table
         sq_release(vm, &freshRunTable);
 
-        std::cout << "now waiting for restart.." << std::endl;
-        waitForRestart();
+        rerun = waitForRestart();
     }
+    // shut down squirrel
+    sq_close(vm);
     return 0;
 }

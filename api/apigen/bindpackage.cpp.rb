@@ -369,7 +369,9 @@ class PackageCpp
     totalparams = method['parameters'] ? method['parameters'].length : 0
     for i in totalparams-opts+1..totalparams
         ret << indent << "// #{i} parameters passed in\n"
-        ret << indent << "if(numargs == #{i+1}) {\n\n"
+        ret << indent
+        if i != totalparams-opts+1 then ret << "else " end
+        ret << "if(numargs == #{i+1}) {\n\n"
         with method['parameters'] do |param, counter|
             if param['optional'] and counter <= i
                 ret << get_parameter(param, counter + 1, true, indent + "    ") << "\n"

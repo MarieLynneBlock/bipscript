@@ -337,17 +337,22 @@ const void *Lv2State::retrieveState(uint32_t key, size_t *size, uint32_t *type, 
     }
 }
 
-void Lv2Plugin::setPortValue(const char *port, const void *value, uint32_t type) {
-    if (type == atomTypes.floatType) {
-        controlMap[port]->value = *(const float *)value;
-    } else if (type == atomTypes.doubleType) {
-        controlMap[port]->value = *(const double *)value;
-    } else if (type == atomTypes.intType) {
-        controlMap[port]->value = *(const int32_t *)value;
-    } else if (type == atomTypes.longType) {
-        controlMap[port]->value = *(const int64_t *)value;
+void Lv2Plugin::setPortValue(const char *portname, const void *value, uint32_t type) {
+    Lv2ControlPort *lv2Port = controlMap[portname];
+    if(lv2Port) {
+        if (type == atomTypes.floatType) {
+            lv2Port->value = *(const float *)value;
+        } else if (type == atomTypes.doubleType) {
+            lv2Port->value = *(const double *)value;
+        } else if (type == atomTypes.intType) {
+            lv2Port->value = *(const int32_t *)value;
+        } else if (type == atomTypes.longType) {
+            lv2Port->value = *(const int64_t *)value;
+        } else {
+            std::cerr << "warning: attempt to set control port with unknown type: " << type << std::endl;
+        }
     } else {
-        std::cerr << "attempt to set control port with unknown type: " << type << std::endl;
+        std::cerr << "warning: attempt to set unknown control port '" << portname << "'" << std::endl;
     }
 }
 
@@ -660,7 +665,6 @@ Lv2Plugin *Lv2PluginCache::getPlugin(const char *uri, const char *preset, Lv2Sta
 
     // return cached plugin instance if available
     std::string key = keyString + ":" + std::to_string(count);
-    std::cout << " key is " << key << std::endl;
     Lv2Plugin *cachedPlugin = findObject(key);
     if(cachedPlugin) {
         cachedPlugin->restore();
@@ -733,7 +737,11 @@ Lv2Plugin *Lv2PluginCache::getPlugin(const char *uri, const char *preset, Lv2Sta
     else if(state) {
         LV2_State_Interface* iState = (LV2_State_Interface*)lilv_instance_get_extension_data(instance, LV2_STATE__interface);
         if (iState) {
-            iState->restore(instance->lv2_handle, &stateRetrieve, (LV2_State_Handle)state, 0, NULL);
+            LV2_State_Status status = iState->restore(instance->lv2_handle, &stateRetrieve,
+                                                      (LV2_State_Handle)state, 0, NULL);
+            if(status != LV2_STATE_SUCCESS) {
+                throw std::logic_error(std::string("Plugin ") + uriString + " error setting state");
+            }
         }
     }
 
