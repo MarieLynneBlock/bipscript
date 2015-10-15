@@ -25,6 +25,12 @@ TransportMaster::~TransportMaster()
     AudioEngine::instance().releaseTransportMaster();
 }
 
+void TransportMaster::forceBeat(double bpm)
+{
+    this->bpm = bpm;
+    doForceBeat = true;
+}
+
 void TransportMaster::setTime(jack_transport_state_t state, jack_nframes_t nframes, jack_position_t *pos, int new_pos)
 {
 
@@ -35,6 +41,7 @@ void TransportMaster::setTime(jack_transport_state_t state, jack_nframes_t nfram
     pos->beats_per_minute = bpm;
 
     if (new_pos) {
+        // TODO: loop over tempo changes up to this point
         long tick = ticksPerBeat * bpm * pos->frame / ((double) pos->frame_rate * 60.0);
         long beat = tick / ticksPerBeat;
 
@@ -59,6 +66,19 @@ void TransportMaster::setTime(jack_transport_state_t state, jack_nframes_t nfram
                 pos->bar_start_tick += (beatsPerBar * ticksPerBeat);
             }
         }
+    }
+
+    if(doForceBeat) {
+        if(pos->tick > ticksPerBeat / 2) {
+            if (++pos->beat > beatsPerBar) {
+                pos->beat = 1;
+                pos->bar++;
+                pos->bar_start_tick += (beatsPerBar * ticksPerBeat);
+            }
+        }
+        lastTick = 0;
+        pos->tick = 0;
+        doForceBeat = false;
     }
 }
 

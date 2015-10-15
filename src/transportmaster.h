@@ -28,14 +28,16 @@ class TransportMaster
     float beatUnit;
     double ticksPerBeat;
     double bpm;
+    bool doForceBeat;
 public:
     TransportMaster(double bpm) : beatsPerBar(4.0), beatUnit(4.0),
-        ticksPerBeat(1920.0), bpm(bpm) {}
+        ticksPerBeat(1920.0), bpm(bpm), doForceBeat(false) {}
     ~TransportMaster();
     // void scheduleBpm(bpm, bar, position, division)
     void setBpm(double bpm) {
         this->bpm = bpm;
     }
+    void forceBeat(double bpm);
     void setTime(jack_transport_state_t state, jack_nframes_t nframes, jack_position_t *pos, int new_pos);
     void reposition() {} // TODO: need this?
 };

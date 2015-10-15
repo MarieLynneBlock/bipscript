@@ -23,6 +23,7 @@
 #include "audioport.h"
 #include "audioengine.h"
 #include "stereoport.h"
+#include "beattracker.h"
 
 namespace binding {
 
@@ -31,6 +32,7 @@ HSQOBJECT AudioMixerObject;
 HSQOBJECT AudioOutputObject;
 HSQOBJECT AudioInputObject;
 HSQOBJECT AudioStereoOutputObject;
+HSQOBJECT AudioBeatTrackerObject;
 
 //
 // Audio.Mixer class
@@ -374,6 +376,65 @@ SQInteger AudioStereoOutputconnect(HSQUIRRELVM vm)
     return 0;
 }
 
+//
+// Audio.BeatTracker class
+//
+SQInteger AudioBeatTrackerCtor(HSQUIRRELVM vm)
+{
+    // get parameter 1 "bpm" as float
+    SQFloat bpm;
+    if (SQ_FAILED(sq_getfloat(vm, 2, &bpm))){
+        return sq_throwerror(vm, "argument 1 is not of type float");
+    }
+
+    BeatTracker *obj;
+    // call the implementation
+    try {
+        obj = BeatTrackerCache::instance().getBeatTracker(bpm);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // return pointer to new object
+    sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
+    //sq_setreleasehook(vm, 1, release_hook);
+    return 1;
+}
+
+//
+// Audio.BeatTracker connect
+//
+SQInteger AudioBeatTrackerconnect(HSQUIRRELVM vm)
+{
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    sq_getinstanceup(vm, 1, &userPtr, 0);
+    BeatTracker *obj = static_cast<BeatTracker*>(userPtr);
+
+    // get parameter 1 "source" as AudioSource
+    SQUserPointer sourceTypeTag, sourcePtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, 0))) {
+        return sq_throwerror(vm, "argument 1 is not an object of type AudioSource");
+    }
+    sq_gettypetag(vm, 2, &sourceTypeTag);
+    AudioSource *source = getAudioSource(sourcePtr, sourceTypeTag);
+    if(source == 0) {
+        return sq_throwerror(vm, "argument 1 is not of type AudioSource");
+    }
+
+    // call the implementation
+    try {
+        obj->connect(*source);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // void method, returns no value
+    return 0;
+}
+
 
 void bindAudio(HSQUIRRELVM vm)
 {
@@ -459,6 +520,25 @@ void bindAudio(HSQUIRRELVM vm)
     sq_newslot(vm, -3, false);
 
     // push StereoOutput to Audio package table
+    sq_newslot(vm, -3, false);
+
+    // create class Audio.BeatTracker
+    sq_pushstring(vm, "BeatTracker", -1);
+    sq_newclass(vm, false);
+    sq_getstackobj(vm, -1, &AudioBeatTrackerObject);
+    sq_settypetag(vm, -1, &AudioBeatTrackerObject);
+
+    // ctor for class BeatTracker
+    sq_pushstring(vm, _SC("constructor"), -1);
+    sq_newclosure(vm, &AudioBeatTrackerCtor, 0);
+    sq_newslot(vm, -3, false);
+
+    // methods for class BeatTracker
+    sq_pushstring(vm, _SC("connect"), -1);
+    sq_newclosure(vm, &AudioBeatTrackerconnect, 0);
+    sq_newslot(vm, -3, false);
+
+    // push BeatTracker to Audio package table
     sq_newslot(vm, -3, false);
 
     // push package "Audio" to root table
