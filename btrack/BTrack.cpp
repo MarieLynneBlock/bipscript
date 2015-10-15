@@ -345,36 +345,10 @@ void BTrack::doNotFixTempo()
 //=======================================================================
 void BTrack::resampleOnsetDetectionFunction()
 {
-	float output[512];
-    float input[onsetDFBufferSize];
-    
-    for (int i = 0;i < onsetDFBufferSize;i++)
+    for (int i = 0;i < 512;i++)
     {
-        input[i] = (float) onsetDF[i];
+        resampledOnsetDF[i] = onsetDF[i];
     }
-		
-	double src_ratio = 512.0/((double) onsetDFBufferSize);
-	int BUFFER_LEN = onsetDFBufferSize;
-	int output_len;
-	SRC_DATA	src_data ;
-	
-	//output_len = (int) floor (((double) BUFFER_LEN) * src_ratio) ;
-	output_len = 512;
-	
-	src_data.data_in = input;
-	src_data.input_frames = BUFFER_LEN;
-	
-	src_data.src_ratio = src_ratio;
-	
-	src_data.data_out = output;
-	src_data.output_frames = output_len;
-	
-	src_simple (&src_data, SRC_SINC_BEST_QUALITY, 1);
-			
-	for (int i = 0;i < output_len;i++)
-	{
-		resampledOnsetDF[i] = (double) src_data.data_out[i];
-	}
 }
 
 //=======================================================================
