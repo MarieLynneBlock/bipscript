@@ -58,9 +58,10 @@ int main(int argc, char **argv)
                             &MidiOutputPortCache::instance(),
                             &MidiInputBufferCache::instance(),
                             &TransportMasterCache::instance(),
-                            &BeatTrackerCache::instance()
+                            &BeatTrackerCache::instance(),
+                            &MidiBeatTrackerCache::instance()
                             };
-    host.setObjectCaches(7, caches);
+    host.setObjectCaches(8, caches);
 
     // create and  start audioengine
     AudioEngine &audioEngine = AudioEngine::instance();

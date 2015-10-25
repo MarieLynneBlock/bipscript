@@ -22,7 +22,10 @@
 #include "BTrack.h"
 #include "transportmaster.h"
 #include "audioconnection.h"
+#include "eventconnection.h"
 #include "objectcache.h"
+
+const unsigned int BT_HOP_SIZE = 512;
 
 class BeatTracker
 {
@@ -31,10 +34,9 @@ class BeatTracker
     unsigned int index;
     TransportMaster *master;
     std::atomic<AudioConnection *> audioInput;
-    const unsigned int BUFFER_SIZE = 512;
 public:
     BeatTracker(double bpm) : index(0), audioInput(0) {
-        btbuffer = new double[BUFFER_SIZE];
+        btbuffer = new double[BT_HOP_SIZE];
         reset(bpm);
     }
     void connect(AudioSource &source) {
@@ -61,5 +63,40 @@ public:
     void reposition();
     bool scriptComplete();
 };
+
+class MidiBeatTracker {
+    BTrack btrack;
+    uint32_t frameIndex;
+    double currentOnset;
+    TransportMaster *master;
+    std::atomic<EventConnection*> midiInput;    
+public:
+    MidiBeatTracker(double bpm) : frameIndex(0), currentOnset(0) {
+        reset(bpm);
+    }
+    void connectMidi(EventSource &source) {
+        this->midiInput.store(&source.getEventConnection(0));
+    }
+    void reset(double bpm);
+    void reposition() {}
+    void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
+};
+
+class MidiBeatTrackerCache : public ObjectCache {
+    bool active;
+    std::atomic<MidiBeatTracker *> cachedTracker;
+    MidiBeatTrackerCache() : active(false) {}
+public:
+    static MidiBeatTrackerCache &instance() {
+        static MidiBeatTrackerCache instance;
+        return instance;
+    }
+    MidiBeatTracker *getMidiBeatTracker(float bpm);
+    // object cache interface
+    void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
+    void reposition();
+    bool scriptComplete();
+};
+
 
 #endif // BEATTRACKER_H

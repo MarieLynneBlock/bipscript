@@ -37,7 +37,7 @@ void BeatTracker::process(bool rolling, jack_position_t &pos, jack_nframes_t nfr
     // add new audio to buffer
     for(jack_nframes_t i = 0; i < nframes; i++) {
         btbuffer[index++] = (double) audio[i];
-        if(index == BUFFER_SIZE) {
+        if(index == BT_HOP_SIZE) {
             // process buffer if full
             btrack.processAudioFrame(btbuffer);
             if(btrack.beatDueInCurrentFrame()) {
@@ -99,3 +99,92 @@ bool BeatTrackerCache::scriptComplete()
     return false;
 }
 
+void MidiBeatTracker::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
+{
+    EventConnection *connection = midiInput.load();
+    uint32_t eventCount = 0;
+    if(connection) {
+        connection->process(rolling, pos, nframes, time);
+        eventCount = connection->getEventCount();
+    }
+
+    // loop over frames
+    MidiEvent *nextEvent = eventCount ? connection->getEvent(0) : 0;
+    uint32_t eventIndex = 1;
+    for(jack_nframes_t i = 0; i < nframes; i++) {
+
+        // add any events at this frame
+        while(nextEvent && nextEvent->getFrameOffset() == i) {
+            currentOnset += nextEvent->getDatabyte2(); // TODO: different weights for different notes
+            nextEvent = eventIndex < eventCount ? connection->getEvent(eventIndex++) : 0;
+        }
+
+        if(frameIndex == BT_HOP_SIZE) {
+            // process onset sample
+            btrack.processOnsetDetectionFunctionSample(currentOnset);
+            if(btrack.beatDueInCurrentFrame()) {
+                // set bpm
+                master->forceBeat(btrack.getCurrentTempoEstimate());
+            }
+            frameIndex = 0;
+            currentOnset = 0;
+        }
+        frameIndex++;
+    }
+}
+
+void MidiBeatTracker::reset(double bpm)
+{
+    master = TransportMasterCache::instance().getTransportMaster(bpm);
+    btrack.setTempo(bpm);
+}
+
+/**
+ * runs in script thread
+ */
+MidiBeatTracker *MidiBeatTrackerCache::getMidiBeatTracker(float bpm)
+{
+    MidiBeatTracker *cached = cachedTracker.load();
+    if(cached) {
+        cached->reset(bpm);
+    } else {
+        cached = new MidiBeatTracker(bpm);
+        cachedTracker.store(cached);
+    }
+    active = true;
+    return cached;
+}
+
+
+void MidiBeatTrackerCache::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
+{
+    MidiBeatTracker *cached = cachedTracker.load();
+    if(cached) {
+        cached->process(rolling, pos, nframes, time);
+    }
+}
+
+/**
+ * runs in process thread
+ */
+void MidiBeatTrackerCache::reposition()
+{
+    MidiBeatTracker *cached = cachedTracker.load();
+    if(cached) {
+        cached->reposition();
+    }
+}
+
+/**
+ * runs in script thread
+ */
+bool MidiBeatTrackerCache::scriptComplete()
+{
+    MidiBeatTracker *cached = cachedTracker.load();
+    if(cached && !active) {
+        cachedTracker.store(0);
+        delete cached;
+    }
+    active = false;
+    return false;
+}
