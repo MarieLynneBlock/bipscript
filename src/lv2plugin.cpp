@@ -92,6 +92,20 @@ Lv2Constants::Lv2Constants(LilvWorld *world) {
 void Lv2MidiInput::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time) {
     // clear atom sequence
     lv2_atom_sequence_clear(atomSequence);
+
+    // send all notes off messages if newly stopped
+    if(localRolling && !rolling) {
+        Lv2MidiEvent lv2Event;
+        lv2Event.event.time.frames = 0;
+        lv2Event.buffer[1] = 0x7b; // CC 123 = all notes off
+        lv2Event.buffer[2] = 0;
+        for(uint8_t channel = 0; channel < 16; channel++) {
+            lv2Event.buffer[0] = MidiEvent::TYPE_CONTROL + channel;
+            lv2_atom_sequence_append_event(atomSequence, CAPACITY, &lv2Event.event);
+        }
+    }
+    localRolling = rolling;
+
     // get connection and event count
     EventConnection *connection = eventConnector.getConnection();
     uint32_t eventCount = 0;
@@ -99,10 +113,12 @@ void Lv2MidiInput::process(bool rolling, jack_position_t &pos, jack_nframes_t nf
         connection->process(rolling, pos, nframes, time);
         eventCount = connection->getEventCount();
     }
+
     // get top events from buffer + connection
     MidiEvent* bufferEvent = static_cast<MidiEvent*>(eventBuffer.getNextEvent(rolling, pos, nframes));
     MidiEvent *connectionEvent = eventCount ? connection->getEvent(0) : 0;
     uint32_t eventIndex = 1;
+
     // loop while events on either buffer or connection
     while(bufferEvent || connectionEvent) {
         bool bufferNext = bufferEvent &&
