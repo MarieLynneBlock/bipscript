@@ -92,8 +92,9 @@ class Lv2MidiInput : public Listable
     LV2_Atom_Sequence *atomSequence;
     EventConnector eventConnector;
     EventBuffer eventBuffer;
+    bool localRolling;
 public:
-    Lv2MidiInput() {
+    Lv2MidiInput() : localRolling(false) {
         atomSequence = static_cast<LV2_Atom_Sequence *>(malloc(sizeof(LV2_Atom_Sequence) + CAPACITY));
     }
     LV2_Atom_Sequence *getAtomSequence() {
@@ -121,7 +122,7 @@ public:
 class Lv2MidiOutput : public Listable, public EventConnection 
 {
     const u_int32_t CAPACITY = 1024;
-    LV2_Atom_Sequence *atomSequence;
+    LV2_Atom_Sequence *atomSequence;    
     MidiEvent event;
 public:
     Lv2MidiOutput(EventSource *source) : EventConnection(source) {
