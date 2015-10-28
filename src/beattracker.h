@@ -70,16 +70,24 @@ class MidiBeatTracker {
     double currentOnset;
     TransportMaster *master;
     std::atomic<EventConnection*> midiInput;    
+    // for count-in
+    std::atomic<uint8_t> countInNote;
+    uint8_t countInCount;
+    jack_nframes_t lastCountTime[3];
+    jack_nframes_t countStartTime;
 public:
-    MidiBeatTracker(double bpm) : frameIndex(0), currentOnset(0) {
+    MidiBeatTracker(double bpm) : frameIndex(0), currentOnset(0), countInNote(0) {
         reset(bpm);
     }
     void connectMidi(EventSource &source) {
         this->midiInput.store(&source.getEventConnection(0));
     }
+    void countIn(uint8_t note) { countInNote.store(note); }
     void reset(double bpm);
     void reposition() {}
     void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
+private:
+    void countInEvent(MidiEvent *nextEvent, jack_position_t &pos, jack_nframes_t time);
 };
 
 class MidiBeatTrackerCache : public ObjectCache {

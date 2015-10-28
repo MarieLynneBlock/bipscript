@@ -99,6 +99,33 @@ bool BeatTrackerCache::scriptComplete()
     return false;
 }
 
+void MidiBeatTracker::countInEvent(MidiEvent *nextEvent, jack_position_t &pos, jack_nframes_t time)
+{
+    if(countInCount) {
+        jack_nframes_t realBeatPeriod = time + nextEvent->getFrameOffset() - lastCountTime[countInCount-1];
+        jack_nframes_t idealBeatPeriod = 60 * pos.frame_rate / pos.beats_per_minute; // one beat
+        uint32_t beatDelta = 100 * realBeatPeriod / idealBeatPeriod;
+        if(beatDelta >= 60 && beatDelta <= 140) { // TODO: optional parameter for window size
+            lastCountTime[countInCount] = time + nextEvent->getFrameOffset();
+            if(++countInCount == 4) {
+                double sumBeatPeriod = 0;
+                for(uint8_t i = 0; i < 3; i++) {
+                    sumBeatPeriod += lastCountTime[i + 1] - lastCountTime[i];
+                }
+                double avgBpm = (double)pos.frame_rate * 60 / (sumBeatPeriod / 3);
+                btrack.setTempo(avgBpm);
+                master->setBpm(avgBpm);
+                countStartTime = time + nextEvent->getFrameOffset() + realBeatPeriod;
+            }
+        } else if(beatDelta > 200) { // abandon this count-in
+            countInCount = 0;
+        }
+    } else {
+        lastCountTime[0] = time + nextEvent->getFrameOffset();
+        countInCount = 1;
+    }
+}
+
 void MidiBeatTracker::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
 {
     EventConnection *connection = midiInput.load();
@@ -106,9 +133,28 @@ void MidiBeatTracker::process(bool rolling, jack_position_t &pos, jack_nframes_t
     if(connection) {
         connection->process(rolling, pos, nframes, time);
         eventCount = connection->getEventCount();
+    }        
+
+    // scheduled start from count-in
+    if(countInCount == 4 && time >= countStartTime) {
+        AudioEngine::instance().transportStart();
+        countInCount = 0;
+        countInNote.store(0);
     }
 
-    // loop over frames
+    // active count-in?
+    uint8_t note = countInNote.load();
+    if(note) {
+        MidiEvent *nextEvent = eventCount ? connection->getEvent(0) : 0;
+        uint32_t eventIndex = 1;
+        while(nextEvent) {
+            if(nextEvent->matches(0x80, note, 100, 127)) { // TODO: velocity configurable?
+                countInEvent(nextEvent, pos, time);
+            }
+            nextEvent = eventIndex < eventCount ? connection->getEvent(eventIndex++) : 0;
+        }
+    }
+
     MidiEvent *nextEvent = eventCount ? connection->getEvent(0) : 0;
     uint32_t eventIndex = 1;
     for(jack_nframes_t i = 0; i < nframes; i++) {

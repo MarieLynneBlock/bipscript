@@ -656,6 +656,34 @@ SQInteger MidiBeatTrackerconnectMidi(HSQUIRRELVM vm)
     return 0;
 }
 
+//
+// Midi.BeatTracker countIn
+//
+SQInteger MidiBeatTrackercountIn(HSQUIRRELVM vm)
+{
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    sq_getinstanceup(vm, 1, &userPtr, 0);
+    MidiBeatTracker *obj = static_cast<MidiBeatTracker*>(userPtr);
+
+    // get parameter 1 "note" as integer
+    SQInteger note;
+    if (SQ_FAILED(sq_getinteger(vm, 2, &note))){
+        return sq_throwerror(vm, "argument 1 is not of type integer");
+    }
+
+    // call the implementation
+    try {
+        obj->countIn(note);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // void method, returns no value
+    return 0;
+}
+
 
 void bindMidi(HSQUIRRELVM vm)
 {
@@ -806,6 +834,10 @@ void bindMidi(HSQUIRRELVM vm)
     // methods for class BeatTracker
     sq_pushstring(vm, _SC("connectMidi"), -1);
     sq_newclosure(vm, &MidiBeatTrackerconnectMidi, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("countIn"), -1);
+    sq_newclosure(vm, &MidiBeatTrackercountIn, 0);
     sq_newslot(vm, -3, false);
 
     // push BeatTracker to Midi package table

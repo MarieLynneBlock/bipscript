@@ -121,3 +121,6 @@ classes :
         - name: connectMidi
           parameters:
             - { name: source, type: EventSource }
+        - name: countIn
+          parameters:
+            - { name: note, type: integer }
