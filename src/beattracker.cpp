@@ -162,6 +162,7 @@ void MidiBeatTracker::process(bool rolling, jack_position_t &pos, jack_nframes_t
         // add any events at this frame
         while(nextEvent && nextEvent->getFrameOffset() == i) {
             currentOnset += nextEvent->getDatabyte2(); // TODO: different weights for different notes
+            lastEventTime = time;
             nextEvent = eventIndex < eventCount ? connection->getEvent(eventIndex++) : 0;
         }
 
@@ -177,6 +178,15 @@ void MidiBeatTracker::process(bool rolling, jack_position_t &pos, jack_nframes_t
         }
         frameIndex++;
     }
+
+    // stop transport if no events
+    uint32_t seconds = (time - lastEventTime) / pos.frame_rate;
+    if(rolling && seconds > stopSeconds) {
+        AudioEngine &ae = AudioEngine::instance();
+        ae.transportStop();
+        ae.transportRelocate(0);
+    }
+
 }
 
 void MidiBeatTracker::reset(double bpm)

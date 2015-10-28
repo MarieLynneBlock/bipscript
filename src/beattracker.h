@@ -75,6 +75,9 @@ class MidiBeatTracker {
     uint8_t countInCount;
     jack_nframes_t lastCountTime[3];
     jack_nframes_t countStartTime;
+    // for stopOnSilence
+    std::atomic<uint32_t> stopSeconds;
+    jack_nframes_t lastEventTime;
 public:
     MidiBeatTracker(double bpm) : frameIndex(0), currentOnset(0), countInNote(0) {
         reset(bpm);
@@ -83,6 +86,7 @@ public:
         this->midiInput.store(&source.getEventConnection(0));
     }
     void countIn(uint8_t note) { countInNote.store(note); }
+    void stopOnSilence(uint32_t seconds) { stopSeconds.store(seconds); }
     void reset(double bpm);
     void reposition() {}
     void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);

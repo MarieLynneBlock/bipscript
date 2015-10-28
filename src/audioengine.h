@@ -97,6 +97,9 @@ public:
     void transportStart() {
         jack_transport_start(client);
     }
+    void transportRelocate(jack_nframes_t frame) {
+        jack_transport_locate(client, frame);
+    }
     TransportMaster *getTransportMaster(double bpm);
     void releaseTransportMaster();
 };

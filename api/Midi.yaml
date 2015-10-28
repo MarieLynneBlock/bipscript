@@ -124,3 +124,6 @@ classes :
         - name: countIn
           parameters:
             - { name: note, type: integer }
+        - name: stopOnSilence
+          parameters:
+            - { name: seconds, type: integer }
