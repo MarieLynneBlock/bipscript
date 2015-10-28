@@ -148,7 +148,7 @@ void MidiBeatTracker::process(bool rolling, jack_position_t &pos, jack_nframes_t
         MidiEvent *nextEvent = eventCount ? connection->getEvent(0) : 0;
         uint32_t eventIndex = 1;
         while(nextEvent) {
-            if(nextEvent->matches(0x80, note, 100, 127)) { // TODO: velocity configurable?
+            if(nextEvent->matches(MidiEvent::TYPE_NOTE_OFF, note, 100, 127)) { // TODO: velocity configurable?
                 countInEvent(nextEvent, pos, time);
             }
             nextEvent = eventIndex < eventCount ? connection->getEvent(eventIndex++) : 0;
@@ -161,8 +161,10 @@ void MidiBeatTracker::process(bool rolling, jack_position_t &pos, jack_nframes_t
 
         // add any events at this frame
         while(nextEvent && nextEvent->getFrameOffset() == i) {
-            currentOnset += nextEvent->getDatabyte2(); // TODO: different weights for different notes
-            lastEventTime = time;
+            if(nextEvent->matches(MidiEvent::TYPE_NOTE_ON)) {
+                currentOnset += nextEvent->getDatabyte2(); // TODO: different weights for different notes
+                lastEventTime = time;
+            }
             nextEvent = eventIndex < eventCount ? connection->getEvent(eventIndex++) : 0;
         }
 

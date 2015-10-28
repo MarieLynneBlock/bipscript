@@ -26,6 +26,8 @@ class MidiEvent : public Event
     unsigned char databyte2;
 public:
     static const unsigned char TYPE_CONTROL = 0xB0;
+    static const unsigned char TYPE_NOTE_OFF = 0x80;
+    static const unsigned char TYPE_NOTE_ON = 0x90;
     unsigned char channel;
     MidiEvent() : Event(1, 1, 1) {}
     MidiEvent(Position &position, int databyte1, int databyte2, int type, unsigned char channel);
