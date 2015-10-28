@@ -143,10 +143,10 @@ SQInteger Timestop(HSQUIRRELVM vm)
 //
 SQInteger TimeTransportMasterCtor(HSQUIRRELVM vm)
 {
-    // get parameter 1 "bpm" as integer
-    SQInteger bpm;
-    if (SQ_FAILED(sq_getinteger(vm, 2, &bpm))){
-        return sq_throwerror(vm, "argument 1 is not of type integer");
+    // get parameter 1 "bpm" as float
+    SQFloat bpm;
+    if (SQ_FAILED(sq_getfloat(vm, 2, &bpm))){
+        return sq_throwerror(vm, "argument 1 is not of type float");
     }
 
     TransportMaster *obj;

@@ -53,6 +53,6 @@ classes :
     - name: TransportMaster
       include: transportmaster
       ctor:
-        parameters: { name: bpm, type: integer }
+        parameters: { name: bpm, type: float }
         expression: TransportMasterCache::instance().getTransportMaster
 
