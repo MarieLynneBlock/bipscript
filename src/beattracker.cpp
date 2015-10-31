@@ -102,27 +102,38 @@ bool BeatTrackerCache::scriptComplete()
 void MidiBeatTracker::countInEvent(MidiEvent *nextEvent, jack_position_t &pos, jack_nframes_t time)
 {
     if(countInCount) {
+
+        // calculate beat periods: ideal, real and difference
         jack_nframes_t realBeatPeriod = time + nextEvent->getFrameOffset() - lastCountTime[countInCount-1];
         jack_nframes_t idealBeatPeriod = 60 * pos.frame_rate / pos.beats_per_minute; // one beat
         uint32_t beatDelta = 100 * realBeatPeriod / idealBeatPeriod;
+
+        // check this event is within expect time for count-in
         if(beatDelta >= 60 && beatDelta <= 140) { // TODO: optional parameter for window size
             lastCountTime[countInCount] = time + nextEvent->getFrameOffset();
+            std::cout << "* Count " << (int)(countInCount + 1) << std::endl;
+
+            // is this the last count-in
             if(++countInCount == 4) {
-                double sumBeatPeriod = 0;
+
+                // sum and average beat periods
+                uint32_t sumBeatPeriod = 0;
                 for(uint8_t i = 0; i < 3; i++) {
                     sumBeatPeriod += lastCountTime[i + 1] - lastCountTime[i];
                 }
-                double avgBpm = (double)pos.frame_rate * 60 / (sumBeatPeriod / 3);
+                double avgBeatPeriod = sumBeatPeriod / 3;
+
+                // set bpm and schedule start
+                double avgBpm = (double)pos.frame_rate * 60 / avgBeatPeriod;
                 btrack.setTempo(avgBpm);
                 master->setBpm(avgBpm);
-                countStartTime = time + nextEvent->getFrameOffset() + realBeatPeriod;
+                countStartTime = time + nextEvent->getFrameOffset() + avgBeatPeriod;
             }
-        } else if(beatDelta > 200) { // abandon this count-in
-            countInCount = 0;
         }
-    } else {
+    } else if(countInCount < 4) { // first count in
         lastCountTime[0] = time + nextEvent->getFrameOffset();
         countInCount = 1;
+        std::cout << "* Count 1" << std::endl;
     }
 }
 
@@ -135,23 +146,32 @@ void MidiBeatTracker::process(bool rolling, jack_position_t &pos, jack_nframes_t
         eventCount = connection->getEventCount();
     }        
 
-    // scheduled start from count-in
-    if(countInCount == 4 && time >= countStartTime) {
+    // count-in scheduled start
+    if(countInCount == 4 && time + nframes >= countStartTime) {
         AudioEngine::instance().transportStart();
         countInCount = 0;
         countInNote.store(0);
     }
 
+    // abandon count-in
+    else if(countInCount && (time - lastCountTime[countInCount - 1]) > pos.frame_rate) {
+        std::cout << "* abandoning count-in" << std::endl;
+        countInCount = 0;
+    }
+
     // active count-in?
-    uint8_t note = countInNote.load();
-    if(note) {
-        MidiEvent *nextEvent = eventCount ? connection->getEvent(0) : 0;
-        uint32_t eventIndex = 1;
-        while(nextEvent) {
-            if(nextEvent->matches(MidiEvent::TYPE_NOTE_OFF, note, 100, 127)) { // TODO: velocity configurable?
-                countInEvent(nextEvent, pos, time);
+    else {
+        uint8_t note = countInNote.load();
+        if(note && countInCount < 4) {
+            MidiEvent *nextEvent = eventCount ? connection->getEvent(0) : 0;
+            uint32_t eventIndex = 1;
+            while(nextEvent) {
+                // TODO: configurable velocity
+                if(nextEvent->matches(MidiEvent::TYPE_NOTE_ON, note, 72, 127)) {
+                    countInEvent(nextEvent, pos, time);
+                }
+                nextEvent = eventIndex < eventCount ? connection->getEvent(eventIndex++) : 0;
             }
-            nextEvent = eventIndex < eventCount ? connection->getEvent(eventIndex++) : 0;
         }
     }
 
@@ -182,13 +202,15 @@ void MidiBeatTracker::process(bool rolling, jack_position_t &pos, jack_nframes_t
     }
 
     // stop transport if no events
-    uint32_t seconds = (time - lastEventTime) / pos.frame_rate;
-    if(rolling && seconds > stopSeconds) {
-        AudioEngine &ae = AudioEngine::instance();
-        ae.transportStop();
-        ae.transportRelocate(0);
+    uint32_t seconds = stopSeconds.load();
+    if(seconds && rolling) {
+        uint32_t elapsed = (time - lastEventTime) / pos.frame_rate;
+        if(elapsed > seconds) {
+            AudioEngine &ae = AudioEngine::instance();
+            ae.transportStop();
+            ae.transportRelocate(0);
+        }
     }
-
 }
 
 void MidiBeatTracker::reset(double bpm)

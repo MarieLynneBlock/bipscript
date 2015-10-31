@@ -73,7 +73,7 @@ class MidiBeatTracker {
     // for count-in
     std::atomic<uint8_t> countInNote;
     uint8_t countInCount;
-    jack_nframes_t lastCountTime[3];
+    jack_nframes_t lastCountTime[4];
     jack_nframes_t countStartTime;
     // for stopOnSilence
     std::atomic<uint32_t> stopSeconds;
