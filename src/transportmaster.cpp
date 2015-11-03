@@ -44,7 +44,7 @@ void TransportMaster::setTime(jack_transport_state_t state, jack_nframes_t nfram
         pos->bar_start_tick = pos->bar * beatsPerBar * ticksPerBeat;
 
         pos->bar++; // bar is 1-based
-        lastTick = tick;
+        lastTick = pos->tick;
     } else {
 
         lastTick += ticksPerBeat * bpm * nframes / ((double) pos->frame_rate * 60);
