@@ -389,8 +389,8 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
     if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiNoteObject) {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
-    if(numargs < 5) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 4");
+    if(numargs < 3) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 2");
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
@@ -410,20 +410,62 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
         return sq_throwerror(vm, "argument 2 is not of type integer");
     }
 
-    // get parameter 3 "position" as integer
-    SQInteger position;
-    if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
-        return sq_throwerror(vm, "argument 3 is not of type integer");
+    // 3 parameters passed in
+    if(numargs == 4) {
+
+        // get parameter 3 "position" as integer
+        SQInteger position;
+        if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
+            return sq_throwerror(vm, "argument 3 is not of type integer");
+        }
+
+        // call the implementation
+        try {
+            obj->schedule(*note, bar, position);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
     }
 
-    // get parameter 4 "division" as integer
-    SQInteger division;
-    if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
-        return sq_throwerror(vm, "argument 4 is not of type integer");
+    // 4 parameters passed in
+    else if(numargs == 5) {
+
+        // get parameter 3 "position" as integer
+        SQInteger position;
+        if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
+            return sq_throwerror(vm, "argument 3 is not of type integer");
+        }
+
+        // get parameter 4 "division" as integer
+        SQInteger division;
+        if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
+            return sq_throwerror(vm, "argument 4 is not of type integer");
+        }
+
+        // call the implementation
+        try {
+            obj->schedule(*note, bar, position, division);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
     }
 
     // 5 parameters passed in
-    if(numargs == 6) {
+    else if(numargs == 6) {
+
+        // get parameter 3 "position" as integer
+        SQInteger position;
+        if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
+            return sq_throwerror(vm, "argument 3 is not of type integer");
+        }
+
+        // get parameter 4 "division" as integer
+        SQInteger division;
+        if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
+            return sq_throwerror(vm, "argument 4 is not of type integer");
+        }
 
         // get parameter 5 "channel" as integer
         SQInteger channel;
@@ -443,7 +485,7 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
     else {
         // call the implementation
         try {
-            obj->schedule(*note, bar, position, division);
+            obj->schedule(*note, bar);
         }
         catch(std::exception const& e) {
             return sq_throwerror(vm, e.what());
