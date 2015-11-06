@@ -51,6 +51,11 @@ SQInteger MathRandomCtor(HSQUIRRELVM vm)
 //
 SQInteger MathRandominteger(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     sq_getinstanceup(vm, 1, &userPtr, 0);

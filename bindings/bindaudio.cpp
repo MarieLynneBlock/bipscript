@@ -37,6 +37,11 @@ HSQOBJECT AudioStereoOutputObject;
 //
 SQInteger AudioMixerCtor(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 3) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 2");
+    }
     // get parameter 1 "inputs" as integer
     SQInteger inputs;
     if (SQ_FAILED(sq_getinteger(vm, 2, &inputs))){
@@ -69,6 +74,11 @@ SQInteger AudioMixerCtor(HSQUIRRELVM vm)
 //
 SQInteger AudioMixeraddGainController(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 5) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 4");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     sq_getinstanceup(vm, 1, &userPtr, 0);
@@ -120,6 +130,11 @@ SQInteger AudioMixeraddGainController(HSQUIRRELVM vm)
 //
 SQInteger AudioMixernextAudioInput(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     sq_getinstanceup(vm, 1, &userPtr, 0);
@@ -153,6 +168,11 @@ SQInteger AudioMixernextAudioInput(HSQUIRRELVM vm)
 //
 SQInteger AudioMixernextStereoInput(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     sq_getinstanceup(vm, 1, &userPtr, 0);
@@ -186,6 +206,11 @@ SQInteger AudioMixernextStereoInput(HSQUIRRELVM vm)
 //
 SQInteger AudioMixerscheduleGain(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 7) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 6");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     sq_getinstanceup(vm, 1, &userPtr, 0);
@@ -244,6 +269,11 @@ SQInteger AudioMixerscheduleGain(HSQUIRRELVM vm)
 //
 SQInteger AudioOutputCtor(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 3) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 2");
+    }
     // get parameter 1 "name" as string
     const SQChar* name;
     if (SQ_FAILED(sq_getstring(vm, 2, &name))){
@@ -276,6 +306,11 @@ SQInteger AudioOutputCtor(HSQUIRRELVM vm)
 //
 SQInteger AudioOutputconnect(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     sq_getinstanceup(vm, 1, &userPtr, 0);
@@ -309,6 +344,11 @@ SQInteger AudioOutputconnect(HSQUIRRELVM vm)
 //
 SQInteger AudioInputCtor(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 3) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 2");
+    }
     // get parameter 1 "name" as string
     const SQChar* name;
     if (SQ_FAILED(sq_getstring(vm, 2, &name))){
@@ -341,6 +381,11 @@ SQInteger AudioInputCtor(HSQUIRRELVM vm)
 //
 SQInteger AudioStereoOutputCtor(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 4) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 3");
+    }
     // get parameter 1 "name" as string
     const SQChar* name;
     if (SQ_FAILED(sq_getstring(vm, 2, &name))){
@@ -379,6 +424,11 @@ SQInteger AudioStereoOutputCtor(HSQUIRRELVM vm)
 //
 SQInteger AudioStereoOutputconnect(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     sq_getinstanceup(vm, 1, &userPtr, 0);

@@ -41,7 +41,10 @@ HSQOBJECT MidiDrumTabReaderObject;
 SQInteger MidiInputCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
-
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
     // get parameter 1 "name" as string
     const SQChar* name;
     if (SQ_FAILED(sq_getstring(vm, 2, &name))){
@@ -88,6 +91,11 @@ SQInteger MidiInputCtor(HSQUIRRELVM vm)
 //
 SQInteger MidiNoteCtor(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 5) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 4");
+    }
     // get parameter 1 "pitch" as integer
     SQInteger pitch;
     if (SQ_FAILED(sq_getinteger(vm, 2, &pitch))){
@@ -132,6 +140,11 @@ SQInteger MidiNoteCtor(HSQUIRRELVM vm)
 //
 SQInteger MidiControlCtor(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 3) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 2");
+    }
     // get parameter 1 "control" as integer
     SQInteger control;
     if (SQ_FAILED(sq_getinteger(vm, 2, &control))){
@@ -164,6 +177,11 @@ SQInteger MidiControlCtor(HSQUIRRELVM vm)
 //
 SQInteger MidiInputBufferCtor(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
     // get parameter 1 "source" as EventSource
     SQUserPointer sourceTypeTag, sourcePtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, 0))) {
@@ -195,6 +213,11 @@ SQInteger MidiInputBufferCtor(HSQUIRRELVM vm)
 //
 SQInteger MidiInputBufferlastControlValue(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     sq_getinstanceup(vm, 1, &userPtr, 0);
@@ -227,7 +250,6 @@ SQInteger MidiInputBufferlastControlValue(HSQUIRRELVM vm)
 SQInteger MidiPatternCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
-
     Pattern *obj;
     // 1 parameters passed in
     if(numargs == 2) {
@@ -274,6 +296,11 @@ SQInteger MidiPatternCtor(HSQUIRRELVM vm)
 //
 SQInteger MidiPatternadd(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 5) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 4");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     sq_getinstanceup(vm, 1, &userPtr, 0);
@@ -370,6 +397,11 @@ SQInteger MidiPatternprint(HSQUIRRELVM vm)
 //
 SQInteger MidiOutputCtor(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 3) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 2");
+    }
     // get parameter 1 "name" as string
     const SQChar* name;
     if (SQ_FAILED(sq_getstring(vm, 2, &name))){
@@ -402,6 +434,11 @@ SQInteger MidiOutputCtor(HSQUIRRELVM vm)
 //
 SQInteger MidiOutputsetDefaultChannel(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     sq_getinstanceup(vm, 1, &userPtr, 0);
@@ -437,6 +474,11 @@ SQInteger MidiOutputschedule(HSQUIRRELVM vm)
     }
 
     if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiNoteObject) {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 5) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 4");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     sq_getinstanceup(vm, 1, &userPtr, 0);
@@ -479,6 +521,11 @@ SQInteger MidiOutputschedule(HSQUIRRELVM vm)
     return 0;
     }
     if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiPatternObject) {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 3) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 2");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     sq_getinstanceup(vm, 1, &userPtr, 0);
@@ -509,6 +556,11 @@ SQInteger MidiOutputschedule(HSQUIRRELVM vm)
     return 0;
     }
     if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiControlObject) {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 5) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 4");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     sq_getinstanceup(vm, 1, &userPtr, 0);
@@ -564,6 +616,11 @@ SQInteger MidiOutputschedule(HSQUIRRELVM vm)
 //
 SQInteger MidiDrumTabReaderread(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     sq_getinstanceup(vm, 1, &userPtr, 0);

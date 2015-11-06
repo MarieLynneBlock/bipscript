@@ -34,7 +34,10 @@ HSQOBJECT TimeTransportMasterObject;
 SQInteger Timeschedule(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
-
+    // check parameter count
+    if(numargs < 3) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 2");
+    }
     // get parameter 1 "function" as function
     HSQOBJECT function;
     sq_getstackobj(vm, 2, &function);
@@ -143,6 +146,11 @@ SQInteger Timestop(HSQUIRRELVM vm)
 //
 SQInteger TimeTransportMasterCtor(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
     // get parameter 1 "bpm" as float
     SQFloat bpm;
     if (SQ_FAILED(sq_getfloat(vm, 2, &bpm))){

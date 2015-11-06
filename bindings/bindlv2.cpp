@@ -36,7 +36,12 @@ SQInteger Lv2PluginCtor(HSQUIRRELVM vm)
     SQInteger numargs = sq_gettop(vm);
     // optional overriden parameter not here
     if(numargs < 3) {
-        // get parameter 1 "uri" as string
+        SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get parameter 1 "uri" as string
     const SQChar* uri;
     if (SQ_FAILED(sq_getstring(vm, 2, &uri))){
         return sq_throwerror(vm, "argument 1 is not of type string");
@@ -64,7 +69,10 @@ SQInteger Lv2PluginCtor(HSQUIRRELVM vm)
 
     if(overrideType == OT_STRING) {
     SQInteger numargs = sq_gettop(vm);
-
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
     // get parameter 1 "uri" as string
     const SQChar* uri;
     if (SQ_FAILED(sq_getstring(vm, 2, &uri))){
@@ -107,7 +115,10 @@ SQInteger Lv2PluginCtor(HSQUIRRELVM vm)
     }
     if(overrideType == OT_INSTANCE && overrideTypeTag == &Lv2StateObject) {
     SQInteger numargs = sq_gettop(vm);
-
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
     // get parameter 1 "uri" as string
     const SQChar* uri;
     if (SQ_FAILED(sq_getstring(vm, 2, &uri))){
@@ -164,6 +175,11 @@ SQInteger Lv2PluginCtor(HSQUIRRELVM vm)
 //
 SQInteger Lv2Pluginconnect(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     sq_getinstanceup(vm, 1, &userPtr, 0);
@@ -197,6 +213,11 @@ SQInteger Lv2Pluginconnect(HSQUIRRELVM vm)
 //
 SQInteger Lv2PluginconnectMidi(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     sq_getinstanceup(vm, 1, &userPtr, 0);
@@ -230,6 +251,11 @@ SQInteger Lv2PluginconnectMidi(HSQUIRRELVM vm)
 //
 SQInteger Lv2PluginsetMidiChannel(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     sq_getinstanceup(vm, 1, &userPtr, 0);
@@ -258,6 +284,11 @@ SQInteger Lv2PluginsetMidiChannel(HSQUIRRELVM vm)
 //
 SQInteger Lv2PluginsetControl(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 3) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 2");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     sq_getinstanceup(vm, 1, &userPtr, 0);
@@ -292,6 +323,11 @@ SQInteger Lv2PluginsetControl(HSQUIRRELVM vm)
 //
 SQInteger Lv2PluginscheduleControl(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 6) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 5");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     sq_getinstanceup(vm, 1, &userPtr, 0);
@@ -352,7 +388,10 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
 
     if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiNoteObject) {
     SQInteger numargs = sq_gettop(vm);
-
+    // check parameter count
+    if(numargs < 5) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 4");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     sq_getinstanceup(vm, 1, &userPtr, 0);
@@ -416,7 +455,10 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
     }
     if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiPatternObject) {
     SQInteger numargs = sq_gettop(vm);
-
+    // check parameter count
+    if(numargs < 3) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 2");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     sq_getinstanceup(vm, 1, &userPtr, 0);
@@ -531,7 +573,10 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
 SQInteger Lv2PluginaddController(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
-
+    // check parameter count
+    if(numargs < 4) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 3");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     sq_getinstanceup(vm, 1, &userPtr, 0);
@@ -628,6 +673,11 @@ SQInteger Lv2StateCtor(HSQUIRRELVM vm)
     }
 
     if(overrideType == OT_TABLE) {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
     // get parameter 1 "state" as table
     HSQOBJECT stateObj;
     if (SQ_FAILED(sq_getstackobj(vm, 2, &stateObj))) {
@@ -653,6 +703,11 @@ SQInteger Lv2StateCtor(HSQUIRRELVM vm)
     return 1;
     }
     if(overrideType == OT_STRING) {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
     // get parameter 1 "file" as string
     const SQChar* file;
     if (SQ_FAILED(sq_getstring(vm, 2, &file))){

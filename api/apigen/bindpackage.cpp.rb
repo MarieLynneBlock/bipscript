@@ -72,6 +72,16 @@ class PackageCpp
     ret.chop.chop
   end
 
+  def count value
+      if value.kind_of?(Array) then
+        value.length
+      elsif value
+        1
+      else
+        0
+      end
+  end
+
   def squirrel_type type
     case type
     when "float"
@@ -244,7 +254,9 @@ class PackageCpp
   end
 
   def push_return type
-    if squirrel_type type
+    if type == "string"
+        "sq_push#{type}(vm, ret, strlen(ret));"
+    elsif squirrel_type type
         "sq_push#{type}(vm, ret);"
     else
     %{sq_pushobject(vm, #{type_package type}#{type_name type}Object);
@@ -338,9 +350,18 @@ class PackageCpp
   def bind_method clazz, method, ctor, overrides, indent
     ret = ""
     # count number of parameters returned
+    totalparams = count method['parameters']
     opts = optional_parameters(method)
-    if opts > 0
-        ret << indent << "SQInteger numargs = sq_gettop(vm);\n\n"
+    reqparams = totalparams - opts
+    if totalparams > 0
+        ret << indent << "SQInteger numargs = sq_gettop(vm);\n"
+    end
+    # check param count
+    if reqparams > 0
+        ret << indent << "// check parameter count\n"
+        ret << indent << "if(numargs < #{reqparams+1}) {\n"
+        ret << indent * 2 << "return sq_throwerror(vm, \"insufficient parameters, expected at least #{reqparams}\");\n"
+        ret << indent << "}\n"
     end
     # "this" pointer
     if clazz and not ctor
@@ -366,11 +387,10 @@ class PackageCpp
         ret << indent << return_type(method) << " ret;\n"
     end
     # optional parameters
-    totalparams = method['parameters'] ? method['parameters'].length : 0
-    for i in totalparams-opts+1..totalparams
+    for i in reqparams + 1..totalparams
         ret << indent << "// #{i} parameters passed in\n"
         ret << indent
-        if i != totalparams-opts+1 then ret << "else " end
+        if i != reqparams + 1 then ret << "else " end
         ret << "if(numargs == #{i+1}) {\n\n"
         with method['parameters'] do |param, counter|
             if param['optional'] and counter <= i
@@ -382,9 +402,8 @@ class PackageCpp
     end
     # call method with required params
     if opts > 0
-        req = totalparams - opts
         ret << indent << "else {\n"
-        ret << call_method(clazz, method, ctor, req, indent + "    ")
+        ret << call_method(clazz, method, ctor, reqparams, indent + "    ")
         ret << indent << "}\n\n"
     else
         ret << call_method(clazz, method, ctor, totalparams, indent) << "\n"
