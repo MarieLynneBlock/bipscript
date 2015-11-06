@@ -139,7 +139,6 @@ int AudioEngine::sync(jack_transport_state_t state, jack_position_t *pos)
             multiplePeriodRestart++;
             return 0;
         }
-        std::cout << "!! finished restarting after " << multiplePeriodRestart << " periods" << std::endl;        
         multiplePeriodRestart = 0;
         runningFrame = 0;
     }
@@ -150,7 +149,6 @@ int AudioEngine::sync(jack_transport_state_t state, jack_position_t *pos)
             multiplePeriodRestart = 1;
             return 0;
         }
-        std::cout << "!! single period restart! " << std::endl;
         // update runningFrame
         runningFrame = 0;
     }

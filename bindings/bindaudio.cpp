@@ -272,6 +272,39 @@ SQInteger AudioOutputCtor(HSQUIRRELVM vm)
 }
 
 //
+// Audio.Output connect
+//
+SQInteger AudioOutputconnect(HSQUIRRELVM vm)
+{
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    sq_getinstanceup(vm, 1, &userPtr, 0);
+    AudioOutputPort *obj = static_cast<AudioOutputPort*>(userPtr);
+
+    // get parameter 1 "source" as AudioSource
+    SQUserPointer sourceTypeTag, sourcePtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, 0))) {
+        return sq_throwerror(vm, "argument 1 is not an object of type AudioSource");
+    }
+    sq_gettypetag(vm, 2, &sourceTypeTag);
+    AudioSource *source = getAudioSource(sourcePtr, sourceTypeTag);
+    if(source == 0) {
+        return sq_throwerror(vm, "argument 1 is not of type AudioSource");
+    }
+
+    // call the implementation
+    try {
+        obj->connect(*source);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // void method, returns no value
+    return 0;
+}
+
+//
 // Audio.Input class
 //
 SQInteger AudioInputCtor(HSQUIRRELVM vm)
@@ -424,6 +457,10 @@ void bindAudio(HSQUIRRELVM vm)
     sq_newslot(vm, -3, false);
 
     // methods for class Output
+    sq_pushstring(vm, _SC("connect"), -1);
+    sq_newclosure(vm, &AudioOutputconnect, 0);
+    sq_newslot(vm, -3, false);
+
     // push Output to Audio package table
     sq_newslot(vm, -3, false);
 
