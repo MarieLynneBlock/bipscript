@@ -14,21 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with Bipscript.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef BINDINGS_H
-#define BINDINGS_H
 
-#include "squirrel.h"
+#include "io.h"
 
-namespace binding
+#include <fstream>
+
+const char *File::readAll()
 {
-    // package binding methods
-    void bindAudio(HSQUIRRELVM vm);
-    void bindExp(HSQUIRRELVM vm);
-    void bindIO(HSQUIRRELVM vm);
-    void bindLv2(HSQUIRRELVM vm);
-    void bindMath(HSQUIRRELVM vm);
-    void bindMidi(HSQUIRRELVM vm);
-    void bindTime(HSQUIRRELVM vm);
+    std::ifstream stream;
+    stream.open(name);
+    stream.seekg(0, std::ios::end);
+    length = stream.tellg();
+    buffer = new char[length];
+    stream.seekg(0, std::ios::beg);
+    stream.read(buffer, length);
+    stream.close();
+    return buffer;
 }
-
-#endif // BINDINGS_H

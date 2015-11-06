@@ -14,21 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with Bipscript.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef BINDINGS_H
-#define BINDINGS_H
+#ifndef BINDIO_H
+#define BINDIO_H
 
 #include "squirrel.h"
 
 namespace binding
 {
-    // package binding methods
-    void bindAudio(HSQUIRRELVM vm);
-    void bindExp(HSQUIRRELVM vm);
-    void bindIO(HSQUIRRELVM vm);
-    void bindLv2(HSQUIRRELVM vm);
-    void bindMath(HSQUIRRELVM vm);
-    void bindMidi(HSQUIRRELVM vm);
-    void bindTime(HSQUIRRELVM vm);
+// object references to types in this package
+extern HSQOBJECT IOFileObject;
 }
 
-#endif // BINDINGS_H
+#endif // BINDIO_H
