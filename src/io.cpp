@@ -18,11 +18,15 @@
 #include "io.h"
 
 #include <fstream>
+#include <stdexcept>
 
 const char *File::readAll()
 {
     std::ifstream stream;
     stream.open(name);
+    if(!stream) {
+        throw std::logic_error("could not read file " + name);
+    }
     stream.seekg(0, std::ios::end);
     length = stream.tellg();
     buffer = new char[length];
