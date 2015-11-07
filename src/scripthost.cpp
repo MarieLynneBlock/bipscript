@@ -150,6 +150,7 @@ int ScriptHost::run() {
     binding::bindMidi(vm);
     binding::bindLv2(vm);
     binding::bindExp(vm);
+    binding::bindIO(vm);
     binding::bindTime(vm);
     binding::bindMath(vm);
     // pop root table

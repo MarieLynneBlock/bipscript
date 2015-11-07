@@ -67,8 +67,8 @@ classes :
           parameters:
             - {name: note, type: Midi.Note}
             - {name: bar, type: integer}
-            - {name: position, type: integer}
-            - {name: division, type: integer}
+            - {name: position, type: integer, optional: true }
+            - {name: division, type: integer, optional: true }
             - {name: channel, type: integer, optional: true }
 
         - name: schedule

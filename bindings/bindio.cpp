@@ -15,26 +15,37 @@
  * along with Bipscript.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "bindmath.h"
+#include "bindio.h"
 #include "bindtypes.h"
 #include "bindings.h"
 
-#include "random.h"
+#include "io.h"
 
 namespace binding {
 
 // object references to types in this package
-HSQOBJECT MathRandomObject;
+HSQOBJECT IOFileObject;
 
 //
-// Math.Random class
+// IO.File class
 //
-SQInteger MathRandomCtor(HSQUIRRELVM vm)
+SQInteger IOFileCtor(HSQUIRRELVM vm)
 {
-    Random *obj;
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get parameter 1 "name" as string
+    const SQChar* name;
+    if (SQ_FAILED(sq_getstring(vm, 2, &name))){
+        return sq_throwerror(vm, "argument 1 is not of type string");
+    }
+
+    File *obj;
     // call the implementation
     try {
-        obj = new Random();
+        obj = new File(name);
     }
     catch(std::exception const& e) {
         return sq_throwerror(vm, e.what());
@@ -47,68 +58,57 @@ SQInteger MathRandomCtor(HSQUIRRELVM vm)
 }
 
 //
-// Math.Random integer
+// IO.File readAll
 //
-SQInteger MathRandominteger(HSQUIRRELVM vm)
+SQInteger IOFilereadAll(HSQUIRRELVM vm)
 {
-    SQInteger numargs = sq_gettop(vm);
-    // check parameter count
-    if(numargs < 2) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
-    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     sq_getinstanceup(vm, 1, &userPtr, 0);
-    Random *obj = static_cast<Random*>(userPtr);
-
-    // get parameter 1 "max" as integer
-    SQInteger max;
-    if (SQ_FAILED(sq_getinteger(vm, 2, &max))){
-        return sq_throwerror(vm, "argument 1 is not of type integer");
-    }
+    File *obj = static_cast<File*>(userPtr);
 
     // return value
-    SQInteger ret;
+    const SQChar* ret;
     // call the implementation
     try {
-        ret = obj->integer(max);
+        ret = obj->readAll();
     }
     catch(std::exception const& e) {
         return sq_throwerror(vm, e.what());
     }
 
     // push return value
-    sq_pushinteger(vm, ret);
+    sq_pushstring(vm, ret, strlen(ret));
     return 1;
 }
 
 
-void bindMath(HSQUIRRELVM vm)
+void bindIO(HSQUIRRELVM vm)
 {
     // create package table
-    sq_pushstring(vm, "Math", -1);
+    sq_pushstring(vm, "IO", -1);
     sq_newtable(vm);
 
-    // create class Math.Random
-    sq_pushstring(vm, "Random", -1);
+    // create class IO.File
+    sq_pushstring(vm, "File", -1);
     sq_newclass(vm, false);
-    sq_getstackobj(vm, -1, &MathRandomObject);
-    sq_settypetag(vm, -1, &MathRandomObject);
+    sq_getstackobj(vm, -1, &IOFileObject);
+    sq_settypetag(vm, -1, &IOFileObject);
 
-    // ctor for class Random
+    // ctor for class File
     sq_pushstring(vm, _SC("constructor"), -1);
-    sq_newclosure(vm, &MathRandomCtor, 0);
+    sq_newclosure(vm, &IOFileCtor, 0);
     sq_newslot(vm, -3, false);
 
-    // methods for class Random
-    sq_pushstring(vm, _SC("integer"), -1);
-    sq_newclosure(vm, &MathRandominteger, 0);
+    // methods for class File
+    sq_pushstring(vm, _SC("readAll"), -1);
+    sq_newclosure(vm, &IOFilereadAll, 0);
     sq_newslot(vm, -3, false);
 
-    // push Random to Math package table
+    // push File to IO package table
     sq_newslot(vm, -3, false);
 
-    // push package "Math" to root table
+    // push package "IO" to root table
     sq_newslot(vm, -3, false);
 }
 }

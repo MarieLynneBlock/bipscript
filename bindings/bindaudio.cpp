@@ -39,6 +39,11 @@ HSQOBJECT AudioBeatTrackerObject;
 //
 SQInteger AudioMixerCtor(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 3) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 2");
+    }
     // get parameter 1 "inputs" as integer
     SQInteger inputs;
     if (SQ_FAILED(sq_getinteger(vm, 2, &inputs))){
@@ -71,6 +76,11 @@ SQInteger AudioMixerCtor(HSQUIRRELVM vm)
 //
 SQInteger AudioMixeraddGainController(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 5) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 4");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     sq_getinstanceup(vm, 1, &userPtr, 0);
@@ -122,6 +132,11 @@ SQInteger AudioMixeraddGainController(HSQUIRRELVM vm)
 //
 SQInteger AudioMixernextAudioInput(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     sq_getinstanceup(vm, 1, &userPtr, 0);
@@ -155,6 +170,11 @@ SQInteger AudioMixernextAudioInput(HSQUIRRELVM vm)
 //
 SQInteger AudioMixernextStereoInput(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     sq_getinstanceup(vm, 1, &userPtr, 0);
@@ -188,6 +208,11 @@ SQInteger AudioMixernextStereoInput(HSQUIRRELVM vm)
 //
 SQInteger AudioMixerscheduleGain(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 7) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 6");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     sq_getinstanceup(vm, 1, &userPtr, 0);
@@ -246,6 +271,11 @@ SQInteger AudioMixerscheduleGain(HSQUIRRELVM vm)
 //
 SQInteger AudioOutputCtor(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 3) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 2");
+    }
     // get parameter 1 "name" as string
     const SQChar* name;
     if (SQ_FAILED(sq_getstring(vm, 2, &name))){
@@ -274,10 +304,53 @@ SQInteger AudioOutputCtor(HSQUIRRELVM vm)
 }
 
 //
+// Audio.Output connect
+//
+SQInteger AudioOutputconnect(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    sq_getinstanceup(vm, 1, &userPtr, 0);
+    AudioOutputPort *obj = static_cast<AudioOutputPort*>(userPtr);
+
+    // get parameter 1 "source" as AudioSource
+    SQUserPointer sourceTypeTag, sourcePtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, 0))) {
+        return sq_throwerror(vm, "argument 1 is not an object of type AudioSource");
+    }
+    sq_gettypetag(vm, 2, &sourceTypeTag);
+    AudioSource *source = getAudioSource(sourcePtr, sourceTypeTag);
+    if(source == 0) {
+        return sq_throwerror(vm, "argument 1 is not of type AudioSource");
+    }
+
+    // call the implementation
+    try {
+        obj->connect(*source);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // void method, returns no value
+    return 0;
+}
+
+//
 // Audio.Input class
 //
 SQInteger AudioInputCtor(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 3) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 2");
+    }
     // get parameter 1 "name" as string
     const SQChar* name;
     if (SQ_FAILED(sq_getstring(vm, 2, &name))){
@@ -310,6 +383,11 @@ SQInteger AudioInputCtor(HSQUIRRELVM vm)
 //
 SQInteger AudioStereoOutputCtor(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 4) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 3");
+    }
     // get parameter 1 "name" as string
     const SQChar* name;
     if (SQ_FAILED(sq_getstring(vm, 2, &name))){
@@ -348,6 +426,11 @@ SQInteger AudioStereoOutputCtor(HSQUIRRELVM vm)
 //
 SQInteger AudioStereoOutputconnect(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     sq_getinstanceup(vm, 1, &userPtr, 0);
@@ -485,6 +568,10 @@ void bindAudio(HSQUIRRELVM vm)
     sq_newslot(vm, -3, false);
 
     // methods for class Output
+    sq_pushstring(vm, _SC("connect"), -1);
+    sq_newclosure(vm, &AudioOutputconnect, 0);
+    sq_newslot(vm, -3, false);
+
     // push Output to Audio package table
     sq_newslot(vm, -3, false);
 

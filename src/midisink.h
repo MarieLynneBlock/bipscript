@@ -35,6 +35,12 @@ public:
     void schedule(Note &note, unsigned int bar, unsigned int position, unsigned int division) {
         schedule(note, bar, position, division, defaultChannel);
     }
+    void schedule(Note &note, unsigned int bar, unsigned int position) {
+        schedule(note, bar, position, 4); // TODO: current time signature
+    }
+    void schedule(Note &note, unsigned int bar) {
+        schedule(note, bar, 1);
+    }
     void schedule(const Note &note, Position &position, unsigned char channel);
     void schedule(Pattern &pattern, unsigned int bar, unsigned int position, unsigned int division, unsigned char channel) {
         Position pos(bar, position, division);

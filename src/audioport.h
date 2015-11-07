@@ -65,6 +65,9 @@ public:
     ~AudioOutputPort();
     jack_port_t* getJackPort() { return port; }
     void processAll(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
+    void connect(AudioSource &source) {
+        connect(source.getAudioConnection(0));
+    }
     void connect(AudioConnection &connection) {
         this->audioInput.store(&connection);
     }
