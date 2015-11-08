@@ -70,14 +70,14 @@ void TransportMaster::setTime(jack_transport_state_t state, jack_nframes_t nfram
 
     if(doForceBeat) {
         if(pos->tick > ticksPerBeat / 2) {
+            // skip to next beat
             if (++pos->beat > beatsPerBar) {
                 pos->beat = 1;
                 pos->bar++;
                 pos->bar_start_tick += (beatsPerBar * ticksPerBeat);
             }
+            lastTick = pos->tick = 0;
         }
-        lastTick = 0;
-        pos->tick = 0;
         doForceBeat = false;
     }
 }
