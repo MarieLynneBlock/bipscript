@@ -33,6 +33,7 @@ HSQOBJECT MidiControlObject;
 HSQOBJECT MidiInputBufferObject;
 HSQOBJECT MidiPatternObject;
 HSQOBJECT MidiOutputObject;
+HSQOBJECT MidiProgramChangeObject;
 HSQOBJECT MidiDrumTabReaderObject;
 
 //
@@ -602,9 +603,87 @@ SQInteger MidiOutputschedule(HSQUIRRELVM vm)
     // void method, returns no value
     return 0;
     }
+    if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiProgramChangeObject) {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 5) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 4");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    sq_getinstanceup(vm, 1, &userPtr, 0);
+    MidiOutputPort *obj = static_cast<MidiOutputPort*>(userPtr);
+
+    // get parameter 1 "control" as Midi.ProgramChange
+    ProgramChange *control = 0;
+    sq_getinstanceup(vm, 2, (SQUserPointer*)&control, 0);
+    if(control == 0) {
+        return sq_throwerror(vm, "argument 1 is not of type Midi.ProgramChange");
+    }
+
+    // get parameter 2 "bar" as integer
+    SQInteger bar;
+    if (SQ_FAILED(sq_getinteger(vm, 3, &bar))){
+        return sq_throwerror(vm, "argument 2 is not of type integer");
+    }
+
+    // get parameter 3 "position" as integer
+    SQInteger position;
+    if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
+        return sq_throwerror(vm, "argument 3 is not of type integer");
+    }
+
+    // get parameter 4 "division" as integer
+    SQInteger division;
+    if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
+        return sq_throwerror(vm, "argument 4 is not of type integer");
+    }
+
+    // call the implementation
+    try {
+        obj->schedule(*control, bar, position, division);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // void method, returns no value
+    return 0;
+    }
     else {
         return sq_throwerror(vm, "argument 1 is not an expected type");
     }
+}
+
+//
+// Midi.ProgramChange class
+//
+SQInteger MidiProgramChangeCtor(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get parameter 1 "program" as integer
+    SQInteger program;
+    if (SQ_FAILED(sq_getinteger(vm, 2, &program))){
+        return sq_throwerror(vm, "argument 1 is not of type integer");
+    }
+
+    ProgramChange *obj;
+    // call the implementation
+    try {
+        obj = new ProgramChange(program);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // return pointer to new object
+    sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
+    //sq_setreleasehook(vm, 1, release_hook);
+    return 1;
 }
 
 //
@@ -771,6 +850,21 @@ void bindMidi(HSQUIRRELVM vm)
     sq_newslot(vm, -3, false);
 
     // push Output to Midi package table
+    sq_newslot(vm, -3, false);
+
+    // create class Midi.ProgramChange
+    sq_pushstring(vm, "ProgramChange", -1);
+    sq_newclass(vm, false);
+    sq_getstackobj(vm, -1, &MidiProgramChangeObject);
+    sq_settypetag(vm, -1, &MidiProgramChangeObject);
+
+    // ctor for class ProgramChange
+    sq_pushstring(vm, _SC("constructor"), -1);
+    sq_newclosure(vm, &MidiProgramChangeCtor, 0);
+    sq_newslot(vm, -3, false);
+
+    // methods for class ProgramChange
+    // push ProgramChange to Midi package table
     sq_newslot(vm, -3, false);
 
     // create class Midi.DrumTabReader

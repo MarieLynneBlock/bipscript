@@ -56,6 +56,7 @@ public:
         schedule(pattern, bar, 1);
     }
     void schedule(Pattern &pattern, Position &position, unsigned char channel);
+    void schedule(ProgramChange &programChange, uint32_t bar, uint32_t position, uint32_t division);
     virtual void addMidiEvent(MidiEvent* evt) = 0;
 };
 

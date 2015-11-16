@@ -45,6 +45,14 @@ public:
         controller(controller), value(value) {}
 };
 
+class ProgramChange
+{
+public:
+    uint8_t program;
+    ProgramChange(uint8_t program) :
+        program(program) {}
+};
+
 class PatternNote {
     friend class Pattern;
     Note note;

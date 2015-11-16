@@ -79,6 +79,13 @@ classes :
             - {name: division, type: integer, optional: true }
             - {name: channel, type: integer, optional: true }
 
+        - name: schedule
+          parameters:
+          - {name: control, type: Midi.ProgramChange}
+          - {name: bar, type: integer}
+          - {name: position, type: integer}
+          - {name: division, type: integer}
+
         - name: addController
           parameters:
             - {name: source, type: EventSource}
