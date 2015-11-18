@@ -41,7 +41,6 @@ void
 init_stresspat ()
 {
   if ( stresspat[0].name == "Hornpipe") {
-      printf("stresspat already initialized\n");
       return;
       } 
   stresspat[0].name = "Hornpipe";

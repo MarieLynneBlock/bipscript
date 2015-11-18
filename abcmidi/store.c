@@ -1108,6 +1108,56 @@ outbase = addstring(argv[1]); /* [RM] 2010-11-21 */
   if (barflymode) init_stresspat();  /* [SS] 2011-08-18 */
 }
 
+void embed_init()
+{
+    int j;
+    int arg,m,n;
+    float afreq,semitone_shift; /* [SS] 2012-04-01 */
+    double log10();
+    check = 0;  /* not "check only" */
+    /* look for filename-from-tune-titles option */
+    namelimit = 252;
+    titlenames = 0;
+
+    verbose = 0;
+    nofnop = 0;
+    ignore_fermata = 0;
+    ignore_gracenotes = 0;
+    nocom = 0;
+    separate_tracks_for_words = 0;
+    harpmode = 0;
+    easyabcmode = 0;
+    /* TODO: make parameters */
+    barflymode = 1;
+    stressmodel = 0;
+    maxnotes = 500;
+    /* allocate space for notes */
+    pitch = checkmalloc(maxnotes*sizeof(int));
+    num = checkmalloc(maxnotes*sizeof(int));
+    denom = checkmalloc(maxnotes*sizeof(int));
+    stressvelocity = checkmalloc(maxnotes*sizeof(int)); /* [SS] 2011-08-17 */
+    bentpitch = checkmalloc(maxnotes*sizeof(int));
+    decotype  = checkmalloc(maxnotes*sizeof(int)); /* [SS] 2012-06-29 */
+    feature = (featuretype*) checkmalloc(maxnotes*sizeof(featuretype));
+    pitchline = checkmalloc(maxnotes*sizeof(int));
+    charloc = checkmalloc(maxnotes*sizeof(int)); /* [SS] 2014-12-25 */
+    for (j=0; j<maxnotes; j++)           /* [SS] 2012-11-25 */
+         bentpitch[j] = decotype[j] = 0; /* [SS] 2012-11-25 */
+    for (j=0;j<DECSIZE;j++)  dummydecorator[j] = 0;
+
+    /* and for text */
+    atext = (char**) checkmalloc(maxtexts*sizeof(char*));
+    words = (char**) checkmalloc(maxwords*sizeof(char*));
+    outbase = addstring("");
+
+    ratio_standard = -1;
+    quiet  = -1;
+    dotune = 0;
+    parseroff();
+    setup_chordnames();
+
+    if (barflymode) init_stresspat();  /* [SS] 2011-08-18 */
+  }
 
 void event_text(s)
 /* text found in abc file */
@@ -5775,7 +5825,7 @@ for (i=0;i<notes;i++) {
 }
 
 
-static void finishfile()
+static void abcmidi_finishfile()
 /* end of tune has been reached - write out MIDI file */
 {
   int i;
@@ -5818,7 +5868,7 @@ static void finishfile()
     if (verbose > 5) dumpfeat(0,notes);
 
     if (check) {
-      Mf_putc = nullputc;
+      //Mf_putc = nullputc;
       header_time_num = time_num; /* [SS] 2010-05-21 */
       header_time_denom = time_denom; /* [SS] 2010-05-21 */
       if (ntracks == 1) {
@@ -5833,7 +5883,7 @@ static void finishfile()
         event_fatal_error("File open failed");
       };
       if (!silent) printf("writing MIDI file %s\n", outname);
-      Mf_putc = myputc;
+      // Mf_putc = myputc;
       Mf_writetrack = writetrack;
       header_time_num = time_num;
       header_time_denom = time_denom;
@@ -5857,6 +5907,67 @@ static void finishfile()
     freevstring(&part);
     free_notestructs(); /* [SS] 2012-06-03 */ 
   };
+}
+
+static void finishfile()
+{
+    int i;
+    complete_all_split_voices ();
+    /* dump_voicecontexts(); for debugging*/
+    setup_trackstructure();
+    clearvoicecontexts();
+    init_drum_map();
+
+    if (!pastheader) {
+      event_error("No valid K: field found at start of tune");
+    } else {
+      scan_for_missing_repeats();
+
+      if (parts > -1) {
+        addfeature(PART, ' ', 0, 0);
+      };
+      if (headerpartlabel == 1 && !silent) {
+        event_error("P: field in header should go after K: field");
+      };
+      if (verbose > 1) {
+        printf("handling grace notes\n");
+      };
+      dograce();
+      if (barflymode) apply_bf_stress_factors (); /* [SS] 2011-08-24 */
+      tiefix(); /* [SS] 2014-04-03 */
+      if ((parts == -1) && (voicecount == 1)) {
+        if (verbose > 1) {
+          printf("fixing repeats\n");
+        };
+        fixreps();
+      };
+
+
+      expand_ornaments();
+
+      no_more_free_channels = 0;
+
+      if (parts >= 0) fix_part_start(); /* [SS] 2012-12-25 */
+      if (verbose > 5) dumpfeat(0,notes);
+
+        Mf_writetrack = writetrack;
+        header_time_num = time_num;
+        header_time_denom = time_denom;
+        if (ntracks == 1) {
+          mfwrite(0, 1, division, fp);
+        } else {
+          mfwrite(1, ntracks, division, fp);
+        };
+        // fclose(fp);
+      };
+      for (i=0; i<ntexts; i++) {
+        free(atext[i]);
+      };
+      for (i=0; i<wcount; i++) {
+        free(words[i]);
+      };
+      freevstring(&part);
+      free_notestructs(); /* [SS] 2012-06-03 */
 }
 
 void event_blankline()
@@ -5901,6 +6012,7 @@ int n;
     if (userfilename == 0) {
       if (outname != NULL) {
         free(outname);
+        outname = NULL;
       };
       sprintf(numstr, "%d", n);
       if ( (int) strlen(numstr) > namelimit - 1) {
@@ -5940,12 +6052,13 @@ void event_eof()
   free(feature);
   free(words);
   free(outname);
+  outname = NULL;
   free(outbase);
 }
 
 void set_control_defaults(); /* from queues.c */
 
-int main(argc,argv)
+int abcmidi_main(argc,argv)
 int argc;
 char *argv[];
 {
@@ -5969,5 +6082,18 @@ char *argv[];
     free_abbreviations();
   };
   return(0);
+}
+
+void parseabc(const char *abc) {
+    int i;
+    oldchordconvention = 0;
+    for (i=0;i<DECSIZE;i++) decorators_passback[i]=0;
+    for (i=0;i<64;i++) dependent_voice[i]=0;
+    set_control_defaults();
+
+    embed_init();
+    init_abbreviations();
+    parsestring(abc);
+    free_abbreviations();
 }
 

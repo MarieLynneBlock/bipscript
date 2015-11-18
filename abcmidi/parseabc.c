@@ -2885,6 +2885,78 @@ parsefile (name)
 }
 
 
+void parsestring(const char *abc)
+{
+    int reading;
+    int fileline;
+    struct vstring line;
+    int t;
+    int lastch, done_eol;
+    int index;
+
+    inhead = 0;
+    inbody = 0;
+    parseroff ();
+    reading = 1;
+    line.limit = 4;
+    initvstring (&line);
+    fileline = 1;
+    done_eol = 0;
+    lastch = '\0';
+    index = 0;
+    while (reading)
+    {
+        t = abc[index++];
+        if (t == '\0')
+        {
+            reading = 0;
+            if (line.len > 0)
+            {
+                parseline (line.st);
+                fileline = fileline + 1;
+                lineno = fileline;
+                if (parsing)
+                    event_linebreak ();
+            };
+        }
+        else
+      {
+        /* recognize  \n  or  \r  or  \r\n  or  \n\r  as end of line */
+        /* should work for DOS, unix and Mac files */
+        if ((t != '\n') && (t != '\r'))
+          {
+            addch ((char) t, &line);
+            done_eol = 0;
+          }
+        else
+          {
+            if ((done_eol) && (((t == '\n') && (lastch == '\r')) ||
+                   ((t == '\r') && (lastch == '\n'))))
+          {
+            done_eol = 0;
+            /* skip this character */
+          }
+            else
+          {
+            /* reached end of line */
+            parseline (line.st);
+            clearvstring (&line);
+            fileline = fileline + 1;
+            lineno = fileline;
+            if (parsing)
+              event_linebreak ();
+            done_eol = 1;
+          };
+          };
+        lastch = t;
+      };
+    };
+    event_eof ();
+    freevstring (&line);
+    if (parsing_started == 0)
+      event_error ("No tune processed. Possible missing X: field");
+  }
+
 int
 parsetune (FILE * fp)
 /* top-level routine for parsing file */
