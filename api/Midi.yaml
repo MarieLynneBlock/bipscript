@@ -19,6 +19,15 @@ name : Midi
 
 classes :
 
+    - name: ABCReader
+      include: abcreader
+      ctor: {}
+      methods:
+        - name: read
+          returns: Midi.Tune
+          parameters:
+            - {name: abc, type: string}
+
     - name: Input
       cppname: MidiInputPort
       super: EventSource
@@ -76,6 +85,17 @@ classes :
           #parameters: {name: index, type: integer}
         - name: getSize
         - name: print
+
+    - name: Tune
+      cppname: MidiTune
+      include: miditune
+      methods:
+        - name: getTitle
+          returns: string
+        - name: getTrack
+          returns: Midi.Pattern
+          parameters:
+            - {name: number, type: integer}
 
     - name: Output
       cppname: MidiOutputPort

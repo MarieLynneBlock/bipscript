@@ -19,21 +19,86 @@
 #include "bindtypes.h"
 #include "bindings.h"
 
+#include "abcreader.h"
 #include "midiport.h"
 #include "module_midi.h"
 #include "midiinputbuffer.h"
+#include "miditune.h"
 #include "drumtabreader.h"
 
 namespace binding {
 
 // object references to types in this package
+HSQOBJECT MidiABCReaderObject;
 HSQOBJECT MidiInputObject;
 HSQOBJECT MidiNoteObject;
 HSQOBJECT MidiControlObject;
 HSQOBJECT MidiInputBufferObject;
 HSQOBJECT MidiPatternObject;
+HSQOBJECT MidiTuneObject;
 HSQOBJECT MidiOutputObject;
 HSQOBJECT MidiDrumTabReaderObject;
+
+//
+// Midi.ABCReader class
+//
+SQInteger MidiABCReaderCtor(HSQUIRRELVM vm)
+{
+    ABCReader *obj;
+    // call the implementation
+    try {
+        obj = new ABCReader();
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // return pointer to new object
+    sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
+    //sq_setreleasehook(vm, 1, release_hook);
+    return 1;
+}
+
+//
+// Midi.ABCReader read
+//
+SQInteger MidiABCReaderread(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    sq_getinstanceup(vm, 1, &userPtr, 0);
+    ABCReader *obj = static_cast<ABCReader*>(userPtr);
+
+    // get parameter 1 "abc" as string
+    const SQChar* abc;
+    if (SQ_FAILED(sq_getstring(vm, 2, &abc))){
+        return sq_throwerror(vm, "argument 1 is not of type string");
+    }
+
+    // return value
+    MidiTune* ret;
+    // call the implementation
+    try {
+        ret = obj->read(abc);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushobject(vm, MidiTuneObject);
+    sq_createinstance(vm, -1);
+    sq_remove(vm, -2);
+    sq_setinstanceup(vm, -1, ret);
+    //sq_setreleasehook(vm, -1, &?);
+    
+    return 1;
+}
 
 //
 // Midi.Input class
@@ -393,6 +458,76 @@ SQInteger MidiPatternprint(HSQUIRRELVM vm)
 }
 
 //
+// Midi.Tune class
+//
+
+//
+// Midi.Tune getTitle
+//
+SQInteger MidiTunegetTitle(HSQUIRRELVM vm)
+{
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    sq_getinstanceup(vm, 1, &userPtr, 0);
+    MidiTune *obj = static_cast<MidiTune*>(userPtr);
+
+    // return value
+    const SQChar* ret;
+    // call the implementation
+    try {
+        ret = obj->getTitle();
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushstring(vm, ret, strlen(ret));
+    return 1;
+}
+
+//
+// Midi.Tune getTrack
+//
+SQInteger MidiTunegetTrack(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    sq_getinstanceup(vm, 1, &userPtr, 0);
+    MidiTune *obj = static_cast<MidiTune*>(userPtr);
+
+    // get parameter 1 "number" as integer
+    SQInteger number;
+    if (SQ_FAILED(sq_getinteger(vm, 2, &number))){
+        return sq_throwerror(vm, "argument 1 is not of type integer");
+    }
+
+    // return value
+    Pattern* ret;
+    // call the implementation
+    try {
+        ret = obj->getTrack(number);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushobject(vm, MidiPatternObject);
+    sq_createinstance(vm, -1);
+    sq_remove(vm, -2);
+    sq_setinstanceup(vm, -1, ret);
+    //sq_setreleasehook(vm, -1, &?);
+    
+    return 1;
+}
+
+//
 // Midi.Output class
 //
 SQInteger MidiOutputCtor(HSQUIRRELVM vm)
@@ -659,6 +794,25 @@ void bindMidi(HSQUIRRELVM vm)
     sq_pushstring(vm, "Midi", -1);
     sq_newtable(vm);
 
+    // create class Midi.ABCReader
+    sq_pushstring(vm, "ABCReader", -1);
+    sq_newclass(vm, false);
+    sq_getstackobj(vm, -1, &MidiABCReaderObject);
+    sq_settypetag(vm, -1, &MidiABCReaderObject);
+
+    // ctor for class ABCReader
+    sq_pushstring(vm, _SC("constructor"), -1);
+    sq_newclosure(vm, &MidiABCReaderCtor, 0);
+    sq_newslot(vm, -3, false);
+
+    // methods for class ABCReader
+    sq_pushstring(vm, _SC("read"), -1);
+    sq_newclosure(vm, &MidiABCReaderread, 0);
+    sq_newslot(vm, -3, false);
+
+    // push ABCReader to Midi package table
+    sq_newslot(vm, -3, false);
+
     // create class Midi.Input
     sq_pushstring(vm, "Input", -1);
     sq_newclass(vm, false);
@@ -748,6 +902,25 @@ void bindMidi(HSQUIRRELVM vm)
     sq_newslot(vm, -3, false);
 
     // push Pattern to Midi package table
+    sq_newslot(vm, -3, false);
+
+    // create class Midi.Tune
+    sq_pushstring(vm, "Tune", -1);
+    sq_newclass(vm, false);
+    sq_getstackobj(vm, -1, &MidiTuneObject);
+    sq_settypetag(vm, -1, &MidiTuneObject);
+
+
+    // methods for class Tune
+    sq_pushstring(vm, _SC("getTitle"), -1);
+    sq_newclosure(vm, &MidiTunegetTitle, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("getTrack"), -1);
+    sq_newclosure(vm, &MidiTunegetTrack, 0);
+    sq_newslot(vm, -3, false);
+
+    // push Tune to Midi package table
     sq_newslot(vm, -3, false);
 
     // create class Midi.Output
