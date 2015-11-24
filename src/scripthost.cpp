@@ -148,8 +148,7 @@ int ScriptHost::run() {
     // bindModules(vm);
     binding::bindAudio(vm);
     binding::bindMidi(vm);
-    binding::bindLv2(vm);
-    binding::bindExp(vm);
+    binding::bindLv2(vm);    
     binding::bindIO(vm);
     binding::bindTime(vm);
     binding::bindMath(vm);
