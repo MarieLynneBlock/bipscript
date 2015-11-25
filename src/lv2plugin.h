@@ -19,6 +19,7 @@
 
 #include "lv2/lv2plug.in/ns/ext/atom/atom.h"
 #include "lv2/lv2plug.in/ns/ext/atom/util.h"
+#include "lv2/lv2plug.in/ns/ext/state/state.h"
 #include <lilv-0/lilv/lilv.h>
 
 #include <map>
@@ -42,6 +43,12 @@ public:
     const char *idToUri(LV2_URID urid);
 };
 
+class Lv2PathMapper
+{
+public:
+    char *mapAbsolutePath(const char *abstractPath);
+    char *mapAbstractPath(const char *absolutePath);
+};
 
 class Lv2Constants
 {
@@ -284,10 +291,12 @@ class Lv2PluginCache : public ProcessorCache<std::string, Lv2Plugin>
     std::map<std::string, const LilvPlugin*> pluginMap;
     std::map<std::string, int> instanceCount;
     // for features
-    const LV2_Feature* lv2Features[5];
+    const LV2_Feature* lv2Features[6];
     std::map<std::string, bool> supported;
     LV2_URID_Map map;
     LV2_URID_Unmap unmap;
+    Lv2PathMapper pathMapper;
+    LV2_State_Map_Path mapPath;
     // use instance()
     Lv2PluginCache();
     void scriptReset() {

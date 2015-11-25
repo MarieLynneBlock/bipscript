@@ -21,7 +21,6 @@
 #include "objectcollector.h"
 
 #include "lv2/lv2plug.in/ns/ext/presets/presets.h"
-#include "lv2/lv2plug.in/ns/ext/state/state.h"
 #include "lv2/lv2plug.in/ns/ext/options/options.h"
 #include "lv2/lv2plug.in/ns/ext/buf-size/buf-size.h"
 
@@ -33,6 +32,14 @@ static LV2_URID uridMap(LV2_URID_Map_Handle handle, const char *uri) {
 
 static const char* uridUnmap(LV2_URID_Unmap_Handle handle, LV2_URID urid) {
     return ((Lv2UridMapper*)handle)->idToUri(urid);
+}
+
+static char *mapAbsolutePath(LV2_State_Map_Path_Handle handle, const char *abstractPath) {
+    return ((Lv2PathMapper*)handle)->mapAbsolutePath(abstractPath);
+}
+
+static char *mapAbstractPath(LV2_State_Map_Path_Handle handle, const char *absolutePath) {
+    return ((Lv2PathMapper*)handle)->mapAbstractPath(absolutePath);
 }
 
 static void setPortValue(const char *port, void *data,
@@ -69,6 +76,24 @@ const char *Lv2UridMapper::idToUri(LV2_URID urid) {
     std::cerr << "!!! uridUnMap failed to find uri for " << urid << std::endl;
     return NULL;
 }
+
+
+char *Lv2PathMapper::mapAbsolutePath(const char *abstractPath)
+{
+    // TODO: implement
+    char *ret = (char *)malloc(strlen(abstractPath) + 1);
+    strcpy(ret, abstractPath);
+    return ret;
+}
+
+char *Lv2PathMapper::mapAbstractPath(const char *absolutePath)
+{
+    // TODO: implement
+    char *ret = (char *)malloc(strlen(absolutePath) + 1);
+    strcpy(ret, absolutePath);
+    return ret;
+}
+
 
 Lv2Constants::Lv2Constants(LilvWorld *world) {
     lv2AtomPort = lilv_new_uri(world, LV2_ATOM__AtomPort);
@@ -622,6 +647,7 @@ Lv2PluginCache::Lv2PluginCache() : world(lilv_world_new()), lv2Constants(world) 
     supported[LV2_URID__unmap] = true;
     supported[LV2_OPTIONS__options] = true;
     supported[LV2_BUF_SIZE__boundedBlockLength] = true;
+    supported[LV2_STATE__mapPath] = true;
 
     // URID feature (map/unmap)
     map.map = &uridMap;
@@ -652,7 +678,15 @@ Lv2PluginCache::Lv2PluginCache() : world(lilv_world_new()), lv2Constants(world) 
     static LV2_Feature boundedBlockFeature = { LV2_BUF_SIZE__boundedBlockLength, NULL };
     lv2Features[3] = &boundedBlockFeature;
 
-    lv2Features[4] = 0;
+    // state map path feature
+    mapPath.handle = &pathMapper;
+    mapPath.absolute_path = &mapAbsolutePath;
+    mapPath.abstract_path = &mapAbstractPath;
+    static LV2_Feature stateMapPathFeature = { LV2_STATE__mapPath, &mapPath };
+    lv2Features[4] = &stateMapPathFeature;
+
+    // end of features
+    lv2Features[5] = 0;
 
     // URIDs
     Lv2Plugin::atomTypes.intType = uridMapper.uriToId(LV2_ATOM__Int);
@@ -720,7 +754,7 @@ Lv2Plugin *Lv2PluginCache::getPlugin(const char *uri, const char *preset, Lv2Sta
 
     // restore baseline default state
     LilvState *defaultState =  lilv_state_new_from_world(world, &map, lilv_plugin_get_uri(lilvPlugin));
-    lilv_state_restore(defaultState, instance, setPortValue, plugin, 0, NULL);
+    lilv_state_restore(defaultState, instance, setPortValue, plugin, 0, lv2Features);
 
     // find and restore preset
     if(preset) {
@@ -754,9 +788,10 @@ Lv2Plugin *Lv2PluginCache::getPlugin(const char *uri, const char *preset, Lv2Sta
         LV2_State_Interface* iState = (LV2_State_Interface*)lilv_instance_get_extension_data(instance, LV2_STATE__interface);
         if (iState) {
             LV2_State_Status status = iState->restore(instance->lv2_handle, &stateRetrieve,
-                                                      (LV2_State_Handle)state, 0, NULL);
+                                                      (LV2_State_Handle)state, 0, lv2Features);
             if(status != LV2_STATE_SUCCESS) {
-                throw std::logic_error(std::string("Plugin ") + uriString + " error setting state");
+                throw std::logic_error(std::string("Plugin ") + uriString
+                                       + " setting state failed with code " + std::to_string(status));
             }
         }
     }
