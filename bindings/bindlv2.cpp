@@ -20,8 +20,8 @@
 #include "bindings.h"
 
 #include "lv2plugin.h"
-
 #include "bindmidi.h"
+
 namespace binding {
 
 // object references to types in this package
@@ -36,7 +36,7 @@ SQInteger Lv2PluginCtor(HSQUIRRELVM vm)
     SQInteger numargs = sq_gettop(vm);
     // optional overriden parameter not here
     if(numargs < 3) {
-        SQInteger numargs = sq_gettop(vm);
+    SQInteger numargs = sq_gettop(vm);
     // check parameter count
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");

@@ -727,7 +727,7 @@ SQInteger MidiDrumTabReaderread(HSQUIRRELVM vm)
     sq_remove(vm, -2);
     sq_setinstanceup(vm, -1, ret);
     //sq_setreleasehook(vm, -1, &?);
-    
+
     return 1;
 }
 
