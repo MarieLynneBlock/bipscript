@@ -46,6 +46,7 @@ public:
     unsigned char getType() {
         return type;
     }
+    uint8_t dataSize();
     void pack(void *buffer);
     void unpack(const uint8_t *buffer);
     bool matches(int type);

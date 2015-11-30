@@ -81,7 +81,8 @@ void MidiOutputPort::processAll(bool rolling, jack_position_t &pos, jack_nframes
     MidiEvent* nextEvent = static_cast<MidiEvent*>(buffer.getNextEvent(rolling, pos, nframes));
     while(nextEvent) {
         long frame = nextEvent->getFrameOffset();
-        unsigned char* jackEvent = jack_midi_event_reserve(port_buf, frame >= 0 ? frame : 0, 3);
+        size_t size = nextEvent->dataSize() + 1;
+        unsigned char* jackEvent = jack_midi_event_reserve(port_buf, frame >= 0 ? frame : 0, size);
         nextEvent->pack(jackEvent);
         ObjectCollector::instance()->recycle(nextEvent);
         nextEvent = static_cast<MidiEvent*>(buffer.getNextEvent(rolling, pos, nframes));

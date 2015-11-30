@@ -132,7 +132,7 @@ Mixer::~Mixer()
  *
  * No allocations.
  */
-void Mixer::nextAudioInput(AudioSource &source)
+void Mixer::connect(AudioSource &source)
 {
     unsigned int inputOutputCount = source.getAudioOutputCount();
     // source has no audio outputs
@@ -143,42 +143,18 @@ void Mixer::nextAudioInput(AudioSource &source)
     if(connectedInputs + inputOutputCount > audioInputCount) {
         throw std::logic_error("not enough inputs available");
     }
-    // loop over inputs and assign to outputs
+    // default gains - distribute across outputs
+    uint32_t inputCounter = 0, outputCounter = 0;
+    while(inputCounter < inputOutputCount || outputCounter < audioOutputCount) {
+        uint32_t inputIndex = connectedInputs + inputCounter++ % inputOutputCount;
+        uint32_t outputIndex = outputCounter++ % audioOutputCount;
+        gain[inputIndex][outputIndex] = 1.0;
+    }
+    // connect inputs
     for(unsigned int i = 0; i < inputOutputCount; i++) {
-        gain[connectedInputs][i % this->getAudioOutputCount()] = 1.0;
         audioInput[connectedInputs++].setConnection(&source.getAudioConnection(i), this);
     }
 }
-
-/**
- * Connect an AudioSource.
- *
- * Runs in script thread.
- *
- * No allocations.
- */
-void Mixer::nextStereoInput(AudioSource &source)
-{
-    unsigned int inputOutputCount = source.getAudioOutputCount();
-    // source has no audio outputs
-    if(!inputOutputCount) {
-        throw std::logic_error("input has no audio outputs");
-    }
-    // not enough free inputs
-    if(connectedInputs + 2 > audioInputCount) {
-        throw std::logic_error("not enough inputs available");
-    }
-    // connect first channel
-    gain[connectedInputs][0] = 1.0;
-    audioInput[connectedInputs++].setConnection(&source.getAudioConnection(0), this);
-    // connect second channel
-    gain[connectedInputs][1] = 1.0;
-    if(inputOutputCount == 1) {
-        audioInput[connectedInputs++].setConnection(&source.getAudioConnection(0), this);
-    } else {
-        audioInput[connectedInputs++].setConnection(&source.getAudioConnection(1), this);
-    }
- }
 
 /**
  * Adds a gain control mapping.

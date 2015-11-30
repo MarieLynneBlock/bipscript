@@ -148,8 +148,7 @@ int ScriptHost::run() {
     // bindModules(vm);
     binding::bindAudio(vm);
     binding::bindMidi(vm);
-    binding::bindLv2(vm);
-    binding::bindExp(vm);
+    binding::bindLv2(vm);    
     binding::bindIO(vm);
     binding::bindTime(vm);
     binding::bindMath(vm);
@@ -164,6 +163,11 @@ int ScriptHost::run() {
         sq_getstackobj(vm,-1,&freshRunTable);
         sq_addref(vm, &freshRunTable);
         if(!SQ_SUCCEEDED(sqstd_dofile(vm, filename, 0, SQTrue))) {
+            const SQChar *error;
+            sq_getlasterror(vm);
+            if (SQ_SUCCEEDED(sq_getstring(vm, -1, &error))) {
+                std::cerr << error << std::endl;
+            }
             return 1;
         }
         // pop fresh run table

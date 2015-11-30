@@ -126,9 +126,9 @@ SQInteger AudioMixeraddGainController(HSQUIRRELVM vm)
 }
 
 //
-// Audio.Mixer nextAudioInput
+// Audio.Mixer connect
 //
-SQInteger AudioMixernextAudioInput(HSQUIRRELVM vm)
+SQInteger AudioMixerconnect(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
@@ -153,45 +153,7 @@ SQInteger AudioMixernextAudioInput(HSQUIRRELVM vm)
 
     // call the implementation
     try {
-        obj->nextAudioInput(*source);
-    }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
-    }
-
-    // void method, returns no value
-    return 0;
-}
-
-//
-// Audio.Mixer nextStereoInput
-//
-SQInteger AudioMixernextStereoInput(HSQUIRRELVM vm)
-{
-    SQInteger numargs = sq_gettop(vm);
-    // check parameter count
-    if(numargs < 2) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
-    }
-    // get "this" pointer
-    SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
-    Mixer *obj = static_cast<Mixer*>(userPtr);
-
-    // get parameter 1 "source" as AudioSource
-    SQUserPointer sourceTypeTag, sourcePtr = 0;
-    if (SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, 0))) {
-        return sq_throwerror(vm, "argument 1 is not an object of type AudioSource");
-    }
-    sq_gettypetag(vm, 2, &sourceTypeTag);
-    AudioSource *source = getAudioSource(sourcePtr, sourceTypeTag);
-    if(source == 0) {
-        return sq_throwerror(vm, "argument 1 is not of type AudioSource");
-    }
-
-    // call the implementation
-    try {
-        obj->nextStereoInput(*source);
+        obj->connect(*source);
     }
     catch(std::exception const& e) {
         return sq_throwerror(vm, e.what());
@@ -480,12 +442,8 @@ void bindAudio(HSQUIRRELVM vm)
     sq_newclosure(vm, &AudioMixeraddGainController, 0);
     sq_newslot(vm, -3, false);
 
-    sq_pushstring(vm, _SC("nextAudioInput"), -1);
-    sq_newclosure(vm, &AudioMixernextAudioInput, 0);
-    sq_newslot(vm, -3, false);
-
-    sq_pushstring(vm, _SC("nextStereoInput"), -1);
-    sq_newclosure(vm, &AudioMixernextStereoInput, 0);
+    sq_pushstring(vm, _SC("connect"), -1);
+    sq_newclosure(vm, &AudioMixerconnect, 0);
     sq_newslot(vm, -3, false);
 
     sq_pushstring(vm, _SC("scheduleGain"), -1);
