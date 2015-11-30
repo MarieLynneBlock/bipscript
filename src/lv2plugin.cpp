@@ -606,12 +606,17 @@ void Lv2Plugin::reposition() {
 
 void Lv2Plugin::processAll(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
 {
+    // update midi inputs
+    Lv2MidiInput *midiInput = midiInputList.getFirst();
+    while(midiInput) {
+        midiInput->update();
+        midiInput = midiInputList.getNext(midiInput);
+    }
     // pull in new control mappings
     Lv2ControlMapping *freshMapping;
     while(newControlMappingsQueue.pop(freshMapping)) {
         freshMapping->getConnection()->addMapping(freshMapping);
-    }
-    // TODO: pull in other buffers
+    }    
 }
 
 void Lv2Plugin::print() {

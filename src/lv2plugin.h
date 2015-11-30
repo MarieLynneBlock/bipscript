@@ -121,7 +121,7 @@ public:
         eventBuffer.recycleRemaining();
     }
     void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
-    void postProcess() {
+    void update() {
         eventBuffer.update();
     }
 };
