@@ -16,13 +16,17 @@
  */
 
 #include <iostream>
+#include <boost/filesystem.hpp>
 
 #include "lv2plugin.h"
 #include "objectcollector.h"
+#include "scripthost.h"
 
 #include "lv2/lv2plug.in/ns/ext/presets/presets.h"
 #include "lv2/lv2plug.in/ns/ext/options/options.h"
 #include "lv2/lv2plug.in/ns/ext/buf-size/buf-size.h"
+
+namespace fs = boost::filesystem;
 
 uint32_t Lv2MidiEvent::midiEventTypeId;
 
@@ -80,20 +84,24 @@ const char *Lv2UridMapper::idToUri(LV2_URID urid) {
 
 char *Lv2PathMapper::mapAbsolutePath(const char *abstractPath)
 {
-    // TODO: implement
-    char *ret = (char *)malloc(strlen(abstractPath) + 1);
-    strcpy(ret, abstractPath);
+    // get script folder and append incoming relative path
+    fs::path absolutePath(ScriptHost::instance().getCurrentFolder());
+    absolutePath /= abstractPath;
+    absolutePath = canonical(absolutePath);
+    // copy to malloc-allocated char*
+    const char *pathString = absolutePath.c_str();
+    char *ret = (char *)malloc(strlen(pathString) + 1);
+    strcpy(ret, pathString);
     return ret;
 }
 
 char *Lv2PathMapper::mapAbstractPath(const char *absolutePath)
 {
-    // TODO: implement
+    // TODO: implement before implementing state save
     char *ret = (char *)malloc(strlen(absolutePath) + 1);
     strcpy(ret, absolutePath);
     return ret;
 }
-
 
 Lv2Constants::Lv2Constants(LilvWorld *world) {
     lv2AtomPort = lilv_new_uri(world, LV2_ATOM__AtomPort);
@@ -616,7 +624,9 @@ void Lv2Plugin::processAll(bool rolling, jack_position_t &pos, jack_nframes_t nf
     Lv2ControlMapping *freshMapping;
     while(newControlMappingsQueue.pop(freshMapping)) {
         freshMapping->getConnection()->addMapping(freshMapping);
-    }    
+    }
+    // update control buffer
+    controlBuffer.update();
 }
 
 void Lv2Plugin::print() {

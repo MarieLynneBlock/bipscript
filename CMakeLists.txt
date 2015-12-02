@@ -22,3 +22,5 @@ add_executable(${PROJECT_NAME} ${SRC_LIST})
 
 target_link_libraries(${PROJECT_NAME} "jack")
 target_link_libraries(${PROJECT_NAME} "lilv-0")
+target_link_libraries(${PROJECT_NAME} "boost_system")
+target_link_libraries(${PROJECT_NAME} "boost_filesystem")
