@@ -254,6 +254,7 @@ Lv2Plugin::Lv2Plugin(const LilvPlugin *plugin, LilvInstance *instance, const Lv2
     audioOutput = new AudioConnection*[audioOutputCount];
     for(uint32_t i = 0; i < audioOutputCount; i++) {
         audioOutput[i] = new AudioConnection(this);
+        audioOutput[i]->clear();
     }
 
     // initialize port structures
