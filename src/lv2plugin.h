@@ -252,6 +252,7 @@ public:
     ~Lv2Plugin();
     // public methods
     void connect(AudioSource &source);
+    void connect(AudioConnection *connection, uint32_t channel);
     void connectMidi(EventSource &source);
     void setPortValue(const char*, const void*, uint32_t);
     void setControlValue(const char *symbol, float value);
@@ -269,8 +270,8 @@ public:
     void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
     // AudioSource interface
     unsigned int getAudioOutputCount() { return audioOutputCount; }
-    AudioConnection &getAudioConnection(unsigned int index) {
-        return *audioOutput[index];
+    AudioConnection *getAudioConnection(unsigned int index) {
+        return audioOutput[index];
     }
     // EventSource interface
     unsigned int getEventOutputCount() { return midiOutputCount; }

@@ -29,7 +29,7 @@ class AudioConnection;
 class AudioSource : virtual public Source {
 public:
     virtual unsigned int getAudioOutputCount() = 0;
-    virtual AudioConnection &getAudioConnection(unsigned int index) = 0;
+    virtual AudioConnection *getAudioConnection(unsigned int index) = 0;
 };
 
 /**

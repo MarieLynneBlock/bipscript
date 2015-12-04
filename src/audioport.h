@@ -37,8 +37,8 @@ public:
     void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
     // AudioSource interface
     unsigned int getAudioOutputCount() { return 1; }
-    AudioConnection &getAudioConnection(unsigned int) {
-        return connection;
+    AudioConnection *getAudioConnection(unsigned int) {
+        return &connection;
     }
 };
 
@@ -68,8 +68,8 @@ public:
     void connect(AudioSource &source) {
         connect(source.getAudioConnection(0));
     }
-    void connect(AudioConnection &connection) {
-        this->audioInput.store(&connection);
+    void connect(AudioConnection *connection) {
+        this->audioInput.store(connection);
     }
     void reposition() {}
     void systemConnect(const char *connection);

@@ -152,7 +152,7 @@ void Mixer::connect(AudioSource &source)
     }
     // connect inputs
     for(unsigned int i = 0; i < inputOutputCount; i++) {
-        audioInput[connectedInputs++].setConnection(&source.getAudioConnection(i), this);
+        audioInput[connectedInputs++].setConnection(source.getAudioConnection(i), this);
     }
 }
 

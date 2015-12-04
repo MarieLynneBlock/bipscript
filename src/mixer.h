@@ -110,7 +110,7 @@ public:
     void reposition();
     // AudioSource interface
     unsigned int getAudioOutputCount() { return audioOutputCount; }
-    AudioConnection &getAudioConnection(unsigned int index) { return *audioOutput[index]; }
+    AudioConnection *getAudioConnection(unsigned int index) { return audioOutput[index]; }
 };
 
 class MixerCache : public ProcessorCache<std::string, Mixer>

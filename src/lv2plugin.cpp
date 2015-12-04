@@ -328,17 +328,28 @@ void Lv2Plugin::connect(AudioSource &source)
         throw std::logic_error("cannot connect: this plugin has no audio inputs");
     }
     if(audioInputCount == 2 && source.getAudioOutputCount() == 1) { // mono to stereo
-        audioInput[0].setConnection(&source.getAudioConnection(0), this);
-        audioInput[1].setConnection(&source.getAudioConnection(0), this);
+        audioInput[0].setConnection(source.getAudioConnection(0), this);
+        audioInput[1].setConnection(source.getAudioConnection(0), this);
     }
     else if(audioInputCount == source.getAudioOutputCount()) {
         for(uint32_t i = 0; i < audioInputCount; i++) {
-            audioInput[i].setConnection(&source.getAudioConnection(i), this);
+            audioInput[i].setConnection(source.getAudioConnection(i), this);
         }
     }
     else {
         throw std::logic_error("cannot connect: different number of input/output connections");
     }
+}
+
+void Lv2Plugin::connect(AudioConnection *connection, uint32_t channel)
+{
+    if(channel == 0) {
+        throw std::logic_error("cannot connect: there is no channel zero");
+    }
+    if(channel > audioInputCount) {
+        throw std::logic_error("cannot connect: channel too high");
+    }
+    audioInput[channel - 1].setConnection(connection, this);
 }
 
 void Lv2Plugin::connectMidi(EventSource &source)
