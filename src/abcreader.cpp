@@ -29,6 +29,7 @@ void mf_write_tempo(long tempo);
 int mf_write_meta_event(long delta_time, int type, char *data, int size);
 int mf_write_midi_event(long delta_time, int type, int chan, char *data, int size);
 void single_note_tuning_change(int key, float midipitch);
+void add_error(char *s, int lineno, int linepos);
 }
 
 long (*Mf_writetrack)(int) = 0;
@@ -63,10 +64,25 @@ void single_note_tuning_change(int key, float midipitch)
     ABCReader::getActiveParser()->singleNoteTuningChange(key, midipitch);
 }
 
+void add_error(char *s, int lineno, int linepos)
+{
+    ABCReader::getActiveParser()->addError(s, lineno, linepos);
+}
+
 MidiTune *ABCReader::read(const char *abc)
 {
     activeParser = this;
+    tune = new MidiTune(1);
+    errors.clear();
     parseabc(abc);
+    if(errors.size()) {
+        ABCError &error = errors.front();
+        std::string message("ABC Error at line ");
+        message += std::to_string(error.lineNo);
+        message += " of the ABC source: ";
+        message += error.mesg;
+        throw std::logic_error(message);
+    }
     return tune;
 }
 
@@ -91,7 +107,7 @@ int ABCReader::writeMetaEvent(long delta_time, int type, char *data, int size)
 {
     // printf("got META event type:0x%x delta:%ld\n", type, delta_time);
     if(type == 0x03 && activeTrack == 0) { // title
-        tune->setTitle(data);
+        tune->setTitle(data); // TODO: should append, may be multiple lines
     }
     else if(type == 0x58) {
         //printf("got time sig %d:%d:%d:%d\n", data[0], data[1], data[2], data[3]);
@@ -105,7 +121,7 @@ int ABCReader::writeMetaEvent(long delta_time, int type, char *data, int size)
 
 int ABCReader::writeMidiEvent(long delta_time, int type, int chan, char *data, int size)
 {
-    // printf("got midi event type:0x%x delta:%ld [%d:%d]", type, delta_time, data[0], data[1]);
+    // printf("got midi event type:0x%x delta:%ld [%d:%d]\n", type, delta_time, data[0], data[1]);
     currentPosition += Duration(0, delta_time, ticksPerBeat * beatsPerBar);
     // std::cout << " new position " << currentPosition << std::endl;
     MidiEvent *event = new MidiEvent(currentPosition, data[0], data[1], type, chan);
@@ -115,4 +131,9 @@ int ABCReader::writeMidiEvent(long delta_time, int type, int chan, char *data, i
 
 void ABCReader::singleNoteTuningChange(int key, float midipitch)
 {
+}
+
+void ABCReader::addError(char *mesg, int lineno, int linepos)
+{
+    errors.push_back(ABCError(mesg, lineno, linepos));
 }

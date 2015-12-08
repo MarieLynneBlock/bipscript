@@ -1543,7 +1543,7 @@ char *s;
   exit(1);
 }
 
-void event_error(s)
+void abcmidi_event_error(s)
 /* generic error handler */
 char *s;
 {
@@ -1556,6 +1556,12 @@ char *s;
 #else
   printf("Error in line-char %d-%d : %s\n", lineno, lineposition, s);
 #endif
+}
+
+void event_error(s)
+char *s;
+{
+    add_error(s, lineno, lineposition);
 }
 
 void event_warning(s)

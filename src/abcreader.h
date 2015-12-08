@@ -17,8 +17,17 @@
 #ifndef ABCREADER_H
 #define ABCREADER_H
 
-#include <string>
 #include "miditune.h"
+#include <vector>
+
+struct ABCError
+{
+    char *mesg;
+    int lineNo;
+    int linePos;
+    ABCError(char *msg, int lineno, int linepos) :
+        mesg(msg), lineNo(lineno), linePos(linepos) {}
+};
 
 class ABCReader
 {
@@ -28,6 +37,7 @@ class ABCReader
     uint32_t beatsPerBar;
     uint32_t activeTrack;
     Position currentPosition;
+    std::vector<ABCError> errors;
 public:
     ABCReader() : tune(0), beatsPerBar(4) {}
     static ABCReader *getActiveParser() {
@@ -41,6 +51,7 @@ public:
     int writeMetaEvent(long delta_time, int type, char *data, int size);
     int writeMidiEvent(long delta_time, int type, int chan, char *data, int size);
     void singleNoteTuningChange(int key, float midipitch);
+    void addError(char *mesg, int lineno, int linepos);
 };
 
 #endif // ABCREADER_H
