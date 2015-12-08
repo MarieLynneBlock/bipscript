@@ -92,6 +92,8 @@ classes :
       methods:
         - name: getTitle
           returns: string
+        - name: getTrackCount
+          returns: integer
         - name: getTrack
           returns: Midi.Pattern
           parameters:

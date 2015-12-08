@@ -97,7 +97,7 @@ SQInteger MidiABCReaderread(HSQUIRRELVM vm)
     sq_remove(vm, -2);
     sq_setinstanceup(vm, -1, ret);
     //sq_setreleasehook(vm, -1, &?);
-    
+
     return 1;
 }
 
@@ -488,6 +488,31 @@ SQInteger MidiTunegetTitle(HSQUIRRELVM vm)
 }
 
 //
+// Midi.Tune getTrackCount
+//
+SQInteger MidiTunegetTrackCount(HSQUIRRELVM vm)
+{
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    sq_getinstanceup(vm, 1, &userPtr, 0);
+    MidiTune *obj = static_cast<MidiTune*>(userPtr);
+
+    // return value
+    SQInteger ret;
+    // call the implementation
+    try {
+        ret = obj->getTrackCount();
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushinteger(vm, ret);
+    return 1;
+}
+
+//
 // Midi.Tune getTrack
 //
 SQInteger MidiTunegetTrack(HSQUIRRELVM vm)
@@ -524,7 +549,7 @@ SQInteger MidiTunegetTrack(HSQUIRRELVM vm)
     sq_remove(vm, -2);
     sq_setinstanceup(vm, -1, ret);
     //sq_setreleasehook(vm, -1, &?);
-    
+
     return 1;
 }
 
@@ -993,6 +1018,10 @@ void bindMidi(HSQUIRRELVM vm)
     // methods for class Tune
     sq_pushstring(vm, _SC("getTitle"), -1);
     sq_newclosure(vm, &MidiTunegetTitle, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("getTrackCount"), -1);
+    sq_newclosure(vm, &MidiTunegetTrackCount, 0);
     sq_newslot(vm, -3, false);
 
     sq_pushstring(vm, _SC("getTrack"), -1);

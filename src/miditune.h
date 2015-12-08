@@ -19,6 +19,9 @@ public:
     void addMidiEvent(uint32_t tracknum, MidiEvent *event) {
         tracks[tracknum].addEvent(event);
     }
+    uint32_t getTrackCount() {
+        return numTracks;
+    }
     Pattern *getTrack(uint32_t number);
 };
 
