@@ -101,6 +101,96 @@ SQInteger MidiABCReaderread(HSQUIRRELVM vm)
         }
     }
 
+    // 3 parameters passed in
+    else if(numargs == 4) {
+
+        // get parameter 2 "key" as string
+        const SQChar* key;
+        if (SQ_FAILED(sq_getstring(vm, 3, &key))){
+            return sq_throwerror(vm, "argument 2 is not of type string");
+        }
+
+        // get parameter 3 "noteLength" as string
+        const SQChar* noteLength;
+        if (SQ_FAILED(sq_getstring(vm, 4, &noteLength))){
+            return sq_throwerror(vm, "argument 3 is not of type string");
+        }
+
+        // call the implementation
+        try {
+            ret = obj->read(abc, key, noteLength);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
+    }
+
+    // 4 parameters passed in
+    else if(numargs == 5) {
+
+        // get parameter 2 "key" as string
+        const SQChar* key;
+        if (SQ_FAILED(sq_getstring(vm, 3, &key))){
+            return sq_throwerror(vm, "argument 2 is not of type string");
+        }
+
+        // get parameter 3 "noteLength" as string
+        const SQChar* noteLength;
+        if (SQ_FAILED(sq_getstring(vm, 4, &noteLength))){
+            return sq_throwerror(vm, "argument 3 is not of type string");
+        }
+
+        // get parameter 4 "meter" as string
+        const SQChar* meter;
+        if (SQ_FAILED(sq_getstring(vm, 5, &meter))){
+            return sq_throwerror(vm, "argument 4 is not of type string");
+        }
+
+        // call the implementation
+        try {
+            ret = obj->read(abc, key, noteLength, meter);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
+    }
+
+    // 5 parameters passed in
+    else if(numargs == 6) {
+
+        // get parameter 2 "key" as string
+        const SQChar* key;
+        if (SQ_FAILED(sq_getstring(vm, 3, &key))){
+            return sq_throwerror(vm, "argument 2 is not of type string");
+        }
+
+        // get parameter 3 "noteLength" as string
+        const SQChar* noteLength;
+        if (SQ_FAILED(sq_getstring(vm, 4, &noteLength))){
+            return sq_throwerror(vm, "argument 3 is not of type string");
+        }
+
+        // get parameter 4 "meter" as string
+        const SQChar* meter;
+        if (SQ_FAILED(sq_getstring(vm, 5, &meter))){
+            return sq_throwerror(vm, "argument 4 is not of type string");
+        }
+
+        // get parameter 5 "rhythm" as string
+        const SQChar* rhythm;
+        if (SQ_FAILED(sq_getstring(vm, 6, &rhythm))){
+            return sq_throwerror(vm, "argument 5 is not of type string");
+        }
+
+        // call the implementation
+        try {
+            ret = obj->read(abc, key, noteLength, meter, rhythm);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
+    }
+
     else {
         // call the implementation
         try {

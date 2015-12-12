@@ -21,7 +21,9 @@ ABCReader *ABCReader::activeParser;
 extern "C"
 {
 // defined in abcmidi
-void parseabc(const char *abc, const char *key);
+void parse_abc(const char *abc);
+void parse_abc_raw(const char *abc, const char *key, const char *length,
+              const char *meter, const char *rhythm);
 
 // callbacks defined here
 void  mfwrite(int format, int ntracks, int division, FILE *fp);
@@ -79,11 +81,12 @@ std::string ABCReader::error()
     return message;
 }
 
-Pattern *ABCReader::read(const char *abc, const char *key)
+Pattern *ABCReader::read(const char *abc, const char *key, const char *noteLength,
+                         const char *meter, const char *rhythm)
 {
     activeParser = this;
     errors.clear();
-    parseabc(abc, key);
+    parse_abc_raw(abc, key, noteLength, meter, rhythm);
     if(errors.size()) {
         throw std::logic_error(error());
     }
@@ -110,7 +113,7 @@ MidiTune *ABCReader::readTune(const char *abc)
 {
     activeParser = this;
     errors.clear();
-    parseabc(abc, 0);
+    parse_abc(abc);
     if(errors.size()) {
         throw std::logic_error(error());
     }

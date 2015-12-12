@@ -28,6 +28,9 @@ classes :
           parameters:
             - {name: abc, type: string}
             - {name: key, type: string, optional: true }
+            - {name: noteLength, type: string, optional: true }
+            - {name: meter, type: string, optional: true }
+            - {name: rhythm, type: string, optional: true }
         - name: readTune
           returns: Midi.Tune
           parameters:

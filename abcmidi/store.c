@@ -6090,7 +6090,22 @@ char *argv[];
   return(0);
 }
 
-void parseabc(const char *abc, const char *key) {
+void parse_abc(const char *abc) {
+    int i;
+    oldchordconvention = 0;
+    for (i=0;i<DECSIZE;i++) decorators_passback[i]=0;
+    for (i=0;i<64;i++) dependent_voice[i]=0;
+    set_control_defaults();
+
+    embed_init();
+    init_abbreviations();
+    parseinit();
+    parsestring(abc);
+    free_abbreviations();
+}
+
+void parse_abc_raw(const char *abc, const char *key, const char *length,
+                  const char *meter, const char *rhythm) {
     int i;
     oldchordconvention = 0;
     for (i=0;i<DECSIZE;i++) decorators_passback[i]=0;
@@ -6104,11 +6119,16 @@ void parseabc(const char *abc, const char *key) {
     while(isspace(*abc)) {
         abc++;
     }
+    // append headers
     if(key) {
         parsefield('X', "1");
+        parsefield('L', length);
+        parsefield('M', meter);
+        if(rhythm) {
+            parsefield('R', rhythm);
+        }
         parsefield('K', key);
     }
     parsestring(abc);
     free_abbreviations();
 }
-

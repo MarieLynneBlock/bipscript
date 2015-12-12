@@ -44,9 +44,20 @@ public:
     static ABCReader *getActiveParser() {
         return activeParser;
     }
-    Pattern *read(const char *abc, const char *key);
+    Pattern *read(const char *abc, const char *key, const char *noteLength,
+                  const char *meter, const char *rhythm);
+    Pattern *read(const char *abc, const char *key, const char *noteLength,
+                  const char *meter) {
+        return read(abc, key, noteLength, meter, 0);
+    }
+    Pattern *read(const char *abc, const char *key, const char *noteLength) {
+        return read(abc, key, noteLength, "C");
+    }
+    Pattern *read(const char *abc, const char *key) {
+        return read(abc, key, "1/8");
+    }
     Pattern *read(const char *abc) {
-        read(abc, "C");
+        return read(abc, "C");
     }
     MidiTune *readTune(const char *abc);
     void startTrack(uint32_t track);
