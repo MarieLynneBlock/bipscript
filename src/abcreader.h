@@ -32,18 +32,23 @@ struct ABCError
 class ABCReader
 {
     static ABCReader *activeParser;
-    MidiTune *tune;
     uint32_t ticksPerBeat;
     uint32_t beatsPerBar;
     uint32_t activeTrack;
     Position currentPosition;
+    std::vector<MidiTune*> tunes;
     std::vector<ABCError> errors;
+    std::string error();
 public:
-    ABCReader() : tune(0), beatsPerBar(4) {}
+    ABCReader() : beatsPerBar(4) {}
     static ABCReader *getActiveParser() {
         return activeParser;
     }
-    MidiTune *read(const char *abc);
+    Pattern *read(const char *abc, const char *key);
+    Pattern *read(const char *abc) {
+        read(abc, "C");
+    }
+    MidiTune *readTune(const char *abc);
     void startTrack(uint32_t track);
     void startSequence(int format, int ntracks, int division);
     // callbacks

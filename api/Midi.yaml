@@ -24,6 +24,11 @@ classes :
       ctor: {}
       methods:
         - name: read
+          returns: Midi.Pattern
+          parameters:
+            - {name: abc, type: string}
+            - {name: key, type: string, optional: true }
+        - name: readTune
           returns: Midi.Tune
           parameters:
             - {name: abc, type: string}

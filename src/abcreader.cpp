@@ -21,7 +21,7 @@ ABCReader *ABCReader::activeParser;
 extern "C"
 {
 // defined in abcmidi
-void parseabc(const char *abc);
+void parseabc(const char *abc, const char *key);
 
 // callbacks defined here
 void  mfwrite(int format, int ntracks, int division, FILE *fp);
@@ -69,28 +69,69 @@ void add_error(char *s, int lineno, int linepos)
     ABCReader::getActiveParser()->addError(s, lineno, linepos);
 }
 
-MidiTune *ABCReader::read(const char *abc)
+std::string ABCReader::error()
+{
+    ABCError &error = errors.front();
+    std::string message("ABC Error at line ");
+    message += std::to_string(error.lineNo);
+    message += " of the ABC source: ";
+    message += error.mesg;
+    return message;
+}
+
+Pattern *ABCReader::read(const char *abc, const char *key)
 {
     activeParser = this;
-    tune = new MidiTune(1);
     errors.clear();
-    parseabc(abc);
+    parseabc(abc, key);
     if(errors.size()) {
-        ABCError &error = errors.front();
-        std::string message("ABC Error at line ");
-        message += std::to_string(error.lineNo);
-        message += " of the ABC source: ";
-        message += error.mesg;
-        throw std::logic_error(message);
+        throw std::logic_error(error());
     }
+    // remove and delete tunes
+    MidiTune *tune = tunes.back();
+    while(tunes.size() > 1) {
+        tunes.pop_back();
+        delete tune;
+        tune = tunes.back();
+    }
+    tunes.pop_back();
+    // determine track index
+    uint32_t trackIndex = 1;
+    if(tune->getTrackCount() > 1) {
+        trackIndex = 2;
+    }
+    // clone pattern from tune
+    Pattern *ret = new Pattern(*tune->getTrack(trackIndex));
+    delete tune;
+    return ret;
+}
+
+MidiTune *ABCReader::readTune(const char *abc)
+{
+    activeParser = this;
+    errors.clear();
+    parseabc(abc, 0);
+    if(errors.size()) {
+        throw std::logic_error(error());
+    }
+    // delete additional tunes
+    MidiTune *tune = tunes.back();
+    while(tunes.size() > 1) {
+        tunes.pop_back();
+        delete tune;
+        tune = tunes.back();
+    }
+    // remove and return first tune
+    tunes.pop_back();
     return tune;
 }
 
 void ABCReader::startSequence(int format, int ntracks, int division)
 {
-    // get division
-    tune = new MidiTune(ntracks);
+    // store division
     ticksPerBeat = division;
+	// create new MidiTune
+    tunes.push_back(new MidiTune(ntracks));
 }
 
 void ABCReader::startTrack(uint32_t track) {
@@ -107,7 +148,7 @@ int ABCReader::writeMetaEvent(long delta_time, int type, char *data, int size)
 {
     // printf("got META event type:0x%x delta:%ld\n", type, delta_time);
     if(type == 0x03 && activeTrack == 0) { // title
-        tune->setTitle(data); // TODO: should append, may be multiple lines
+        tunes.back()->setTitle(data); // TODO: should append, may be multiple lines
     }
     else if(type == 0x58) {
         //printf("got time sig %d:%d:%d:%d\n", data[0], data[1], data[2], data[3]);
@@ -125,7 +166,7 @@ int ABCReader::writeMidiEvent(long delta_time, int type, int chan, char *data, i
     currentPosition += Duration(0, delta_time, ticksPerBeat * beatsPerBar);
     // std::cout << " new position " << currentPosition << std::endl;
     MidiEvent *event = new MidiEvent(currentPosition, data[0], data[1], type, chan);
-    tune->addMidiEvent(activeTrack, event);
+    tunes.back()->addMidiEvent(activeTrack, event);
     return 0;
 }
 

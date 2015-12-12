@@ -6090,7 +6090,7 @@ char *argv[];
   return(0);
 }
 
-void parseabc(const char *abc) {
+void parseabc(const char *abc, const char *key) {
     int i;
     oldchordconvention = 0;
     for (i=0;i<DECSIZE;i++) decorators_passback[i]=0;
@@ -6099,6 +6099,15 @@ void parseabc(const char *abc) {
 
     embed_init();
     init_abbreviations();
+    parseinit();
+    // remove leading whitespace
+    while(isspace(*abc)) {
+        abc++;
+    }
+    if(key) {
+        parsefield('X', "1");
+        parsefield('K', key);
+    }
     parsestring(abc);
     free_abbreviations();
 }

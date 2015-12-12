@@ -2884,6 +2884,12 @@ parsefile (name)
     event_error ("No tune processed. Possible missing X: field");
 }
 
+void parseinit()
+{
+    inhead = 0;
+    inbody = 0;
+    parseroff ();
+}
 
 void parsestring(const char *abc)
 {
@@ -2894,9 +2900,6 @@ void parsestring(const char *abc)
     int lastch, done_eol;
     int index;
 
-    inhead = 0;
-    inbody = 0;
-    parseroff ();
     reading = 1;
     line.limit = 4;
     initvstring (&line);

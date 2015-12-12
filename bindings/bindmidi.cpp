@@ -82,10 +82,71 @@ SQInteger MidiABCReaderread(HSQUIRRELVM vm)
     }
 
     // return value
+    Pattern* ret;
+    // 2 parameters passed in
+    if(numargs == 3) {
+
+        // get parameter 2 "key" as string
+        const SQChar* key;
+        if (SQ_FAILED(sq_getstring(vm, 3, &key))){
+            return sq_throwerror(vm, "argument 2 is not of type string");
+        }
+
+        // call the implementation
+        try {
+            ret = obj->read(abc, key);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
+    }
+
+    else {
+        // call the implementation
+        try {
+            ret = obj->read(abc);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
+    }
+
+    // push return value
+    sq_pushobject(vm, MidiPatternObject);
+    sq_createinstance(vm, -1);
+    sq_remove(vm, -2);
+    sq_setinstanceup(vm, -1, ret);
+    //sq_setreleasehook(vm, -1, &?);
+
+    return 1;
+}
+
+//
+// Midi.ABCReader readTune
+//
+SQInteger MidiABCReaderreadTune(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    sq_getinstanceup(vm, 1, &userPtr, 0);
+    ABCReader *obj = static_cast<ABCReader*>(userPtr);
+
+    // get parameter 1 "abc" as string
+    const SQChar* abc;
+    if (SQ_FAILED(sq_getstring(vm, 2, &abc))){
+        return sq_throwerror(vm, "argument 1 is not of type string");
+    }
+
+    // return value
     MidiTune* ret;
     // call the implementation
     try {
-        ret = obj->read(abc);
+        ret = obj->readTune(abc);
     }
     catch(std::exception const& e) {
         return sq_throwerror(vm, e.what());
@@ -912,6 +973,10 @@ void bindMidi(HSQUIRRELVM vm)
     // methods for class ABCReader
     sq_pushstring(vm, _SC("read"), -1);
     sq_newclosure(vm, &MidiABCReaderread, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("readTune"), -1);
+    sq_newclosure(vm, &MidiABCReaderreadTune, 0);
     sq_newslot(vm, -3, false);
 
     // push ABCReader to Midi package table
