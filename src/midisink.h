@@ -18,6 +18,7 @@
 #define MIDISINK_H
 
 #include "module_midi.h"
+#include "midipattern.h"
 #include "midievent.h"
 
 class MidiSink {

@@ -14,8 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Bipscript.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "midipattern.h"
 
-#include "module_midi.h"
 #include <sstream>
 
 void Pattern::addNote(Note &note, int bar, int position, int division)

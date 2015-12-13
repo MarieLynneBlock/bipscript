@@ -26,14 +26,17 @@ class MidiEvent : public Event
     unsigned char databyte2;
 public:
     static const unsigned char TYPE_CONTROL = 0xB0;
-    unsigned char channel;
+    uint8_t channel;
     MidiEvent() : Event(1, 1, 1) {}
     MidiEvent(Position &position, int databyte1, int databyte2, int type, unsigned char channel);
     MidiEvent(const MidiEvent&);
     friend std::ostream& operator<< (std::ostream &out, MidiEvent &evt);
     void setPosition(int bar, int position, int division) {
         Position(bar, position, division);
-    }   
+    }
+    void setChannel(uint8_t channel) {
+        this->channel = channel;
+    }
     unsigned char getDatabyte1() {
         return databyte1;
     }

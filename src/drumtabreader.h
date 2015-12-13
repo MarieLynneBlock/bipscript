@@ -17,7 +17,7 @@
 #ifndef DRUMTABPARSER_H
 #define DRUMTABPARSER_H
 
-#include "module_midi.h"
+#include "midipattern.h"
 
 class DrumTabReader
 {

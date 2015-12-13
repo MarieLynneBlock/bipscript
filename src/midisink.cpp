@@ -40,11 +40,26 @@ void MidiSink::schedule(const Note &note, Position &position, unsigned char chan
 }
 
 void MidiSink::schedule(Pattern &pattern, Position &position, unsigned char channel)
-{   
-    for(unsigned int i = 0; i < pattern.getSize(); i++) {
-        const PatternNote &note = pattern.get(i);
-        Position newPosition = position + note.getPosition();
-        this->schedule(note.getNote(), newPosition, channel);
+{
+    if(channel < 1 || channel > 16) {
+        throw std::logic_error("MIDI channel must be between 1 and 16");
+    }
+    MidiEvent *event = pattern.getFirstEvent();
+    if(!event) {
+        for(unsigned int i = 0; i < pattern.getSize(); i++) {
+            const PatternNote &note = pattern.get(i);
+            Position newPosition = position + note.getPosition();
+            this->schedule(note.getNote(), newPosition, channel);
+        }
+    }
+    else {
+        while(event) {
+            MidiEvent *newEvent = new MidiEvent(*event);
+            *newEvent += position;
+            newEvent->setChannel(channel - 1);
+            addMidiEvent(newEvent);
+            event = pattern.getNextEvent(event);
+        }
     }
 }
 

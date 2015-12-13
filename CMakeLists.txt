@@ -7,13 +7,16 @@ cmake_minimum_required(VERSION 2.8)
 
 aux_source_directory("src" SRC_LIST)
 aux_source_directory("bindings" SRC_LIST)
+aux_source_directory("abcmidi" SRC_LIST)
 aux_source_directory("squirrel/squirrel" SRC_LIST)
 aux_source_directory("squirrel/sqstdlib" SRC_LIST)
 
 include_directories("src")
 include_directories("bindings")
+include_directories("abcmidi")
 include_directories("squirrel/include")
 
+add_definitions(-DANSILIBS)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 
 # message(STATUS "SRC_LIST : ${SRC_LIST}")
