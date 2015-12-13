@@ -1564,7 +1564,7 @@ char *s;
     add_error(s, lineno, lineposition);
 }
 
-void event_warning(s)
+void abcmidi_event_warning(s)
 /* generic warning handler - for flagging possible errors */
 char *s;
 {
@@ -1577,6 +1577,12 @@ char *s;
 #else
   printf("Warning in line-char %d-%d : %s\n", lineno, lineposition, s);
 #endif
+}
+
+void event_warning(s)
+char *s;
+{
+    add_warning(s, lineno, lineposition);
 }
 
 static int autoextend(maxnotes)
@@ -6100,13 +6106,14 @@ void parse_abc(const char *abc) {
     embed_init();
     init_abbreviations();
     parseinit();
-    parsestring(abc);
+    parsestring(abc, 1);
     free_abbreviations();
 }
 
 void parse_abc_raw(const char *abc, const char *key, const char *length,
                   const char *meter, const char *rhythm) {
     int i;
+    int startline;
     oldchordconvention = 0;
     for (i=0;i<DECSIZE;i++) decorators_passback[i]=0;
     for (i=0;i<64;i++) dependent_voice[i]=0;
@@ -6116,7 +6123,12 @@ void parse_abc_raw(const char *abc, const char *key, const char *length,
     init_abbreviations();
     parseinit();
     // remove leading whitespace
+    startline = 1;
     while(isspace(*abc)) {
+        // count newlines
+        if(*abc == '\n') {
+            startline++;
+        }
         abc++;
     }
     // append headers
@@ -6128,7 +6140,8 @@ void parse_abc_raw(const char *abc, const char *key, const char *length,
             parsefield('R', rhythm);
         }
         parsefield('K', key);
+        addfeature(LINENUM, startline, 0, 0);
     }
-    parsestring(abc);
+    parsestring(abc, startline);
     free_abbreviations();
 }

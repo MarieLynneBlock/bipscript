@@ -38,9 +38,10 @@ class ABCReader
     Position currentPosition;
     std::vector<MidiTune*> tunes;
     std::vector<ABCError> errors;
+    bool verbose; // TODO: parameterize
     std::string error();
 public:
-    ABCReader() : beatsPerBar(4) {}
+    ABCReader() : beatsPerBar(4), verbose(true) {}
     static ABCReader *getActiveParser() {
         return activeParser;
     }
@@ -68,6 +69,7 @@ public:
     int writeMidiEvent(long delta_time, int type, int chan, char *data, int size);
     void singleNoteTuningChange(int key, float midipitch);
     void addError(char *mesg, int lineno, int linepos);
+    void addWarning(char *mesg, int lineno, int linepos);
 };
 
 #endif // ABCREADER_H

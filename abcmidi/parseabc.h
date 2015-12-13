@@ -145,7 +145,7 @@ extern void print_voicecodes(void);
 extern void init_abbreviations();
 extern void free_abbreviations();
 extern void parsefile();
-extern void parsestring(const char *abc);
+extern void parsestring(const char *abc, int startline);
 extern int parsetune();
 #else
 extern void event_init();

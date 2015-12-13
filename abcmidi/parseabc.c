@@ -2891,7 +2891,7 @@ void parseinit()
     parseroff ();
 }
 
-void parsestring(const char *abc)
+void parsestring(const char *abc, int startline)
 {
     int reading;
     int fileline;
@@ -2903,7 +2903,7 @@ void parsestring(const char *abc)
     reading = 1;
     line.limit = 4;
     initvstring (&line);
-    fileline = 1;
+    fileline = startline;
     done_eol = 0;
     lastch = '\0';
     index = 0;

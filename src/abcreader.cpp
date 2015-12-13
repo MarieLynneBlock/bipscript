@@ -31,7 +31,9 @@ void mf_write_tempo(long tempo);
 int mf_write_meta_event(long delta_time, int type, char *data, int size);
 int mf_write_midi_event(long delta_time, int type, int chan, char *data, int size);
 void single_note_tuning_change(int key, float midipitch);
+// custom callbacks
 void add_error(char *s, int lineno, int linepos);
+void add_warning(char *s, int lineno, int linepos);
 }
 
 long (*Mf_writetrack)(int) = 0;
@@ -71,12 +73,19 @@ void add_error(char *s, int lineno, int linepos)
     ABCReader::getActiveParser()->addError(s, lineno, linepos);
 }
 
+void add_warning(char *s, int lineno, int linepos)
+{
+    ABCReader::getActiveParser()->addWarning(s, lineno, linepos);
+}
+
 std::string ABCReader::error()
 {
     ABCError &error = errors.front();
-    std::string message("ABC Error at line ");
+    std::string message("ABC Error [");
     message += std::to_string(error.lineNo);
-    message += " of the ABC source: ";
+    message += ":";
+    message += std::to_string(error.linePos);
+    message += "] ";
     message += error.mesg;
     return message;
 }
@@ -180,4 +189,17 @@ void ABCReader::singleNoteTuningChange(int key, float midipitch)
 void ABCReader::addError(char *mesg, int lineno, int linepos)
 {
     errors.push_back(ABCError(mesg, lineno, linepos));
+}
+
+void ABCReader::addWarning(char *mesg, int lineno, int linepos)
+{
+    if(verbose) {
+        std::string message("ABC Warning [");
+        message += std::to_string(lineno);
+        message += ":";
+        message += std::to_string(linepos);
+        message += "] ";
+        message += mesg;
+        std::cerr << message << std::endl;
+    }
 }
