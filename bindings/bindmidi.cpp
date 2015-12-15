@@ -18,6 +18,7 @@
 #include "bindmidi.h"
 #include "bindtypes.h"
 #include "bindings.h"
+#include "bindtime.h"
 
 #include "abcreader.h"
 #include "midiport.h"
@@ -614,6 +615,36 @@ SQInteger MidiPatternprint(HSQUIRRELVM vm)
 //
 
 //
+// Midi.Tune getTimeSignature
+//
+SQInteger MidiTunegetTimeSignature(HSQUIRRELVM vm)
+{
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    sq_getinstanceup(vm, 1, &userPtr, 0);
+    MidiTune *obj = static_cast<MidiTune*>(userPtr);
+
+    // return value
+    TimeSignature* ret;
+    // call the implementation
+    try {
+        ret = obj->getTimeSignature();
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushobject(vm, TimeSignatureObject);
+    sq_createinstance(vm, -1);
+    sq_remove(vm, -2);
+    sq_setinstanceup(vm, -1, ret);
+    //sq_setreleasehook(vm, -1, &?);
+
+    return 1;
+}
+
+//
 // Midi.Tune getTitle
 //
 SQInteger MidiTunegetTitle(HSQUIRRELVM vm)
@@ -1171,6 +1202,10 @@ void bindMidi(HSQUIRRELVM vm)
 
 
     // methods for class Tune
+    sq_pushstring(vm, _SC("getTimeSignature"), -1);
+    sq_newclosure(vm, &MidiTunegetTimeSignature, 0);
+    sq_newslot(vm, -3, false);
+
     sq_pushstring(vm, _SC("getTitle"), -1);
     sq_newclosure(vm, &MidiTunegetTitle, 0);
     sq_newslot(vm, -3, false);

@@ -21,12 +21,14 @@
 
 #include "timepackage.h"
 #include "audioengine.h"
+#include "timesignature.h"
 #include "transportmaster.h"
 
 namespace binding {
 
 // object references to types in this package
 HSQOBJECT TimePositionObject;
+HSQOBJECT TimeSignatureObject;
 HSQOBJECT TimeTransportMasterObject;
 //
 // Time schedule
@@ -142,6 +144,60 @@ SQInteger Timestop(HSQUIRRELVM vm)
 //
 
 //
+// Time.Signature class
+//
+
+//
+// Time.Signature numerator
+//
+SQInteger TimeSignaturenumerator(HSQUIRRELVM vm)
+{
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    sq_getinstanceup(vm, 1, &userPtr, 0);
+    TimeSignature *obj = static_cast<TimeSignature*>(userPtr);
+
+    // return value
+    SQInteger ret;
+    // call the implementation
+    try {
+        ret = obj->getNumerator();
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushinteger(vm, ret);
+    return 1;
+}
+
+//
+// Time.Signature denominator
+//
+SQInteger TimeSignaturedenominator(HSQUIRRELVM vm)
+{
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    sq_getinstanceup(vm, 1, &userPtr, 0);
+    TimeSignature *obj = static_cast<TimeSignature*>(userPtr);
+
+    // return value
+    SQInteger ret;
+    // call the implementation
+    try {
+        ret = obj->getDenominator();
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushinteger(vm, ret);
+    return 1;
+}
+
+//
 // Time.TransportMaster class
 //
 SQInteger TimeTransportMasterCtor(HSQUIRRELVM vm)
@@ -203,6 +259,25 @@ void bindTime(HSQUIRRELVM vm)
 
     // methods for class Position
     // push Position to Time package table
+    sq_newslot(vm, -3, false);
+
+    // create class Time.Signature
+    sq_pushstring(vm, "Signature", -1);
+    sq_newclass(vm, false);
+    sq_getstackobj(vm, -1, &TimeSignatureObject);
+    sq_settypetag(vm, -1, &TimeSignatureObject);
+
+
+    // methods for class Signature
+    sq_pushstring(vm, _SC("numerator"), -1);
+    sq_newclosure(vm, &TimeSignaturenumerator, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("denominator"), -1);
+    sq_newclosure(vm, &TimeSignaturedenominator, 0);
+    sq_newslot(vm, -3, false);
+
+    // push Signature to Time package table
     sq_newslot(vm, -3, false);
 
     // create class Time.TransportMaster

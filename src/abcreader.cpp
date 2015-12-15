@@ -174,14 +174,10 @@ int ABCReader::writeMetaEvent(long delta_time, int type, char *data, int size)
 {
     // printf("got META event type:0x%x delta:%ld\n", type, delta_time);
     if(type == 0x03 && activeTrack == 0) { // title
-        tunes.back()->setTitle(data); // TODO: should append, may be multiple lines
+        currentTune()->setTitle(data); // TODO: should append, may be multiple lines
     }
     else if(type == 0x58) {
-        //printf("got time sig %d:%d:%d:%d\n", data[0], data[1], data[2], data[3]);
-        uint32_t num = data[0];
-        uint32_t denom = pow(2, data[1]);
-        beatsPerBar = num / (denom / 4);
-        // std::cout << "beats per bar now " << beatsPerBar << std::endl;
+        currentTune()->setTimeSignature(data[0], pow(2, data[1]));
     }
     return 0;
 }
@@ -192,7 +188,7 @@ int ABCReader::writeMidiEvent(long delta_time, int type, int chan, char *data, i
     currentPosition += Duration(0, delta_time, ticksPerBeat * beatsPerBar);
     // std::cout << " new position " << currentPosition << std::endl;
     MidiEvent *event = new MidiEvent(currentPosition, data[0], data[1], type, chan);
-    tunes.back()->addMidiEvent(activeTrack, event);
+    currentTune()->addMidiEvent(activeTrack, event);
     return 0;
 }
 

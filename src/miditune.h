@@ -2,6 +2,7 @@
 #define MIDITUNE_H
 
 #include "midipattern.h"
+#include "timesignature.h"
 #include <string>
 
 class MidiTune
@@ -9,6 +10,7 @@ class MidiTune
     std::string title;
     Pattern *tracks;
     uint32_t numTracks;
+    TimeSignature timeSignature;
 public:
     MidiTune(uint32_t numTracks) :
         numTracks(numTracks) {
@@ -23,6 +25,12 @@ public:
         return numTracks;
     }
     Pattern *getTrack(uint32_t number);
+    void setTimeSignature(float num, float denom) {
+        timeSignature = TimeSignature(true, num, denom);
+    }
+    TimeSignature *getTimeSignature() {
+        return new TimeSignature(timeSignature);
+    }
 };
 
 #endif // MIDITUNE_H

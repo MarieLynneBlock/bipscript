@@ -40,6 +40,7 @@ class ABCReader
     std::vector<ABCError> errors;
     bool verbose; // TODO: parameterize
     std::string error();
+    MidiTune *currentTune() { return tunes.back(); }
 public:
     ABCReader() : beatsPerBar(4), verbose(true) {}
     static ABCReader *getActiveParser() {

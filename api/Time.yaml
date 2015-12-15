@@ -50,6 +50,17 @@ classes :
         #- name: getBar
           #returns: integer
 
+    - name: Signature
+      cppname: TimeSignature
+      include: timesignature
+      methods:
+        - name: numerator
+          cppname: getNumerator
+          returns: integer
+        - name: denominator
+          cppname: getDenominator
+          returns: integer
+
     - name: TransportMaster
       include: transportmaster
       ctor:

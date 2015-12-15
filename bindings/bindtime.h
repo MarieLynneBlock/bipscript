@@ -23,6 +23,7 @@ namespace binding
 {
 // object references to types in this package
 extern HSQOBJECT TimePositionObject;
+extern HSQOBJECT TimeSignatureObject;
 extern HSQOBJECT TimeTransportMasterObject;
 }
 

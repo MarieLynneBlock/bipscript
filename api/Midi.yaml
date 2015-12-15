@@ -98,6 +98,8 @@ classes :
       cppname: MidiTune
       include: miditune
       methods:
+        - name: getTimeSignature
+          returns: Time.Signature
         - name: getTitle
           returns: string
         - name: getTrackCount
