@@ -51,9 +51,7 @@ public:
                   const char *meter) {
         return read(abc, key, noteLength, meter, 0);
     }
-    Pattern *read(const char *abc, const char *key, const char *noteLength) {
-        return read(abc, key, noteLength, "C");
-    }
+    Pattern *read(const char *abc, const char *key, const char *noteLength);
     Pattern *read(const char *abc, const char *key) {
         return read(abc, key, "1/8");
     }

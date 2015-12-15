@@ -21,6 +21,7 @@
 
 #include "position.h"
 #include "objectcache.h"
+#include "timesignature.h"
 
 class TransportMaster;
 
@@ -38,6 +39,7 @@ class AudioEngine
     // transport
     TransportMaster *transportMaster;
     unsigned int multiplePeriodRestart;
+    TimeSignature currentTimeSignature;
 
     // private methods
     void reset(bool final);
@@ -59,6 +61,7 @@ public:
     bool getPosition(jack_position_t &jack_pos) {
         return jack_transport_query(client, &jack_pos) == JackTransportRolling;
     }
+    TimeSignature &getTimeSignature();
     // public methods
     int activate(const char *clientName);
     int process(jack_nframes_t nframes);

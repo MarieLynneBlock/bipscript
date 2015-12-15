@@ -15,6 +15,7 @@
  * along with Bipscript.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "abcreader.h"
+#include "audioengine.h"
 
 ABCReader *ABCReader::activeParser;
 
@@ -88,6 +89,19 @@ std::string ABCReader::error()
     message += "] ";
     message += error.mesg;
     return message;
+}
+
+Pattern *ABCReader::read(const char *abc, const char *key, const char *noteLength) {
+    TimeSignature &time = AudioEngine::instance().getTimeSignature();
+    if(time.isValid()) {
+        std::string timeString;
+        timeString += std::to_string(time.getNumerator());
+        timeString += "/";
+        timeString += std::to_string(time.getDenominator());
+        return read(abc, key, noteLength, timeString.c_str());
+    } else {
+        return read(abc, key, noteLength, "4/4");
+    }
 }
 
 Pattern *ABCReader::read(const char *abc, const char *key, const char *noteLength,
