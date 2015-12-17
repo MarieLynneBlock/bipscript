@@ -20,8 +20,8 @@
 #include "bindings.h"
 
 #include "lv2plugin.h"
-
 #include "bindmidi.h"
+
 namespace binding {
 
 // object references to types in this package
@@ -36,7 +36,7 @@ SQInteger Lv2PluginCtor(HSQUIRRELVM vm)
     SQInteger numargs = sq_gettop(vm);
     // optional overriden parameter not here
     if(numargs < 3) {
-        SQInteger numargs = sq_gettop(vm);
+    SQInteger numargs = sq_gettop(vm);
     // check parameter count
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
@@ -599,6 +599,53 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
         catch(std::exception const& e) {
             return sq_throwerror(vm, e.what());
         }
+    }
+
+    // void method, returns no value
+    return 0;
+    }
+    if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiProgramChangeObject) {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 5) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 4");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    sq_getinstanceup(vm, 1, &userPtr, 0);
+    Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
+
+    // get parameter 1 "control" as Midi.ProgramChange
+    ProgramChange *control = 0;
+    sq_getinstanceup(vm, 2, (SQUserPointer*)&control, 0);
+    if(control == 0) {
+        return sq_throwerror(vm, "argument 1 is not of type Midi.ProgramChange");
+    }
+
+    // get parameter 2 "bar" as integer
+    SQInteger bar;
+    if (SQ_FAILED(sq_getinteger(vm, 3, &bar))){
+        return sq_throwerror(vm, "argument 2 is not of type integer");
+    }
+
+    // get parameter 3 "position" as integer
+    SQInteger position;
+    if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
+        return sq_throwerror(vm, "argument 3 is not of type integer");
+    }
+
+    // get parameter 4 "division" as integer
+    SQInteger division;
+    if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
+        return sq_throwerror(vm, "argument 4 is not of type integer");
+    }
+
+    // call the implementation
+    try {
+        obj->schedule(*control, bar, position, division);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
     }
 
     // void method, returns no value

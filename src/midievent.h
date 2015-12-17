@@ -28,14 +28,17 @@ public:
     static const unsigned char TYPE_CONTROL = 0xB0;
     static const unsigned char TYPE_NOTE_OFF = 0x80;
     static const unsigned char TYPE_NOTE_ON = 0x90;
-    unsigned char channel;
+    uint8_t channel;
     MidiEvent() : Event(1, 1, 1) {}
     MidiEvent(Position &position, int databyte1, int databyte2, int type, unsigned char channel);
     MidiEvent(const MidiEvent&);
     friend std::ostream& operator<< (std::ostream &out, MidiEvent &evt);
     void setPosition(int bar, int position, int division) {
         Position(bar, position, division);
-    }   
+    }
+    void setChannel(uint8_t channel) {
+        this->channel = channel;
+    }
     unsigned char getDatabyte1() {
         return databyte1;
     }
@@ -45,6 +48,7 @@ public:
     unsigned char getType() {
         return type;
     }
+    uint8_t dataSize();
     void pack(void *buffer);
     void unpack(const uint8_t *buffer);
     bool matches(int type);

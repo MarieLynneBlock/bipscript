@@ -26,3 +26,9 @@ classes:
       methods:
         - name: readAll 
           returns: string
+        - name: size
+          returns: integer
+        - name: exists
+          returns: bool
+        - name: isFolder
+          returns: bool

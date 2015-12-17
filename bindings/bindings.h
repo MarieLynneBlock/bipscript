@@ -23,7 +23,6 @@ namespace binding
 {
     // package binding methods
     void bindAudio(HSQUIRRELVM vm);
-    void bindExp(HSQUIRRELVM vm);
     void bindIO(HSQUIRRELVM vm);
     void bindLv2(HSQUIRRELVM vm);
     void bindMath(HSQUIRRELVM vm);

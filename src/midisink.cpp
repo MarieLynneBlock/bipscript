@@ -30,7 +30,6 @@ void MidiSink::schedule(Control &cc, int bar, int  position, int  division)
 void MidiSink::schedule(const Note &note, Position &position, unsigned char channel)
 {
     if(channel < 1 || channel > 16) {
-        std::cout << "chenl: " << (int)channel << std::endl;
         throw std::logic_error("MIDI channel must be between 1 and 16");
     }
     MidiEvent* evt = new MidiEvent(position, note.note, note.velocity, 0x90, channel - 1);
@@ -41,10 +40,33 @@ void MidiSink::schedule(const Note &note, Position &position, unsigned char chan
 }
 
 void MidiSink::schedule(Pattern &pattern, Position &position, unsigned char channel)
-{   
-    for(unsigned int i = 0; i < pattern.getSize(); i++) {
-        const PatternNote &note = pattern.get(i);
-        Position newPosition = position + note.getPosition();
-        this->schedule(note.getNote(), newPosition, channel);
+{
+    if(channel < 1 || channel > 16) {
+        throw std::logic_error("MIDI channel must be between 1 and 16");
     }
+    MidiEvent *event = pattern.getFirstEvent();
+    if(!event) {
+        for(unsigned int i = 0; i < pattern.getSize(); i++) {
+            const PatternNote &note = pattern.get(i);
+            Position newPosition = position + note.getPosition();
+            this->schedule(note.getNote(), newPosition, channel);
+        }
+    }
+    else {
+        while(event) {
+            MidiEvent *newEvent = new MidiEvent(*event);
+            *newEvent += position;
+            newEvent->setChannel(channel - 1);
+            addMidiEvent(newEvent);
+            event = pattern.getNextEvent(event);
+        }
+    }
+}
+
+void MidiSink::schedule(ProgramChange &pc, uint32_t bar, uint32_t position, uint32_t division)
+{
+    int channel = 0;
+    Position start(bar, position, division);
+    MidiEvent* evt = new MidiEvent(start, pc.program, 0, 0xC0, channel);
+    addMidiEvent(evt);
 }

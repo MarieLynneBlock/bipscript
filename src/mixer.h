@@ -99,8 +99,7 @@ class Mixer : public AudioSource, public Listable
 public:
     Mixer(unsigned int inputs, const unsigned int outputs);
     ~Mixer();
-    void nextAudioInput(AudioSource &source);
-    void nextStereoInput(AudioSource &source);
+    void connect(AudioSource &source);
     void addGainController(EventSource &source, unsigned int cc, unsigned int input, unsigned int output);
     void scheduleGain(uint32_t input, uint32_t output, float gain, uint32_t bar, uint32_t position, uint32_t division);
     void restore();
@@ -111,7 +110,7 @@ public:
     void reposition();
     // AudioSource interface
     unsigned int getAudioOutputCount() { return audioOutputCount; }
-    AudioConnection &getAudioConnection(unsigned int index) { return *audioOutput[index]; }
+    AudioConnection *getAudioConnection(unsigned int index) { return audioOutput[index]; }
 };
 
 class MixerCache : public ProcessorCache<std::string, Mixer>

@@ -29,11 +29,22 @@ MidiEvent::MidiEvent(const MidiEvent &other) :
 MidiEvent::MidiEvent(Position &position, int n, int vel, int t, unsigned char ch)
     : Event(position), type(t), databyte1(n), databyte2(vel), channel(ch)  {}
 
+
+uint8_t MidiEvent::dataSize() {
+    switch(type) {
+    case 0xC0:
+        return 1;
+    }
+    return 2;
+}
+
 void MidiEvent::pack(void *space) {
     unsigned char *buffer = (unsigned char*)space;
     buffer[0] = this->type + this->channel;
     buffer[1] = this->databyte1;
-    buffer[2] = this->databyte2;
+    if(dataSize() == 2) {
+        buffer[2] = this->databyte2;
+    }
 }
 
 void MidiEvent::unpack(const uint8_t *buffer)
@@ -41,7 +52,9 @@ void MidiEvent::unpack(const uint8_t *buffer)
     this->type = buffer[0] & 0xf0;
     this->channel = buffer[0] & 0x0f;
     this->databyte1 = buffer[1];
-    this->databyte2 = buffer[2];
+    if(dataSize() == 2) {
+        this->databyte2 = buffer[2];
+    }
 }
 
 bool MidiEvent::matches(int type) { // TODO: what about channels

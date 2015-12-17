@@ -19,6 +19,23 @@ name : Midi
 
 classes :
 
+    - name: ABCReader
+      include: abcreader
+      ctor: {}
+      methods:
+        - name: read
+          returns: Midi.Pattern
+          parameters:
+            - {name: abc, type: string}
+            - {name: key, type: string, optional: true }
+            - {name: noteLength, type: string, optional: true }
+            - {name: meter, type: string, optional: true }
+            - {name: rhythm, type: string, optional: true }
+        - name: readTune
+          returns: Midi.Tune
+          parameters:
+            - {name: abc, type: string}
+
     - name: Input
       cppname: MidiInputPort
       super: EventSource
@@ -77,6 +94,21 @@ classes :
         - name: getSize
         - name: print
 
+    - name: Tune
+      cppname: MidiTune
+      include: miditune
+      methods:
+        - name: getTimeSignature
+          returns: Time.Signature
+        - name: getTitle
+          returns: string
+        - name: getTrackCount
+          returns: integer
+        - name: getTrack
+          returns: Midi.Pattern
+          parameters:
+            - {name: number, type: integer}
+
     - name: Output
       cppname: MidiOutputPort
       ctor:
@@ -103,6 +135,18 @@ classes :
           - {name: bar, type: integer}
           - {name: position, type: integer}
           - {name: division, type: integer}
+      - name: schedule
+        parameters:
+          - {name: control, type: Midi.ProgramChange}
+          - {name: bar, type: integer}
+          - {name: position, type: integer}
+          - {name: division, type: integer}
+
+
+    - name: ProgramChange
+      ctor:
+        parameters:
+          - {name: program, type: integer}
 
     - name: DrumTabReader
       include: drumtabreader

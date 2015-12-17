@@ -18,6 +18,9 @@
 #define IO_H
 
 #include <string>
+#include <boost/filesystem.hpp>
+
+namespace fs = boost::filesystem;
 
 class File {
     std::string name;
@@ -28,6 +31,9 @@ public:
         name = cname;
     }
     ~File() { delete buffer; }
+    uintmax_t size() { return fs::file_size(name); }
+    bool exists() { return fs::exists(name); }
+    bool isFolder() { return fs::is_directory(name); }
     const char *readAll();
 };
 

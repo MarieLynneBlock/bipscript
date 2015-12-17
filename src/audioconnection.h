@@ -20,6 +20,7 @@
 #include "source.h"
 #include <atomic>
 #include <stdexcept>
+#include <cstring>
 
 class AudioConnection;
 
@@ -29,7 +30,7 @@ class AudioConnection;
 class AudioSource : virtual public Source {
 public:
     virtual unsigned int getAudioOutputCount() = 0;
-    virtual AudioConnection &getAudioConnection(unsigned int index) = 0;
+    virtual AudioConnection *getAudioConnection(unsigned int index) = 0;
 };
 
 /**
@@ -70,6 +71,9 @@ public:
     float *getAudio(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time) {
         source->process(rolling, pos, nframes, time);
         return buffer;
+    }
+    void clear() {
+        std::memset(buffer, 0, sizeof(float) * bufferSize);
     }
 };
 

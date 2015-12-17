@@ -36,11 +36,9 @@ classes :
             - { name: input, type: integer }
             - { name: output, type: integer }
 
-        - name: nextAudioInput
-          parameters: {name: source, type: AudioSource}
-
-        - name: nextStereoInput
-          parameters: {name: source, type: AudioSource}
+        - name: connect
+          parameters:
+            - {name: source, type: AudioSource}
 
         - name: scheduleGain
           parameters:

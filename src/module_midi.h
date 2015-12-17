@@ -45,38 +45,12 @@ public:
         controller(controller), value(value) {}
 };
 
-class PatternNote {
-    friend class Pattern;
-    Note note;
-    Position position;
-public:
-    PatternNote(Note &note, const Position &position)
-        : note(note), position(position) {}
-    const Position &getPosition() const {
-        return position;
-    }
-    const Note &getNote() const {
-        return note;
-    }
-};
-
-class Pattern
+class ProgramChange
 {
-    std::deque<PatternNote> noteList;
 public:
-    void addNote(Note &note, int bar, int position, int division);
-    void addNote(Note &note, Position &position);
-    void addNote(Note &note) { // TODO: expose when binding supports method overload
-        addNote(note, 1, 1, 1);
-    }
-    unsigned int getSize() {
-        return noteList.size();
-    }
-    const PatternNote &get(unsigned int index) {
-        return noteList[index];
-    }
-    std::string print();
-    //void schedule(MidiSink *sink, Position position);
+    uint8_t program;
+    ProgramChange(uint8_t program) :
+        program(program) {}
 };
 
 #endif // MIDIOUTPUT_H

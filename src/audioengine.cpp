@@ -69,6 +69,15 @@ int sync_callback(jack_transport_state_t state, jack_position_t *pos, void *arg)
     return ((AudioEngine*)arg)->sync(state, pos);
 }
 
+TimeSignature &AudioEngine::getTimeSignature()
+{
+    jack_position_t pos;
+    jack_transport_query(client, &pos);
+    bool valid = pos.valid & JackTransportBBT;
+    currentTimeSignature = TimeSignature(valid, pos.beats_per_bar, pos.beat_type);
+    return currentTimeSignature;
+}
+
 int AudioEngine::activate(const char *clientName)
 {
     // connect to Jack

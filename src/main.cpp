@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <iostream>
+#include <boost/filesystem.hpp>
 
 #include "scripthost.h"
 #include "audioengine.h"
@@ -31,6 +32,8 @@
 #include "midiinputbuffer.h"
 #include "audioport.h"
 #include "beattracker.h"
+
+namespace fs = boost::filesystem;
 
 void signal_handler(int sig)
 {
@@ -46,9 +49,20 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    fs::path filePath(argv[1]);
+    if(!exists(filePath)) {
+       std::cerr << "error: script file does not exist: " << argv[1] << std::endl;
+       return 2;
+    }
+    if(is_directory(filePath)) {
+       std::cerr << "error: script file is a directory: " << argv[1] << std::endl;
+       return 2;
+    }
+    fs::path parentPath = system_complete(filePath).parent_path();
+
     // create script host
     ScriptHost &host = ScriptHost::instance();
-    host.setScriptFile(argv[1]);
+    host.setScriptFile(parentPath.c_str(), argv[1]);
 
     // add object caches
     ObjectCache *caches[] = {
@@ -82,8 +96,10 @@ int main(int argc, char **argv)
     jack_nframes_t sampleRate = audioEngine.getSampleRate();
     Lv2PluginCache::instance().setSampleRate(sampleRate);
 
-    // start script host
+    // run script
     status = host.run();
+
+    // script has ended
     audioEngine.shutdown();
     return status;
 }

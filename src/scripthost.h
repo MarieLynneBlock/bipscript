@@ -38,6 +38,7 @@ public:
 class ScriptHost
 {
     HSQUIRRELVM vm;
+    std::string folder;
     const char *filename;
 
     // async methods
@@ -61,12 +62,16 @@ public:
         static ScriptHost instance;
         return instance;
     }
-    void setScriptFile(const char *filename) {
+    void setScriptFile(const char *folder, const char *filename) {
+        this->folder = folder;
         this->filename = filename;
     }
     void setObjectCaches(uint16_t count, ObjectCache *list[]) {
         objectCacheCount = count;
         objectCacheList = list;
+    }
+    std::string &getCurrentFolder() {
+        return folder;
     }
     int run();
     void schedule(HSQOBJECT &function, unsigned int bar, unsigned int position, unsigned int division);

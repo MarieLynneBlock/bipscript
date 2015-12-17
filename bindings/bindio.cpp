@@ -82,6 +82,81 @@ SQInteger IOFilereadAll(HSQUIRRELVM vm)
     return 1;
 }
 
+//
+// IO.File size
+//
+SQInteger IOFilesize(HSQUIRRELVM vm)
+{
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    sq_getinstanceup(vm, 1, &userPtr, 0);
+    File *obj = static_cast<File*>(userPtr);
+
+    // return value
+    SQInteger ret;
+    // call the implementation
+    try {
+        ret = obj->size();
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushinteger(vm, ret);
+    return 1;
+}
+
+//
+// IO.File exists
+//
+SQInteger IOFileexists(HSQUIRRELVM vm)
+{
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    sq_getinstanceup(vm, 1, &userPtr, 0);
+    File *obj = static_cast<File*>(userPtr);
+
+    // return value
+    SQBool ret;
+    // call the implementation
+    try {
+        ret = obj->exists();
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushbool(vm, ret);
+    return 1;
+}
+
+//
+// IO.File isFolder
+//
+SQInteger IOFileisFolder(HSQUIRRELVM vm)
+{
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    sq_getinstanceup(vm, 1, &userPtr, 0);
+    File *obj = static_cast<File*>(userPtr);
+
+    // return value
+    SQBool ret;
+    // call the implementation
+    try {
+        ret = obj->isFolder();
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushbool(vm, ret);
+    return 1;
+}
+
 
 void bindIO(HSQUIRRELVM vm)
 {
@@ -103,6 +178,18 @@ void bindIO(HSQUIRRELVM vm)
     // methods for class File
     sq_pushstring(vm, _SC("readAll"), -1);
     sq_newclosure(vm, &IOFilereadAll, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("size"), -1);
+    sq_newclosure(vm, &IOFilesize, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("exists"), -1);
+    sq_newclosure(vm, &IOFileexists, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("isFolder"), -1);
+    sq_newclosure(vm, &IOFileisFolder, 0);
     sq_newslot(vm, -3, false);
 
     // push File to IO package table

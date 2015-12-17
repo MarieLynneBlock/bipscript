@@ -16,14 +16,17 @@
  */
 
 #include <iostream>
+#include <boost/filesystem.hpp>
 
 #include "lv2plugin.h"
 #include "objectcollector.h"
+#include "scripthost.h"
 
 #include "lv2/lv2plug.in/ns/ext/presets/presets.h"
-#include "lv2/lv2plug.in/ns/ext/state/state.h"
 #include "lv2/lv2plug.in/ns/ext/options/options.h"
 #include "lv2/lv2plug.in/ns/ext/buf-size/buf-size.h"
+
+namespace fs = boost::filesystem;
 
 uint32_t Lv2MidiEvent::midiEventTypeId;
 
@@ -33,6 +36,14 @@ static LV2_URID uridMap(LV2_URID_Map_Handle handle, const char *uri) {
 
 static const char* uridUnmap(LV2_URID_Unmap_Handle handle, LV2_URID urid) {
     return ((Lv2UridMapper*)handle)->idToUri(urid);
+}
+
+static char *mapAbsolutePath(LV2_State_Map_Path_Handle handle, const char *abstractPath) {
+    return ((Lv2PathMapper*)handle)->mapAbsolutePath(abstractPath);
+}
+
+static char *mapAbstractPath(LV2_State_Map_Path_Handle handle, const char *absolutePath) {
+    return ((Lv2PathMapper*)handle)->mapAbstractPath(absolutePath);
 }
 
 static void setPortValue(const char *port, void *data,
@@ -68,6 +79,28 @@ const char *Lv2UridMapper::idToUri(LV2_URID urid) {
     }
     std::cerr << "!!! uridUnMap failed to find uri for " << urid << std::endl;
     return NULL;
+}
+
+
+char *Lv2PathMapper::mapAbsolutePath(const char *abstractPath)
+{
+    // get script folder and append incoming relative path
+    fs::path absolutePath(ScriptHost::instance().getCurrentFolder());
+    absolutePath /= abstractPath;
+    absolutePath = canonical(absolutePath);
+    // copy to malloc-allocated char*
+    const char *pathString = absolutePath.c_str();
+    char *ret = (char *)malloc(strlen(pathString) + 1);
+    strcpy(ret, pathString);
+    return ret;
+}
+
+char *Lv2PathMapper::mapAbstractPath(const char *absolutePath)
+{
+    // TODO: implement before implementing state save
+    char *ret = (char *)malloc(strlen(absolutePath) + 1);
+    strcpy(ret, absolutePath);
+    return ret;
 }
 
 Lv2Constants::Lv2Constants(LilvWorld *world) {
@@ -221,6 +254,7 @@ Lv2Plugin::Lv2Plugin(const LilvPlugin *plugin, LilvInstance *instance, const Lv2
     audioOutput = new AudioConnection*[audioOutputCount];
     for(uint32_t i = 0; i < audioOutputCount; i++) {
         audioOutput[i] = new AudioConnection(this);
+        audioOutput[i]->clear();
     }
 
     // initialize port structures
@@ -295,17 +329,28 @@ void Lv2Plugin::connect(AudioSource &source)
         throw std::logic_error("cannot connect: this plugin has no audio inputs");
     }
     if(audioInputCount == 2 && source.getAudioOutputCount() == 1) { // mono to stereo
-        audioInput[0].setConnection(&source.getAudioConnection(0), this);
-        audioInput[1].setConnection(&source.getAudioConnection(0), this);
+        audioInput[0].setConnection(source.getAudioConnection(0), this);
+        audioInput[1].setConnection(source.getAudioConnection(0), this);
     }
     else if(audioInputCount == source.getAudioOutputCount()) {
         for(uint32_t i = 0; i < audioInputCount; i++) {
-            audioInput[i].setConnection(&source.getAudioConnection(i), this);
+            audioInput[i].setConnection(source.getAudioConnection(i), this);
         }
     }
     else {
         throw std::logic_error("cannot connect: different number of input/output connections");
     }
+}
+
+void Lv2Plugin::connect(AudioConnection *connection, uint32_t channel)
+{
+    if(channel == 0) {
+        throw std::logic_error("cannot connect: there is no channel zero");
+    }
+    if(channel > audioInputCount) {
+        throw std::logic_error("cannot connect: channel too high");
+    }
+    audioInput[channel - 1].setConnection(connection, this);
 }
 
 void Lv2Plugin::connectMidi(EventSource &source)
@@ -581,12 +626,19 @@ void Lv2Plugin::reposition() {
 
 void Lv2Plugin::processAll(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
 {
+    // update midi inputs
+    Lv2MidiInput *midiInput = midiInputList.getFirst();
+    while(midiInput) {
+        midiInput->update();
+        midiInput = midiInputList.getNext(midiInput);
+    }
     // pull in new control mappings
     Lv2ControlMapping *freshMapping;
     while(newControlMappingsQueue.pop(freshMapping)) {
         freshMapping->getConnection()->addMapping(freshMapping);
     }
-    // TODO: pull in other buffers
+    // update control buffer
+    controlBuffer.update();
 }
 
 void Lv2Plugin::print() {
@@ -622,6 +674,7 @@ Lv2PluginCache::Lv2PluginCache() : world(lilv_world_new()), lv2Constants(world) 
     supported[LV2_URID__unmap] = true;
     supported[LV2_OPTIONS__options] = true;
     supported[LV2_BUF_SIZE__boundedBlockLength] = true;
+    supported[LV2_STATE__mapPath] = true;
 
     // URID feature (map/unmap)
     map.map = &uridMap;
@@ -652,7 +705,15 @@ Lv2PluginCache::Lv2PluginCache() : world(lilv_world_new()), lv2Constants(world) 
     static LV2_Feature boundedBlockFeature = { LV2_BUF_SIZE__boundedBlockLength, NULL };
     lv2Features[3] = &boundedBlockFeature;
 
-    lv2Features[4] = 0;
+    // state map path feature
+    mapPath.handle = &pathMapper;
+    mapPath.absolute_path = &mapAbsolutePath;
+    mapPath.abstract_path = &mapAbstractPath;
+    static LV2_Feature stateMapPathFeature = { LV2_STATE__mapPath, &mapPath };
+    lv2Features[4] = &stateMapPathFeature;
+
+    // end of features
+    lv2Features[5] = 0;
 
     // URIDs
     Lv2Plugin::atomTypes.intType = uridMapper.uriToId(LV2_ATOM__Int);
@@ -720,7 +781,7 @@ Lv2Plugin *Lv2PluginCache::getPlugin(const char *uri, const char *preset, Lv2Sta
 
     // restore baseline default state
     LilvState *defaultState =  lilv_state_new_from_world(world, &map, lilv_plugin_get_uri(lilvPlugin));
-    lilv_state_restore(defaultState, instance, setPortValue, plugin, 0, NULL);
+    lilv_state_restore(defaultState, instance, setPortValue, plugin, 0, lv2Features);
 
     // find and restore preset
     if(preset) {
@@ -754,9 +815,10 @@ Lv2Plugin *Lv2PluginCache::getPlugin(const char *uri, const char *preset, Lv2Sta
         LV2_State_Interface* iState = (LV2_State_Interface*)lilv_instance_get_extension_data(instance, LV2_STATE__interface);
         if (iState) {
             LV2_State_Status status = iState->restore(instance->lv2_handle, &stateRetrieve,
-                                                      (LV2_State_Handle)state, 0, NULL);
+                                                      (LV2_State_Handle)state, 0, lv2Features);
             if(status != LV2_STATE_SUCCESS) {
-                throw std::logic_error(std::string("Plugin ") + uriString + " error setting state");
+                throw std::logic_error(std::string("Plugin ") + uriString
+                                       + " setting state failed with code " + std::to_string(status));
             }
         }
     }
