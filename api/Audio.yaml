@@ -39,6 +39,7 @@ classes :
         - name: connect
           parameters:
             - {name: source, type: AudioSource}
+            - {name: gain, type: float, optional: true}
 
         - name: scheduleGain
           parameters:
