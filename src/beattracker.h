@@ -40,7 +40,7 @@ public:
         reset(bpm);
     }
     void connect(AudioSource &source) {
-        this->audioInput.store(&source.getAudioConnection(0));
+        this->audioInput.store(source.getAudioConnection(0));
     }
     void reset(double bpm);
     void reposition() {}
