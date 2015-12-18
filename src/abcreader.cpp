@@ -155,7 +155,8 @@ MidiTune *ABCReader::readTune(const char *abc)
 void ABCReader::startSequence(int format, int ntracks, int division)
 {
     // store division
-    ticksPerBeat = division;
+    ticksPerQuarter = division;
+    ticksPerBeat = ticksPerQuarter * 4 / beatUnit;
 	// create new MidiTune
     tunes.push_back(new MidiTune(ntracks));
 }
@@ -177,7 +178,10 @@ int ABCReader::writeMetaEvent(long delta_time, int type, char *data, int size)
         currentTune()->setTitle(data); // TODO: should append, may be multiple lines
     }
     else if(type == 0x58) {
-        currentTune()->setTimeSignature(data[0], pow(2, data[1]));
+        beatsPerBar = data[0];
+        beatUnit = pow(2, data[1]);
+        ticksPerBeat = ticksPerQuarter * 4 / beatUnit;
+        currentTune()->setTimeSignature(beatsPerBar, beatUnit);
     }
     return 0;
 }
@@ -186,7 +190,6 @@ int ABCReader::writeMidiEvent(long delta_time, int type, int chan, char *data, i
 {
     // printf("got midi event type:0x%x delta:%ld [%d:%d]\n", type, delta_time, data[0], data[1]);
     currentPosition += Duration(0, delta_time, ticksPerBeat * beatsPerBar);
-    // std::cout << " new position " << currentPosition << std::endl;
     MidiEvent *event = new MidiEvent(currentPosition, data[0], data[1], type, chan);
     currentTune()->addMidiEvent(activeTrack, event);
     return 0;
