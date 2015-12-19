@@ -66,4 +66,12 @@ classes :
       ctor:
         parameters: { name: bpm, type: float }
         expression: TransportMasterCache::instance().getTransportMaster
+      methods:
+        - name: setTimeSignature
+          parameters:
+            - {name: signature, type: Time.Signature }
+        - name: setTimeSignature
+          parameters:
+            - {name: numerator, type: integer }
+            - {name: denominator, type: integer }
 
