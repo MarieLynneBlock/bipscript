@@ -27,26 +27,6 @@ MidiEvent *MidiInputConnection::getEvent(uint32_t i) {
     return &lastEvent;
 }
 
-MidiInputPort *MidiInputPortCache::getMidiInputPort(const char *name)
-{
-    // see if port already exists in map
-    MidiInputPort *port = inputPorts[name];
-    if (!port) {
-        // create new jack port
-        jack_port_t *jackPort = AudioEngine::instance().registerMidiInputPort(name);
-        //jack_port_register(client, name, JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
-        if(!jackPort) {
-            std::string message = "Failed to register midi input port: ";
-            throw message + name;
-        }
-        // add to map
-        port = new MidiInputPort(jackPort);
-        inputPorts[name] = port;
-    }
-    return port;
-}
-
-
 MidiInputPort *MidiInputPortCache::getMidiInputPort(const char *name, const char *connectTo)
 {
     // see if port already exists in map
@@ -61,8 +41,10 @@ MidiInputPort *MidiInputPortCache::getMidiInputPort(const char *name, const char
         // add to map
         port = new MidiInputPort(jackPort);
         inputPorts[name] = port;
-        // auto connect input port
-        AudioEngine::instance().connectPort(connectTo, jackPort);
+    }
+    // auto-connect
+    if(connectTo) {
+        port->systemConnect(connectTo);
     }
     return port;
 }

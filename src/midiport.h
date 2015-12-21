@@ -21,6 +21,7 @@
 #include "eventconnection.h"
 #include "midisink.h"
 #include "objectcache.h"
+#include "audioengine.h"
 
 #include <jack/jack.h>
 #include <jack/midiport.h>
@@ -42,6 +43,9 @@ public:
     uint32_t getEventCount() {
         return jack_midi_get_event_count(buffer);
     }
+    void systemConnect(const char *name) {
+        AudioEngine::instance().connectPort(name, jackPort);
+    }
     MidiEvent *getEvent(uint32_t i);
 };
 
@@ -51,6 +55,9 @@ class MidiInputPort : public EventSource
 public:
     MidiInputPort(jack_port_t *jackPort)
         : connection(this, jackPort) {}
+    void systemConnect(const char *name) {
+        connection.systemConnect(name);
+    }
     EventConnection &getEventConnection(unsigned int) {
         return connection;
     }
@@ -71,8 +78,10 @@ public:
         static MidiInputPortCache instance;
         return instance;
     }
-    MidiInputPort *getMidiInputPort(const char*  name);
     MidiInputPort *getMidiInputPort(const char*  name, const char* connectTo);
+    MidiInputPort *getMidiInputPort(const char*  name) {
+        return getMidiInputPort(name, 0);
+    }
 };
 
 class MidiOutputPort : public Listable, public MidiSink
@@ -98,6 +107,9 @@ public:
         return instance;
     }
     MidiOutputPort *getMidiOutputPort(const char *portName, const char *connectTo);
+    MidiOutputPort *getMidiOutputPort(const char *portName) {
+        return getMidiOutputPort(portName, 0);
+    }
 };
 
 #endif // MIDIPORT_H
