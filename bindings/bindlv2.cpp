@@ -18,9 +18,9 @@
 #include "bindlv2.h"
 #include "bindtypes.h"
 #include "bindings.h"
+#include "bindmidi.h"
 
 #include "lv2plugin.h"
-#include "bindmidi.h"
 
 namespace binding {
 

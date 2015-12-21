@@ -253,8 +253,8 @@ SQInteger AudioOutputCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
-    if(numargs < 3) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 2");
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
     // get parameter 1 "name" as string
     const SQChar* name;
@@ -262,19 +262,33 @@ SQInteger AudioOutputCtor(HSQUIRRELVM vm)
         return sq_throwerror(vm, "argument 1 is not of type string");
     }
 
-    // get parameter 2 "connection" as string
-    const SQChar* connection;
-    if (SQ_FAILED(sq_getstring(vm, 3, &connection))){
-        return sq_throwerror(vm, "argument 2 is not of type string");
+    AudioOutputPort *obj;
+    // 2 parameters passed in
+    if(numargs == 3) {
+
+        // get parameter 2 "connection" as string
+        const SQChar* connection;
+        if (SQ_FAILED(sq_getstring(vm, 3, &connection))){
+            return sq_throwerror(vm, "argument 2 is not of type string");
+        }
+
+        // call the implementation
+        try {
+            obj = AudioOutputPortCache::instance().getAudioOutputPort(name, connection);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
     }
 
-    AudioOutputPort *obj;
-    // call the implementation
-    try {
-        obj = AudioOutputPortCache::instance().getAudioOutputPort(name, connection);
-    }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
+    else {
+        // call the implementation
+        try {
+            obj = AudioOutputPortCache::instance().getAudioOutputPort(name);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
     }
 
     // return pointer to new object
@@ -328,8 +342,8 @@ SQInteger AudioInputCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
-    if(numargs < 3) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 2");
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
     // get parameter 1 "name" as string
     const SQChar* name;
@@ -337,19 +351,33 @@ SQInteger AudioInputCtor(HSQUIRRELVM vm)
         return sq_throwerror(vm, "argument 1 is not of type string");
     }
 
-    // get parameter 2 "connection" as string
-    const SQChar* connection;
-    if (SQ_FAILED(sq_getstring(vm, 3, &connection))){
-        return sq_throwerror(vm, "argument 2 is not of type string");
+    AudioInputPort *obj;
+    // 2 parameters passed in
+    if(numargs == 3) {
+
+        // get parameter 2 "connection" as string
+        const SQChar* connection;
+        if (SQ_FAILED(sq_getstring(vm, 3, &connection))){
+            return sq_throwerror(vm, "argument 2 is not of type string");
+        }
+
+        // call the implementation
+        try {
+            obj = AudioInputPortCache::instance().getAudioInputPort(name, connection);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
     }
 
-    AudioInputPort *obj;
-    // call the implementation
-    try {
-        obj = AudioInputPortCache::instance().getAudioInputPort(name, connection);
-    }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
+    else {
+        // call the implementation
+        try {
+            obj = AudioInputPortCache::instance().getAudioInputPort(name);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
     }
 
     // return pointer to new object

@@ -24,6 +24,7 @@
 #include "listable.h"
 #include "audioconnection.h"
 #include "objectcache.h"
+#include "audioengine.h"
 
 class AudioInputPort : public AudioSource
 {
@@ -32,6 +33,9 @@ class AudioInputPort : public AudioSource
 public:
     AudioInputPort(jack_port_t *jackPort)
         : port(jackPort), connection(this, false) { }
+    void systemConnect(const char *name) {
+        AudioEngine::instance().connectPort(name, port);
+    }
     // Source interface
     bool connectsTo(Source *) { return false; }
     void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
@@ -50,8 +54,10 @@ public:
         static AudioInputPortCache instance;
         return instance;
     }
-    AudioInputPort *getAudioInputPort(const char*  name);
-    AudioInputPort *getAudioInputPort(const char*  name, const char* connectTo);
+    AudioInputPort *getAudioInputPort(const char* name, const char* connectTo);
+    AudioInputPort *getAudioInputPort(const char* name) {
+        return getAudioInputPort(name, 0);
+    }
 };
 
 // represents a system output port
@@ -84,6 +90,9 @@ public:
         return instance;
     }
     AudioOutputPort *getAudioOutputPort(const char *portName, const char *connectTo);
+    AudioOutputPort *getAudioOutputPort(const char *portName) {
+        return getAudioOutputPort(portName, 0);
+    }
 };
 
 #endif // AUDIOOUTPUT_H

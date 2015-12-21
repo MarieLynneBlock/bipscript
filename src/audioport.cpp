@@ -41,9 +41,9 @@ AudioInputPort *AudioInputPortCache::getAudioInputPort(const char *name, const c
         port = new AudioInputPort(jackPort);
         audioInputPortMap[name] = port;
         // auto connect output port
-        if (connection) {
-            AudioEngine::instance().connectPort(connection, jackPort);
-        }
+    }
+    if (connection) {
+        port->systemConnect(name);
     }
     return port;
 }
