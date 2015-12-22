@@ -18,16 +18,21 @@
 #include "eventbuffer.h"
 #include "objectcollector.h"
 
+#define UPDATE_MAX_EVENTS 32
+
 // runs in script thread
 void EventBuffer::addEvent(Event *evt)  {
     while(!eventQueue.push(evt)); // maybe wait a bit?
 }
 
+// process thread
 void EventBuffer::update()
 {
     Event *freshEvent;
-    while (eventQueue.pop(freshEvent)) {
+    int counter = 0;
+    while (counter < UPDATE_MAX_EVENTS && eventQueue.pop(freshEvent)) {
         sortedEvents.insert(freshEvent);
+        counter++;
     }
 }
 
