@@ -58,7 +58,9 @@ SQInteger MathRandominteger(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "integer method needs an instance of Random");
+    }
     Random *obj = static_cast<Random*>(userPtr);
 
     // get parameter 1 "max" as integer

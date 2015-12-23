@@ -154,7 +154,9 @@ SQInteger TimeSignaturenumerator(HSQUIRRELVM vm)
 {
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "numerator method needs an instance of Signature");
+    }
     TimeSignature *obj = static_cast<TimeSignature*>(userPtr);
 
     // return value
@@ -179,7 +181,9 @@ SQInteger TimeSignaturedenominator(HSQUIRRELVM vm)
 {
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "denominator method needs an instance of Signature");
+    }
     TimeSignature *obj = static_cast<TimeSignature*>(userPtr);
 
     // return value
@@ -247,7 +251,9 @@ SQInteger TimeTransportMastersetTimeSignature(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "setTimeSignature method needs an instance of TransportMaster");
+    }
     TransportMaster *obj = static_cast<TransportMaster*>(userPtr);
 
     // get parameter 1 "signature" as Time.Signature
@@ -276,7 +282,9 @@ SQInteger TimeTransportMastersetTimeSignature(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "setTimeSignature method needs an instance of TransportMaster");
+    }
     TransportMaster *obj = static_cast<TransportMaster*>(userPtr);
 
     // get parameter 1 "numerator" as integer

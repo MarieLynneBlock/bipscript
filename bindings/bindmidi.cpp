@@ -73,7 +73,9 @@ SQInteger MidiABCReaderread(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "read method needs an instance of ABCReader");
+    }
     ABCReader *obj = static_cast<ABCReader*>(userPtr);
 
     // get parameter 1 "abc" as string
@@ -224,7 +226,9 @@ SQInteger MidiABCReaderreadTune(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "readTune method needs an instance of ABCReader");
+    }
     ABCReader *obj = static_cast<ABCReader*>(userPtr);
 
     // get parameter 1 "abc" as string
@@ -438,7 +442,9 @@ SQInteger MidiInputBufferlastControlValue(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "lastControlValue method needs an instance of InputBuffer");
+    }
     MidiInputBuffer *obj = static_cast<MidiInputBuffer*>(userPtr);
 
     // get parameter 1 "control" as integer
@@ -521,7 +527,9 @@ SQInteger MidiPatternadd(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "add method needs an instance of Pattern");
+    }
     Pattern *obj = static_cast<Pattern*>(userPtr);
 
     // get parameter 1 "note" as Midi.Note
@@ -573,7 +581,9 @@ SQInteger MidiPatterngetSize(HSQUIRRELVM vm)
 {
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "getSize method needs an instance of Pattern");
+    }
     Pattern *obj = static_cast<Pattern*>(userPtr);
 
     // call the implementation
@@ -595,7 +605,9 @@ SQInteger MidiPatternprint(HSQUIRRELVM vm)
 {
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "print method needs an instance of Pattern");
+    }
     Pattern *obj = static_cast<Pattern*>(userPtr);
 
     // call the implementation
@@ -621,7 +633,9 @@ SQInteger MidiTunegetTimeSignature(HSQUIRRELVM vm)
 {
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "getTimeSignature method needs an instance of Tune");
+    }
     MidiTune *obj = static_cast<MidiTune*>(userPtr);
 
     // return value
@@ -651,7 +665,9 @@ SQInteger MidiTunegetTitle(HSQUIRRELVM vm)
 {
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "getTitle method needs an instance of Tune");
+    }
     MidiTune *obj = static_cast<MidiTune*>(userPtr);
 
     // return value
@@ -676,7 +692,9 @@ SQInteger MidiTunegetTrackCount(HSQUIRRELVM vm)
 {
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "getTrackCount method needs an instance of Tune");
+    }
     MidiTune *obj = static_cast<MidiTune*>(userPtr);
 
     // return value
@@ -706,7 +724,9 @@ SQInteger MidiTunegetTrack(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "getTrack method needs an instance of Tune");
+    }
     MidiTune *obj = static_cast<MidiTune*>(userPtr);
 
     // get parameter 1 "number" as integer
@@ -798,7 +818,9 @@ SQInteger MidiOutputsetDefaultChannel(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "setDefaultChannel method needs an instance of Output");
+    }
     MidiOutputPort *obj = static_cast<MidiOutputPort*>(userPtr);
 
     // get parameter 1 "channel" as integer
@@ -838,7 +860,9 @@ SQInteger MidiOutputschedule(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "schedule method needs an instance of Output");
+    }
     MidiOutputPort *obj = static_cast<MidiOutputPort*>(userPtr);
 
     // get parameter 1 "note" as Midi.Note
@@ -885,7 +909,9 @@ SQInteger MidiOutputschedule(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "schedule method needs an instance of Output");
+    }
     MidiOutputPort *obj = static_cast<MidiOutputPort*>(userPtr);
 
     // get parameter 1 "pattern" as Midi.Pattern
@@ -920,7 +946,9 @@ SQInteger MidiOutputschedule(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "schedule method needs an instance of Output");
+    }
     MidiOutputPort *obj = static_cast<MidiOutputPort*>(userPtr);
 
     // get parameter 1 "control" as Midi.Control
@@ -967,7 +995,9 @@ SQInteger MidiOutputschedule(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "schedule method needs an instance of Output");
+    }
     MidiOutputPort *obj = static_cast<MidiOutputPort*>(userPtr);
 
     // get parameter 1 "control" as Midi.ProgramChange
@@ -1058,7 +1088,9 @@ SQInteger MidiDrumTabReaderread(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "read method needs an instance of DrumTabReader");
+    }
     DrumTabReader *obj = static_cast<DrumTabReader*>(userPtr);
 
     // get parameter 1 "tab" as string

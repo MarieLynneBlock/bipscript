@@ -182,7 +182,9 @@ SQInteger Lv2Pluginconnect(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "connect method needs an instance of Plugin");
+    }
     Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
 
     // get parameter 1 "source" as AudioSource
@@ -220,7 +222,9 @@ SQInteger Lv2PluginconnectMidi(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "connectMidi method needs an instance of Plugin");
+    }
     Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
 
     // get parameter 1 "source" as EventSource
@@ -258,7 +262,9 @@ SQInteger Lv2PluginsetMidiChannel(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "setMidiChannel method needs an instance of Plugin");
+    }
     Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
 
     // get parameter 1 "channel" as integer
@@ -291,7 +297,9 @@ SQInteger Lv2PluginsetControl(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "setControl method needs an instance of Plugin");
+    }
     Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
 
     // get parameter 1 "control" as string
@@ -330,7 +338,9 @@ SQInteger Lv2PluginscheduleControl(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "scheduleControl method needs an instance of Plugin");
+    }
     Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
 
     // get parameter 1 "control" as string
@@ -394,7 +404,9 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "schedule method needs an instance of Plugin");
+    }
     Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
 
     // get parameter 1 "note" as Midi.Note
@@ -503,7 +515,9 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "schedule method needs an instance of Plugin");
+    }
     Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
 
     // get parameter 1 "pattern" as Midi.Pattern
@@ -612,7 +626,9 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "schedule method needs an instance of Plugin");
+    }
     Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
 
     // get parameter 1 "control" as Midi.ProgramChange
@@ -668,7 +684,9 @@ SQInteger Lv2PluginaddController(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "addController method needs an instance of Plugin");
+    }
     Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
 
     // get parameter 1 "source" as EventSource

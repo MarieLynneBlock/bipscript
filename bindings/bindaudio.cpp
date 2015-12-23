@@ -81,7 +81,9 @@ SQInteger AudioMixeraddGainController(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "addGainController method needs an instance of Mixer");
+    }
     Mixer *obj = static_cast<Mixer*>(userPtr);
 
     // get parameter 1 "source" as EventSource
@@ -137,7 +139,9 @@ SQInteger AudioMixerconnect(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "connect method needs an instance of Mixer");
+    }
     Mixer *obj = static_cast<Mixer*>(userPtr);
 
     // get parameter 1 "source" as AudioSource
@@ -195,7 +199,9 @@ SQInteger AudioMixerscheduleGain(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "scheduleGain method needs an instance of Mixer");
+    }
     Mixer *obj = static_cast<Mixer*>(userPtr);
 
     // get parameter 1 "input" as integer
@@ -309,7 +315,9 @@ SQInteger AudioOutputconnect(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "connect method needs an instance of Output");
+    }
     AudioOutputPort *obj = static_cast<AudioOutputPort*>(userPtr);
 
     // get parameter 1 "source" as AudioSource
@@ -441,7 +449,9 @@ SQInteger AudioStereoOutputconnect(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "connect method needs an instance of StereoOutput");
+    }
     StereoOutput *obj = static_cast<StereoOutput*>(userPtr);
 
     // get parameter 1 "source" as AudioSource
