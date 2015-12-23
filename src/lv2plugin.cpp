@@ -23,7 +23,6 @@
 #include "scripthost.h"
 
 #include "lv2/lv2plug.in/ns/ext/presets/presets.h"
-#include "lv2/lv2plug.in/ns/ext/options/options.h"
 #include "lv2/lv2plug.in/ns/ext/buf-size/buf-size.h"
 
 namespace fs = boost::filesystem;
@@ -688,16 +687,11 @@ Lv2PluginCache::Lv2PluginCache() : world(lilv_world_new()), lv2Constants(world) 
     lv2Features[1] = &uridUnmapFeature;
 
     // Options feature
-    jack_nframes_t blockLength = AudioConnection::getBufferSize();
-    LV2_Options_Option options[] = {
-        {   LV2_OPTIONS_INSTANCE, 0, uridMapper.uriToId(LV2_BUF_SIZE__minBlockLength),
-            sizeof(float), uridMapper.uriToId(LV2_ATOM__Int), &blockLength
-        },
-        {   LV2_OPTIONS_INSTANCE, 0, uridMapper.uriToId(LV2_BUF_SIZE__maxBlockLength),
-            sizeof(float), uridMapper.uriToId(LV2_ATOM__Int), &blockLength
-        },
-        { LV2_OPTIONS_INSTANCE, 0, 0, 0, 0, NULL }
-    };
+    options[0] = { LV2_OPTIONS_INSTANCE, 0, uridMapper.uriToId(LV2_BUF_SIZE__minBlockLength),
+            sizeof(float), uridMapper.uriToId(LV2_ATOM__Int), &blockLength };
+    options[1] = { LV2_OPTIONS_INSTANCE, 0, uridMapper.uriToId(LV2_BUF_SIZE__maxBlockLength),
+            sizeof(float), uridMapper.uriToId(LV2_ATOM__Int), &blockLength };
+    options[2] = { LV2_OPTIONS_INSTANCE, 0, 0, 0, 0, NULL };
 
     static LV2_Feature optionsFeature = { LV2_OPTIONS__options, &options };
     lv2Features[2] = &optionsFeature;
