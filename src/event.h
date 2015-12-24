@@ -29,6 +29,7 @@ class Event : public Position, public Listable
     long frameOffset;
 public:
     Event(Position &pos) : Position(pos) {} // refCount++; refSet.insert(this); }
+    Event(const Event &other) : Position(other) {}
     Event(unsigned int bar, unsigned int position, unsigned int division) :
         Position(bar, position, division) {} // refCount++; refSet.insert(this); }
     long getFrameOffset() const {
