@@ -54,6 +54,11 @@ classes :
           - {name: velocity, type: integer}
           - {name: duration, type: integer}
           - {name: division, type: integer}
+      methods:
+        - name: transpose
+          parameters:
+            - {name: amount, type: integer}
+
 
     - name: Control
       ctor:
@@ -90,6 +95,9 @@ classes :
           #parameters: {name: index, type: integer}
         - name: getSize
         - name: print
+        - name: transpose
+          parameters:
+            - {name: amount, type: integer}
 
     - name: Tune
       cppname: MidiTune

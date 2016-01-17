@@ -19,6 +19,7 @@
 
 #include "position.h"
 #include <deque>
+#include <stdexcept>
 
 class Note
 {
@@ -33,6 +34,16 @@ public:
         note(note), velocity(velocity), duration(duration), channel(0) {}
     unsigned int getPitch() {
         return note;
+    }
+    void transpose(int amount) {
+        int value = amount + note;
+        if(value < 0) {
+            throw std::logic_error("Cannot transpose this note that low");
+        }
+        else if(value > 127) {
+            throw std::logic_error("Cannot transpose this note that high");
+        }
+        note = value;
     }
 };
 

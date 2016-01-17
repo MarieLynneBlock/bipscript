@@ -65,6 +65,7 @@ public:
     }
     std::string print();
     //void schedule(MidiSink *sink, Position position);
+    void transpose(int amount);
 };
 
 #endif // MIDIPATTERN_H
