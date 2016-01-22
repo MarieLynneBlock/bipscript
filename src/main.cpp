@@ -92,7 +92,7 @@ int main(int argc, char **argv)
     signal(SIGHUP, signal_handler);
     signal(SIGINT, signal_handler);
 
-    // sample rate and buffer size now valid
+    // sample rate now valid
     jack_nframes_t sampleRate = audioEngine.getSampleRate();
     Lv2PluginCache::instance().setSampleRate(sampleRate);
 

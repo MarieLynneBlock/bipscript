@@ -83,7 +83,9 @@ SQInteger AudioMixeraddGainController(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "addGainController method needs an instance of Mixer");
+    }
     Mixer *obj = static_cast<Mixer*>(userPtr);
 
     // get parameter 1 "source" as EventSource
@@ -139,7 +141,9 @@ SQInteger AudioMixerconnect(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "connect method needs an instance of Mixer");
+    }
     Mixer *obj = static_cast<Mixer*>(userPtr);
 
     // get parameter 1 "source" as AudioSource
@@ -153,12 +157,32 @@ SQInteger AudioMixerconnect(HSQUIRRELVM vm)
         return sq_throwerror(vm, "argument 1 is not of type AudioSource");
     }
 
-    // call the implementation
-    try {
-        obj->connect(*source);
+    // 2 parameters passed in
+    if(numargs == 3) {
+
+        // get parameter 2 "gain" as float
+        SQFloat gain;
+        if (SQ_FAILED(sq_getfloat(vm, 3, &gain))){
+            return sq_throwerror(vm, "argument 2 is not of type float");
+        }
+
+        // call the implementation
+        try {
+            obj->connect(*source, gain);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
     }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
+
+    else {
+        // call the implementation
+        try {
+            obj->connect(*source);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
     }
 
     // void method, returns no value
@@ -177,7 +201,9 @@ SQInteger AudioMixerscheduleGain(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "scheduleGain method needs an instance of Mixer");
+    }
     Mixer *obj = static_cast<Mixer*>(userPtr);
 
     // get parameter 1 "input" as integer
@@ -235,8 +261,8 @@ SQInteger AudioOutputCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
-    if(numargs < 3) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 2");
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
     // get parameter 1 "name" as string
     const SQChar* name;
@@ -244,19 +270,33 @@ SQInteger AudioOutputCtor(HSQUIRRELVM vm)
         return sq_throwerror(vm, "argument 1 is not of type string");
     }
 
-    // get parameter 2 "connection" as string
-    const SQChar* connection;
-    if (SQ_FAILED(sq_getstring(vm, 3, &connection))){
-        return sq_throwerror(vm, "argument 2 is not of type string");
+    AudioOutputPort *obj;
+    // 2 parameters passed in
+    if(numargs == 3) {
+
+        // get parameter 2 "connection" as string
+        const SQChar* connection;
+        if (SQ_FAILED(sq_getstring(vm, 3, &connection))){
+            return sq_throwerror(vm, "argument 2 is not of type string");
+        }
+
+        // call the implementation
+        try {
+            obj = AudioOutputPortCache::instance().getAudioOutputPort(name, connection);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
     }
 
-    AudioOutputPort *obj;
-    // call the implementation
-    try {
-        obj = AudioOutputPortCache::instance().getAudioOutputPort(name, connection);
-    }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
+    else {
+        // call the implementation
+        try {
+            obj = AudioOutputPortCache::instance().getAudioOutputPort(name);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
     }
 
     // return pointer to new object
@@ -277,7 +317,9 @@ SQInteger AudioOutputconnect(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "connect method needs an instance of Output");
+    }
     AudioOutputPort *obj = static_cast<AudioOutputPort*>(userPtr);
 
     // get parameter 1 "source" as AudioSource
@@ -310,8 +352,8 @@ SQInteger AudioInputCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
-    if(numargs < 3) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 2");
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
     // get parameter 1 "name" as string
     const SQChar* name;
@@ -319,19 +361,33 @@ SQInteger AudioInputCtor(HSQUIRRELVM vm)
         return sq_throwerror(vm, "argument 1 is not of type string");
     }
 
-    // get parameter 2 "connection" as string
-    const SQChar* connection;
-    if (SQ_FAILED(sq_getstring(vm, 3, &connection))){
-        return sq_throwerror(vm, "argument 2 is not of type string");
+    AudioInputPort *obj;
+    // 2 parameters passed in
+    if(numargs == 3) {
+
+        // get parameter 2 "connection" as string
+        const SQChar* connection;
+        if (SQ_FAILED(sq_getstring(vm, 3, &connection))){
+            return sq_throwerror(vm, "argument 2 is not of type string");
+        }
+
+        // call the implementation
+        try {
+            obj = AudioInputPortCache::instance().getAudioInputPort(name, connection);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
     }
 
-    AudioInputPort *obj;
-    // call the implementation
-    try {
-        obj = AudioInputPortCache::instance().getAudioInputPort(name, connection);
-    }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
+    else {
+        // call the implementation
+        try {
+            obj = AudioInputPortCache::instance().getAudioInputPort(name);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
     }
 
     // return pointer to new object
@@ -395,7 +451,9 @@ SQInteger AudioStereoOutputconnect(HSQUIRRELVM vm)
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "connect method needs an instance of StereoOutput");
+    }
     StereoOutput *obj = static_cast<StereoOutput*>(userPtr);
 
     // get parameter 1 "source" as AudioSource

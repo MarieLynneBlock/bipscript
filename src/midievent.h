@@ -42,6 +42,9 @@ public:
     unsigned char getDatabyte1() {
         return databyte1;
     }
+    void setDatabyte1(unsigned char databyte) {
+        this->databyte1 = databyte;
+    }
     unsigned char getDatabyte2() {
         return databyte2;
     }

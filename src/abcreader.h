@@ -32,8 +32,10 @@ struct ABCError
 class ABCReader
 {
     static ABCReader *activeParser;
+    uint32_t ticksPerQuarter;
     uint32_t ticksPerBeat;
     uint32_t beatsPerBar;
+    uint32_t beatUnit;
     uint32_t activeTrack;
     Position currentPosition;
     std::vector<MidiTune*> tunes;
@@ -42,7 +44,7 @@ class ABCReader
     std::string error();
     MidiTune *currentTune() { return tunes.back(); }
 public:
-    ABCReader() : beatsPerBar(4), verbose(true) {}
+    ABCReader() : beatsPerBar(4), beatUnit(4), verbose(true) {}
     static ABCReader *getActiveParser() {
         return activeParser;
     }

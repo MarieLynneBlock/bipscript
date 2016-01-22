@@ -62,6 +62,7 @@ public:
         return jack_transport_query(client, &jack_pos) == JackTransportRolling;
     }
     TimeSignature &getTimeSignature();
+    void setBufferSize(jack_nframes_t size);
     // public methods
     int activate(const char *clientName);
     int process(jack_nframes_t nframes);

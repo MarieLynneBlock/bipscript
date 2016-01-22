@@ -22,6 +22,7 @@
 #include "scripthost.h"
 #include "audioconnection.h"
 #include "transportmaster.h"
+#include "lv2plugin.h"
 
 using namespace std;
 
@@ -69,6 +70,12 @@ int sync_callback(jack_transport_state_t state, jack_position_t *pos, void *arg)
     return ((AudioEngine*)arg)->sync(state, pos);
 }
 
+int buffersize_callback(jack_nframes_t nframes, void* arg)
+{
+    ((AudioEngine*)arg)->setBufferSize(nframes);
+    return 0;
+}
+
 TimeSignature &AudioEngine::getTimeSignature()
 {
     jack_position_t pos;
@@ -76,6 +83,13 @@ TimeSignature &AudioEngine::getTimeSignature()
     bool valid = pos.valid & JackTransportBBT;
     currentTimeSignature = TimeSignature(valid, pos.beats_per_bar, pos.beat_type);
     return currentTimeSignature;
+}
+
+void AudioEngine::setBufferSize(jack_nframes_t size)
+{
+    // TODO: generic size listener?
+    AudioConnection::setBufferSize(size);
+    Lv2PluginCache::instance().setBufferSize(size);
 }
 
 int AudioEngine::activate(const char *clientName)
@@ -87,12 +101,12 @@ int AudioEngine::activate(const char *clientName)
 
     // get sample rate and buffer size
     sampleRate = jack_get_sample_rate(client);
-    jack_nframes_t bufferSize = jack_get_buffer_size(client);
-    AudioConnection::setBufferSize(bufferSize);
+    setBufferSize(jack_get_buffer_size(client));
 
     // Jack callbacks
     jack_set_process_callback(client, jack_process, this);
     jack_set_sync_callback(client, sync_callback, this);
+    jack_set_buffer_size_callback(client, &buffersize_callback, this);
 
     // activate jack
     if (jack_activate(client)) {

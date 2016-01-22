@@ -50,9 +50,6 @@ public:
         dummyBuffer = new float[size];
         bufferSize = size;
     }
-    static jack_nframes_t getBufferSize() {
-        return bufferSize;
-    }
     static float *getDummyBuffer() {
         return dummyBuffer;
     }

@@ -64,7 +64,9 @@ SQInteger IOFilereadAll(HSQUIRRELVM vm)
 {
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "readAll method needs an instance of File");
+    }
     File *obj = static_cast<File*>(userPtr);
 
     // return value
@@ -89,7 +91,9 @@ SQInteger IOFilesize(HSQUIRRELVM vm)
 {
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "size method needs an instance of File");
+    }
     File *obj = static_cast<File*>(userPtr);
 
     // return value
@@ -114,7 +118,9 @@ SQInteger IOFileexists(HSQUIRRELVM vm)
 {
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "exists method needs an instance of File");
+    }
     File *obj = static_cast<File*>(userPtr);
 
     // return value
@@ -139,7 +145,9 @@ SQInteger IOFileisFolder(HSQUIRRELVM vm)
 {
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "isFolder method needs an instance of File");
+    }
     File *obj = static_cast<File*>(userPtr);
 
     // return value

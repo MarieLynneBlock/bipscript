@@ -29,9 +29,10 @@ const char *File::readAll()
     }
     stream.seekg(0, std::ios::end);
     length = stream.tellg();
-    buffer = new char[length];
+    buffer = new char[length + 1];
     stream.seekg(0, std::ios::beg);
     stream.read(buffer, length);
     stream.close();
+    buffer[length] = '\0';
     return buffer;
 }

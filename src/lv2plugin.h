@@ -20,6 +20,7 @@
 #include "lv2/lv2plug.in/ns/ext/atom/atom.h"
 #include "lv2/lv2plug.in/ns/ext/atom/util.h"
 #include "lv2/lv2plug.in/ns/ext/state/state.h"
+#include "lv2/lv2plug.in/ns/ext/options/options.h"
 #include <lilv-0/lilv/lilv.h>
 
 #include <map>
@@ -294,6 +295,10 @@ class Lv2PluginCache : public ProcessorCache<std::string, Lv2Plugin>
     // for features
     const LV2_Feature* lv2Features[6];
     std::map<std::string, bool> supported;
+    // options feature
+    jack_nframes_t blockLength;
+    LV2_Options_Option options[3];
+    // urid features
     LV2_URID_Map map;
     LV2_URID_Unmap unmap;
     Lv2PathMapper pathMapper;
@@ -312,6 +317,9 @@ public:
     }
     void setSampleRate(jack_nframes_t rate) {
         this->sampleRate = rate;
+    }
+    void setBufferSize(jack_nframes_t size) {
+        this->blockLength = size;
     }
     Lv2Plugin *getPlugin(const char *uri, const char *preset, Lv2State *state);
     Lv2Plugin *getPlugin(const char *uri, const char *preset) {

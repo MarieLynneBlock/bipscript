@@ -144,8 +144,9 @@ Pattern* DrumTabReader::read(const char*tab)
     int last = 0;
     int lineBars = 0;
     int startBar = 1;
-    for(unsigned int i = 0; i < strlen(tab); i++) {
-        if(tab[i] != '\n') {
+    size_t tablen = strlen(tab);
+    for(unsigned int i = 0; i <= tablen; i++) {
+        if(i != tablen && tab[i] != '\n') {
             continue;
         }
         // pointer to line

@@ -132,7 +132,7 @@ Mixer::~Mixer()
  *
  * No allocations.
  */
-void Mixer::connect(AudioSource &source)
+void Mixer::connect(AudioSource &source, float initialGain)
 {
     unsigned int inputOutputCount = source.getAudioOutputCount();
     // source has no audio outputs
@@ -148,7 +148,7 @@ void Mixer::connect(AudioSource &source)
     while(inputCounter < inputOutputCount || outputCounter < audioOutputCount) {
         uint32_t inputIndex = connectedInputs + inputCounter++ % inputOutputCount;
         uint32_t outputIndex = outputCounter++ % audioOutputCount;
-        gain[inputIndex][outputIndex] = 1.0;
+        gain[inputIndex][outputIndex] = initialGain;
     }
     // connect inputs
     for(unsigned int i = 0; i < inputOutputCount; i++) {

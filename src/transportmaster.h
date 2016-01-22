@@ -19,6 +19,7 @@
 
 #include "jack/types.h"
 #include "objectcache.h"
+#include "timesignature.h"
 #include <atomic>
 
 class TransportMaster
@@ -38,6 +39,14 @@ public:
         this->bpm = bpm;
     }
     void forceBeat(double bpm);
+    void setTimeSignature(uint32_t numerator, uint32_t denominator) {
+        this->beatsPerBar = numerator;
+        this->beatUnit = denominator;
+    }
+    void setTimeSignature(TimeSignature &timeSignature) {
+        this->beatsPerBar = timeSignature.getNumerator();
+        this->beatUnit = timeSignature.getDenominator();
+    }
     void setTime(jack_transport_state_t state, jack_nframes_t nframes, jack_position_t *pos, int new_pos);
     void reposition() {} // TODO: need this?
 };

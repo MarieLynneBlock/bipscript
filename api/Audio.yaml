@@ -39,6 +39,7 @@ classes :
         - name: connect
           parameters:
             - {name: source, type: AudioSource}
+            - {name: gain, type: float, optional: true}
 
         - name: scheduleGain
           parameters:
@@ -58,7 +59,7 @@ classes :
       ctor:
         parameters:
         - { name: name, type: string }
-        - { name: connection, type: string }
+        - { name: connection, type: string, optional: true }
         expression: AudioOutputPortCache::instance().getAudioOutputPort
       methods:
         - name: connect
@@ -74,7 +75,7 @@ classes :
       ctor:
         parameters:
         - { name: name, type: string }
-        - { name: connection, type: string }
+        - { name: connection, type: string, optional: true }
         expression: AudioInputPortCache::instance().getAudioInputPort
 
     - name: StereoOutput
