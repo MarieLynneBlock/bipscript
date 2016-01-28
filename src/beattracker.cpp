@@ -17,6 +17,7 @@
 #include "beattracker.h"
 
 #include "audioengine.h"
+#include <iostream>
 
 void BeatTracker::reset(double bpm) {
     master = TransportMasterCache::instance().getTransportMaster(bpm);

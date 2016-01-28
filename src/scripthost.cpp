@@ -26,6 +26,7 @@
 #include "scripthost.h"
 #include "audioengine.h"
 #include "objectcollector.h"
+#include <iostream>
 
 void ScriptHost::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
 {

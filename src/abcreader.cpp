@@ -16,6 +16,7 @@
  */
 #include "abcreader.h"
 #include "audioengine.h"
+#include <iostream>
 
 ABCReader *ABCReader::activeParser;
 
