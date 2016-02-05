@@ -114,6 +114,9 @@ public:
     // AudioSource interface
     unsigned int getAudioOutputCount() { return audioOutputCount; }
     AudioConnection *getAudioConnection(unsigned int index) { return audioOutput[index]; }
+private:
+    void validateInputChannel(uint32_t input);
+    void validateOutputChannel(uint32_t output);
 };
 
 class MixerCache : public ProcessorCache<std::string, Mixer>

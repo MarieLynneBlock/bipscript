@@ -172,18 +172,8 @@ void Mixer::addGainController(EventSource &source, unsigned int cc, unsigned int
     if(cc > 127) {
         throw std::logic_error("MIDI control number cannot be greater than 127");
     }
-    if(input == 0) {
-        throw std::logic_error("There is no input channel zero");
-    }
-    if(input > audioInputCount) {
-        throw std::logic_error("No such input on this mixer");
-    }
-    if(output == 0) {
-        throw std::logic_error("There is no output channel zero");
-    }
-    if(output > audioOutputCount) {
-        throw std::logic_error("No such output on this mixer");
-    }
+    validateInputChannel(input);
+    validateOutputChannel(output);
     EventConnection &connection = source.getEventConnection(0); // TODO: how to specify other connections
     // check hash for existing connection
     MixerControlConnection *mixerConnection = controlConnectionMap[&connection];
@@ -207,6 +197,8 @@ void Mixer::addGainController(EventSource &source, unsigned int cc, unsigned int
  */
 
 void Mixer::scheduleGain(uint32_t input, uint32_t output, float gain, uint32_t bar, uint32_t position, uint32_t division) {
+    validateInputChannel(input);
+    validateOutputChannel(output);
     gainEventBuffer.addEvent(new MixerGainEvent(input - 1, output - 1, gain, bar, position, division));
 }
 
@@ -353,6 +345,26 @@ void Mixer::reposition()
     MixerControlMapping *mapping;
     while(newControlMappingsQueue.pop(mapping)) {}
     connectedInputs = 0;
+}
+
+void Mixer::validateInputChannel(uint32_t input)
+{
+    if(input == 0) {
+        throw std::logic_error("There is no input channel zero");
+    }
+    if(input > audioInputCount) {
+        throw std::logic_error("No such input on this mixer");
+    }
+}
+
+void Mixer::validateOutputChannel(uint32_t output)
+{
+    if(output == 0) {
+        throw std::logic_error("There is no output channel zero");
+    }
+    if(output > audioOutputCount) {
+        throw std::logic_error("No such output on this mixer");
+    }
 }
 
 /**
