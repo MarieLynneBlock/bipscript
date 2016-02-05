@@ -269,8 +269,8 @@ Lv2Plugin::Lv2Plugin(const LilvPlugin *plugin, LilvInstance *instance, const Lv2
             else if(lilv_port_is_a(plugin, port, uris.lv2OutputPort)) {
                 audioOutputIndex[audioOutputCounter++] = i;
             }
-        } else if(lilv_port_is_a(plugin, port, uris.lv2ControlPort)) {
-
+        } else if(lilv_port_is_a(plugin, port, uris.lv2ControlPort)
+                  && lilv_port_is_a(plugin, port, uris.lv2InputPort)) {
             // get control name
             const LilvNode* symbol = lilv_port_get_symbol(plugin, port);
             std::string portName(lilv_node_as_string(symbol));
