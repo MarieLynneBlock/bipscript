@@ -484,6 +484,11 @@ SQInteger AudioStereoOutputconnect(HSQUIRRELVM vm)
 //
 SQInteger AudioBeatTrackerCtor(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
     // get parameter 1 "bpm" as float
     SQFloat bpm;
     if (SQ_FAILED(sq_getfloat(vm, 2, &bpm))){
@@ -510,9 +515,16 @@ SQInteger AudioBeatTrackerCtor(HSQUIRRELVM vm)
 //
 SQInteger AudioBeatTrackerconnect(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "connect method needs an instance of BeatTracker");
+    }
     BeatTracker *obj = static_cast<BeatTracker*>(userPtr);
 
     // get parameter 1 "source" as AudioSource

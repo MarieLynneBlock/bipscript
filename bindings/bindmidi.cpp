@@ -1277,6 +1277,11 @@ SQInteger MidiDrumTabReaderread(HSQUIRRELVM vm)
 //
 SQInteger MidiBeatTrackerCtor(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
     // get parameter 1 "bpm" as float
     SQFloat bpm;
     if (SQ_FAILED(sq_getfloat(vm, 2, &bpm))){
@@ -1303,9 +1308,16 @@ SQInteger MidiBeatTrackerCtor(HSQUIRRELVM vm)
 //
 SQInteger MidiBeatTrackerconnectMidi(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "connectMidi method needs an instance of BeatTracker");
+    }
     MidiBeatTracker *obj = static_cast<MidiBeatTracker*>(userPtr);
 
     // get parameter 1 "source" as EventSource
@@ -1336,9 +1348,16 @@ SQInteger MidiBeatTrackerconnectMidi(HSQUIRRELVM vm)
 //
 SQInteger MidiBeatTrackercountIn(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "countIn method needs an instance of BeatTracker");
+    }
     MidiBeatTracker *obj = static_cast<MidiBeatTracker*>(userPtr);
 
     // get parameter 1 "note" as integer
@@ -1364,9 +1383,16 @@ SQInteger MidiBeatTrackercountIn(HSQUIRRELVM vm)
 //
 SQInteger MidiBeatTrackerstopOnSilence(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
-    sq_getinstanceup(vm, 1, &userPtr, 0);
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "stopOnSilence method needs an instance of BeatTracker");
+    }
     MidiBeatTracker *obj = static_cast<MidiBeatTracker*>(userPtr);
 
     // get parameter 1 "seconds" as integer
