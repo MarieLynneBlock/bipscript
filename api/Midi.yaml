@@ -58,6 +58,9 @@ classes :
         - name: transpose
           parameters:
             - {name: amount, type: integer}
+        - name: setVelocity
+          parameters:
+            - {name: velocity, type: integer}
 
 
     - name: Control
@@ -91,9 +94,11 @@ classes :
             - {name: position, type: integer}
             - {name: division, type: integer}
           cppname: addNote
-        #- name: get
-          #parameters: {name: index, type: integer}
         - name: getSize
+          returns: integer
+        - name: getNote
+          parameters: {name: index, type: integer}
+          returns: Midi.Note
         - name: print
         - name: transpose
           parameters:

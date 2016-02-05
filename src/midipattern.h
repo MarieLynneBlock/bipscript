@@ -31,8 +31,11 @@ public:
     const Position &getPosition() const {
         return position;
     }
-    const Note &getNote() const {
+    const Note &getNoteRef() const {
         return note;
+    }
+    Note *getNote() {
+        return &note;
     }
 };
 
@@ -49,6 +52,9 @@ public:
     }
     unsigned int getSize() {
         return noteList.size();
+    }
+    Note *getNote(uint32_t index) {
+        return noteList[index].getNote();
     }
     const PatternNote &get(unsigned int index) {
         return noteList[index];

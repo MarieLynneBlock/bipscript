@@ -49,7 +49,7 @@ void MidiSink::schedule(Pattern &pattern, Position &position, unsigned char chan
         for(unsigned int i = 0; i < pattern.getSize(); i++) {
             const PatternNote &note = pattern.get(i);
             Position newPosition = position + note.getPosition();
-            this->schedule(note.getNote(), newPosition, channel);
+            this->schedule(note.getNoteRef(), newPosition, channel);
         }
     }
     else {

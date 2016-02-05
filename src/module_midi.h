@@ -45,6 +45,12 @@ public:
         }
         note = value;
     }
+    void setVelocity(uint32_t velocity) {
+        if(velocity > 127) {
+            throw std::logic_error("Velocity value cannot be greater than 127");
+        }
+        this->velocity = velocity;
+    }
 };
 
 class Control
