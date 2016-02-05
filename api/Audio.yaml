@@ -89,3 +89,14 @@ classes :
         - name: connect
           parameters:
             - { name: source, type: AudioSource }
+
+    - name: BeatTracker
+      include: beattracker
+      ctor:
+        parameters: { name: bpm, type: float }
+        expression: BeatTrackerCache::instance().getBeatTracker
+      methods:
+        - name: connect
+          parameters:
+            - { name: source, type: AudioSource }
+

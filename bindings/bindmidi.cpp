@@ -26,6 +26,7 @@
 #include "midiinputbuffer.h"
 #include "miditune.h"
 #include "drumtabreader.h"
+#include "beattracker.h"
 
 namespace binding {
 
@@ -40,6 +41,7 @@ HSQOBJECT MidiTuneObject;
 HSQOBJECT MidiOutputObject;
 HSQOBJECT MidiProgramChangeObject;
 HSQOBJECT MidiDrumTabReaderObject;
+HSQOBJECT MidiBeatTrackerObject;
 
 //
 // Midi.ABCReader class
@@ -1270,6 +1272,121 @@ SQInteger MidiDrumTabReaderread(HSQUIRRELVM vm)
     return 1;
 }
 
+//
+// Midi.BeatTracker class
+//
+SQInteger MidiBeatTrackerCtor(HSQUIRRELVM vm)
+{
+    // get parameter 1 "bpm" as float
+    SQFloat bpm;
+    if (SQ_FAILED(sq_getfloat(vm, 2, &bpm))){
+        return sq_throwerror(vm, "argument 1 is not of type float");
+    }
+
+    MidiBeatTracker *obj;
+    // call the implementation
+    try {
+        obj = MidiBeatTrackerCache::instance().getMidiBeatTracker(bpm);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // return pointer to new object
+    sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
+    //sq_setreleasehook(vm, 1, release_hook);
+    return 1;
+}
+
+//
+// Midi.BeatTracker connectMidi
+//
+SQInteger MidiBeatTrackerconnectMidi(HSQUIRRELVM vm)
+{
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    sq_getinstanceup(vm, 1, &userPtr, 0);
+    MidiBeatTracker *obj = static_cast<MidiBeatTracker*>(userPtr);
+
+    // get parameter 1 "source" as EventSource
+    SQUserPointer sourceTypeTag, sourcePtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, 0))) {
+        return sq_throwerror(vm, "argument 1 is not an object of type EventSource");
+    }
+    sq_gettypetag(vm, 2, &sourceTypeTag);
+    EventSource *source = getEventSource(sourcePtr, sourceTypeTag);
+    if(source == 0) {
+        return sq_throwerror(vm, "argument 1 is not of type EventSource");
+    }
+
+    // call the implementation
+    try {
+        obj->connectMidi(*source);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // void method, returns no value
+    return 0;
+}
+
+//
+// Midi.BeatTracker countIn
+//
+SQInteger MidiBeatTrackercountIn(HSQUIRRELVM vm)
+{
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    sq_getinstanceup(vm, 1, &userPtr, 0);
+    MidiBeatTracker *obj = static_cast<MidiBeatTracker*>(userPtr);
+
+    // get parameter 1 "note" as integer
+    SQInteger note;
+    if (SQ_FAILED(sq_getinteger(vm, 2, &note))){
+        return sq_throwerror(vm, "argument 1 is not of type integer");
+    }
+
+    // call the implementation
+    try {
+        obj->countIn(note);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // void method, returns no value
+    return 0;
+}
+
+//
+// Midi.BeatTracker stopOnSilence
+//
+SQInteger MidiBeatTrackerstopOnSilence(HSQUIRRELVM vm)
+{
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    sq_getinstanceup(vm, 1, &userPtr, 0);
+    MidiBeatTracker *obj = static_cast<MidiBeatTracker*>(userPtr);
+
+    // get parameter 1 "seconds" as integer
+    SQInteger seconds;
+    if (SQ_FAILED(sq_getinteger(vm, 2, &seconds))){
+        return sq_throwerror(vm, "argument 1 is not of type integer");
+    }
+
+    // call the implementation
+    try {
+        obj->stopOnSilence(seconds);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // void method, returns no value
+    return 0;
+}
+
 
 void bindMidi(HSQUIRRELVM vm)
 {
@@ -1485,6 +1602,33 @@ void bindMidi(HSQUIRRELVM vm)
     sq_newslot(vm, -3, false);
 
     // push DrumTabReader to Midi package table
+    sq_newslot(vm, -3, false);
+
+    // create class Midi.BeatTracker
+    sq_pushstring(vm, "BeatTracker", -1);
+    sq_newclass(vm, false);
+    sq_getstackobj(vm, -1, &MidiBeatTrackerObject);
+    sq_settypetag(vm, -1, &MidiBeatTrackerObject);
+
+    // ctor for class BeatTracker
+    sq_pushstring(vm, _SC("constructor"), -1);
+    sq_newclosure(vm, &MidiBeatTrackerCtor, 0);
+    sq_newslot(vm, -3, false);
+
+    // methods for class BeatTracker
+    sq_pushstring(vm, _SC("connectMidi"), -1);
+    sq_newclosure(vm, &MidiBeatTrackerconnectMidi, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("countIn"), -1);
+    sq_newclosure(vm, &MidiBeatTrackercountIn, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("stopOnSilence"), -1);
+    sq_newclosure(vm, &MidiBeatTrackerstopOnSilence, 0);
+    sq_newslot(vm, -3, false);
+
+    // push BeatTracker to Midi package table
     sq_newslot(vm, -3, false);
 
     // push package "Midi" to root table

@@ -29,14 +29,16 @@ class TransportMaster
     float beatUnit;
     double ticksPerBeat;
     double bpm;
+    bool doForceBeat;
 public:
     TransportMaster(double bpm) : beatsPerBar(4.0), beatUnit(4.0),
-        ticksPerBeat(1920.0), bpm(bpm) {}
+        ticksPerBeat(1920.0), bpm(bpm), doForceBeat(false) {}
     ~TransportMaster();
     // void scheduleBpm(bpm, bar, position, division)
     void setBpm(double bpm) {
         this->bpm = bpm;
     }
+    void forceBeat(double bpm);
     void setTimeSignature(uint32_t numerator, uint32_t denominator) {
         this->beatsPerBar = numerator;
         this->beatUnit = denominator;

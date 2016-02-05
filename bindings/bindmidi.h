@@ -32,6 +32,7 @@ extern HSQOBJECT MidiTuneObject;
 extern HSQOBJECT MidiOutputObject;
 extern HSQOBJECT MidiProgramChangeObject;
 extern HSQOBJECT MidiDrumTabReaderObject;
+extern HSQOBJECT MidiBeatTrackerObject;
 }
 
 #endif // BINDMIDI_H

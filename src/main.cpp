@@ -31,7 +31,7 @@
 #include "mixer.h"
 #include "midiinputbuffer.h"
 #include "audioport.h"
-#include "transportmaster.h"
+#include "beattracker.h"
 
 namespace fs = boost::filesystem;
 
@@ -71,9 +71,11 @@ int main(int argc, char **argv)
                             &Lv2PluginCache::instance(),
                             &MidiOutputPortCache::instance(),
                             &MidiInputBufferCache::instance(),
-                            &TransportMasterCache::instance()
+                            &TransportMasterCache::instance(),
+                            &BeatTrackerCache::instance(),
+                            &MidiBeatTrackerCache::instance()
                             };
-    host.setObjectCaches(6, caches);
+    host.setObjectCaches(8, caches);
 
     // create and  start audioengine
     AudioEngine &audioEngine = AudioEngine::instance();

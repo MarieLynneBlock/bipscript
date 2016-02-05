@@ -165,3 +165,19 @@ classes :
         returns: Midi.Pattern
         parameters: {name: tab, type: string}
 
+    - name: BeatTracker
+      cppname: MidiBeatTracker
+      include: beattracker
+      ctor:
+        parameters: { name: bpm, type: float }
+        expression: MidiBeatTrackerCache::instance().getMidiBeatTracker
+      methods:
+        - name: connectMidi
+          parameters:
+            - { name: source, type: EventSource }
+        - name: countIn
+          parameters:
+            - { name: note, type: integer }
+        - name: stopOnSilence
+          parameters:
+            - { name: seconds, type: integer }
