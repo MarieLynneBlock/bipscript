@@ -81,6 +81,13 @@ classes :
 
         - name: schedule
           parameters:
+          - {name: control, type: Midi.PitchBend}
+          - {name: bar, type: integer}
+          - {name: position, type: integer}
+          - {name: division, type: integer}
+
+        - name: schedule
+          parameters:
           - {name: control, type: Midi.ProgramChange}
           - {name: bar, type: integer}
           - {name: position, type: integer}

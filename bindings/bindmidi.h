@@ -30,6 +30,7 @@ extern HSQOBJECT MidiInputBufferObject;
 extern HSQOBJECT MidiPatternObject;
 extern HSQOBJECT MidiTuneObject;
 extern HSQOBJECT MidiOutputObject;
+extern HSQOBJECT MidiPitchBendObject;
 extern HSQOBJECT MidiProgramChangeObject;
 extern HSQOBJECT MidiDrumTabReaderObject;
 extern HSQOBJECT MidiBeatTrackerObject;

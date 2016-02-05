@@ -63,10 +63,21 @@ void MidiSink::schedule(Pattern &pattern, Position &position, unsigned char chan
     }
 }
 
+void MidiSink::schedule(PitchBend &pitchBend, uint32_t bar, uint32_t position, uint32_t division)
+{
+    uint8_t channel = 0;
+    uint32_t value = pitchBend.getValue();
+    uint32_t lsb = value & 0x7F;
+    uint32_t msb = value >> 7;
+    Position start(bar, position, division);
+    MidiEvent* evt = new MidiEvent(start, lsb, msb, MidiEvent::TYPE_PITCH_BEND, channel);
+    addMidiEvent(evt);
+}
+
 void MidiSink::schedule(ProgramChange &pc, uint32_t bar, uint32_t position, uint32_t division)
 {
     int channel = 0;
     Position start(bar, position, division);
-    MidiEvent* evt = new MidiEvent(start, pc.program, 0, 0xC0, channel);
+    MidiEvent* evt = new MidiEvent(start, pc.getProgram(), 0, 0xC0, channel);
     addMidiEvent(evt);
 }

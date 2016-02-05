@@ -152,6 +152,10 @@ classes :
           - {name: position, type: integer}
           - {name: division, type: integer}
 
+    - name: PitchBend
+      ctor:
+        parameters:
+          - {name: program, type: integer}
 
     - name: ProgramChange
       ctor:

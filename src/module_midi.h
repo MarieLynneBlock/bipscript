@@ -62,12 +62,26 @@ public:
         controller(controller), value(value) {}
 };
 
+class PitchBend
+{
+    uint32_t value;
+public:
+    PitchBend(uint32_t value) :
+        value(value) {}
+    uint32_t getValue() {
+        return value;
+    }
+};
+
 class ProgramChange
 {
-public:
     uint8_t program;
+public:
     ProgramChange(uint8_t program) :
         program(program) {}
+    uint8_t getProgram() {
+        return program;
+    }
 };
 
 #endif // MIDIOUTPUT_H

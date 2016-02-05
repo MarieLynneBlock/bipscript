@@ -39,6 +39,7 @@ HSQOBJECT MidiInputBufferObject;
 HSQOBJECT MidiPatternObject;
 HSQOBJECT MidiTuneObject;
 HSQOBJECT MidiOutputObject;
+HSQOBJECT MidiPitchBendObject;
 HSQOBJECT MidiProgramChangeObject;
 HSQOBJECT MidiDrumTabReaderObject;
 HSQOBJECT MidiBeatTrackerObject;
@@ -1195,6 +1196,37 @@ SQInteger MidiOutputschedule(HSQUIRRELVM vm)
 }
 
 //
+// Midi.PitchBend class
+//
+SQInteger MidiPitchBendCtor(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get parameter 1 "program" as integer
+    SQInteger program;
+    if (SQ_FAILED(sq_getinteger(vm, 2, &program))){
+        return sq_throwerror(vm, "argument 1 is not of type integer");
+    }
+
+    PitchBend *obj;
+    // call the implementation
+    try {
+        obj = new PitchBend(program);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // return pointer to new object
+    sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
+    //sq_setreleasehook(vm, 1, release_hook);
+    return 1;
+}
+
+//
 // Midi.ProgramChange class
 //
 SQInteger MidiProgramChangeCtor(HSQUIRRELVM vm)
@@ -1598,6 +1630,21 @@ void bindMidi(HSQUIRRELVM vm)
     sq_newslot(vm, -3, false);
 
     // push Output to Midi package table
+    sq_newslot(vm, -3, false);
+
+    // create class Midi.PitchBend
+    sq_pushstring(vm, "PitchBend", -1);
+    sq_newclass(vm, false);
+    sq_getstackobj(vm, -1, &MidiPitchBendObject);
+    sq_settypetag(vm, -1, &MidiPitchBendObject);
+
+    // ctor for class PitchBend
+    sq_pushstring(vm, _SC("constructor"), -1);
+    sq_newclosure(vm, &MidiPitchBendCtor, 0);
+    sq_newslot(vm, -3, false);
+
+    // methods for class PitchBend
+    // push PitchBend to Midi package table
     sq_newslot(vm, -3, false);
 
     // create class Midi.ProgramChange
