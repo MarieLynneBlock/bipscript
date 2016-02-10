@@ -18,10 +18,13 @@
 #define SCRIPTTYPES_H
 
 #include "squirrel.h"
+#include <stdint.h>
 
 enum ScriptValueType {
-    NULLVALUE, INTEGER, FLOAT, STRING
+    NULLVALUE, INTEGER, FLOAT, STRING, ARRAY
 };
+
+class ScriptArray;
 
 struct ScriptValue
 {
@@ -30,8 +33,23 @@ struct ScriptValue
         SQInteger intValue;
         SQFloat floatValue;
         const SQChar *stringValue;
+        ScriptArray *arrayValue;
     };
     void setValue(HSQUIRRELVM &vm, SQInteger idx);
+};
+
+class ScriptArray
+{
+    HSQUIRRELVM &vm;
+    HSQOBJECT array;
+    ScriptValue element;
+    uint32_t length;
+public:
+    ScriptArray(HSQUIRRELVM &vm, HSQOBJECT &array);
+    uint32_t size() const {
+        return length;
+    }
+    ScriptValue &operator[](const int index);
 };
 
 struct ScriptHashPair

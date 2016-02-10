@@ -31,6 +31,7 @@ using boost::lockfree::spsc_queue;
 using std::map;
 
 class MixerControlConnection;
+class ScriptArray;
 
 struct MixerControlMapping : public Listable
 {
@@ -99,6 +100,7 @@ class Mixer : public AudioSource, public Listable
 public:
     Mixer(unsigned int inputs, const unsigned int outputs);
     ~Mixer();
+    void connect(AudioSource &source, ScriptArray &gains);
     void connect(AudioSource &source, float gain);
     void connect(AudioSource &source) {
         connect(source, 1.0);

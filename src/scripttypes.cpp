@@ -62,9 +62,33 @@ void ScriptValue::setValue(HSQUIRRELVM &vm, SQInteger idx)
             type = STRING;
             sq_getstring(vm, idx, &stringValue);
             break;
+        case OT_ARRAY:
+            type = ARRAY;
+            HSQOBJECT arrayObj;
+            sq_getstackobj(vm, idx, &arrayObj);
+            arrayValue = new ScriptArray(vm, arrayObj);
+            break;
         case OT_TABLE:
             throw std::logic_error("Table not supported here");
         default:
             throw std::logic_error("Unknown type not supported here");
     }
+}
+
+
+ScriptArray::ScriptArray(HSQUIRRELVM &vm, HSQOBJECT &array) :
+    vm(vm), array(array) {
+    sq_pushobject(vm, array); // push array
+    length = sq_getsize(vm, -1); // TODO: error handling
+    sq_pop(vm, 1); // pop array
+}
+
+ScriptValue &ScriptArray::operator[](const int index)
+{
+    sq_pushobject(vm, array);
+    sq_pushinteger(vm, index);
+    sq_get(vm, -2);
+    element.setValue(vm, -1);
+    sq_pop(vm, 2); // pop element + array
+    return element;
 }

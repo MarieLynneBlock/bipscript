@@ -16,6 +16,7 @@
  */
 
 #include "mixer.h"
+#include "scripttypes.h"
 #include "objectcollector.h"
 
 #include <cstring>
@@ -123,6 +124,63 @@ Mixer::~Mixer()
         delete[] gain[i];
     }
     delete[] gain;
+}
+
+/**
+ * Connect an AudioSource using the given gains.
+ *
+ * Runs in script thread.
+ *
+ * No allocations.
+ */
+void Mixer::connect(AudioSource &source, ScriptArray &gainsArray)
+{
+    uint32_t sourceOutputCount = source.getAudioOutputCount();
+    // set gains from array
+    if(gainsArray.size() != sourceOutputCount) {
+        throw std::logic_error("gains array has different length than input count");
+    }
+    for(uint32_t i = 0; i < sourceOutputCount; i++) {
+        ScriptValue &val = gainsArray[i];
+        uint32_t input = connectedInputs + i;
+        if(val.type == ARRAY) {
+            ScriptArray *array = val.arrayValue;
+            if(array->size() != audioOutputCount) {
+                std::string error("gain subarray should be length ");
+                error.append(std::to_string(audioOutputCount));
+                throw std::logic_error(error);
+            }
+            for(uint32_t j = 0; j < audioOutputCount; j++) {
+                ScriptValue &gainValue = (*array)[j];
+                if(gainValue.type == FLOAT) {
+                    gain[input][j] = gainValue.floatValue;
+                }
+                else if(gainValue.type == INTEGER) {
+                    gain[input][j] = gainValue.intValue;
+                }
+                else {
+                    throw std::logic_error("gain value should be a number");
+                }
+            }
+        }
+        else if(val.type == INTEGER) {
+            for(uint32_t j = 0; j < audioOutputCount; j++) {
+                gain[input][j] = val.intValue;
+            }
+        }
+        else if(val.type == FLOAT) {
+            for(uint32_t j = 0; j < audioOutputCount; j++) {
+                gain[input][j] = val.floatValue;
+            }
+        }
+        else {
+            throw std::logic_error("each gain array entry should be a number or subarray");
+        }
+    }
+    // connect inputs
+    for(unsigned int i = 0; i < sourceOutputCount; i++) {
+        audioInput[connectedInputs++].setConnection(source.getAudioConnection(i), this);
+    }
 }
 
 /**

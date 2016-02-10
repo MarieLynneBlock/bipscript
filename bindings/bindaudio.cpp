@@ -135,6 +135,50 @@ SQInteger AudioMixeraddGainController(HSQUIRRELVM vm)
 SQInteger AudioMixerconnect(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
+    // optional overriden parameter not here
+    if(numargs < 3) {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "connect method needs an instance of Mixer");
+    }
+    Mixer *obj = static_cast<Mixer*>(userPtr);
+
+    // get parameter 1 "source" as AudioSource
+    SQUserPointer sourceTypeTag, sourcePtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, 0))) {
+        return sq_throwerror(vm, "argument 1 is not an object of type AudioSource");
+    }
+    sq_gettypetag(vm, 2, &sourceTypeTag);
+    AudioSource *source = getAudioSource(sourcePtr, sourceTypeTag);
+    if(source == 0) {
+        return sq_throwerror(vm, "argument 1 is not of type AudioSource");
+    }
+
+    // call the implementation
+    try {
+        obj->connect(*source);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // void method, returns no value
+    return 0;
+    }
+    SQObjectType overrideType = sq_gettype(vm, 3);
+    SQUserPointer overrideTypeTag;
+    if(overrideType == OT_INSTANCE) {
+        sq_gettypetag(vm, 3, &overrideTypeTag);
+    }
+
+    if(overrideType == OT_FLOAT) {
+    SQInteger numargs = sq_gettop(vm);
     // check parameter count
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
@@ -187,6 +231,69 @@ SQInteger AudioMixerconnect(HSQUIRRELVM vm)
 
     // void method, returns no value
     return 0;
+    }
+    if(overrideType == OT_ARRAY) {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "connect method needs an instance of Mixer");
+    }
+    Mixer *obj = static_cast<Mixer*>(userPtr);
+
+    // get parameter 1 "source" as AudioSource
+    SQUserPointer sourceTypeTag, sourcePtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, 0))) {
+        return sq_throwerror(vm, "argument 1 is not an object of type AudioSource");
+    }
+    sq_gettypetag(vm, 2, &sourceTypeTag);
+    AudioSource *source = getAudioSource(sourcePtr, sourceTypeTag);
+    if(source == 0) {
+        return sq_throwerror(vm, "argument 1 is not of type AudioSource");
+    }
+
+    // 2 parameters passed in
+    if(numargs == 3) {
+
+        // get parameter 2 "gains" as array
+        HSQOBJECT gainsObj;
+        if (SQ_FAILED(sq_getstackobj(vm, 3, &gainsObj))) {
+            return sq_throwerror(vm, "argument 2 is not of type array");
+        }
+        if (sq_gettype(vm, 3) != OT_ARRAY) {
+            return sq_throwerror(vm, "argument 2 is not of type array");
+        }
+        ScriptArray gains(vm, gainsObj);
+
+        // call the implementation
+        try {
+            obj->connect(*source, gains);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
+    }
+
+    else {
+        // call the implementation
+        try {
+            obj->connect(*source);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
+    }
+
+    // void method, returns no value
+    return 0;
+    }
+    else {
+        return sq_throwerror(vm, "argument 2 is not an expected type");
+    }
 }
 
 //
