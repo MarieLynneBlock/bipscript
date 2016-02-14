@@ -100,6 +100,9 @@ bool BeatTrackerCache::scriptComplete()
     return false;
 }
 
+/**
+ * process thread
+ */
 void MidiBeatTracker::countInEvent(MidiEvent *nextEvent, jack_position_t &pos, jack_nframes_t time)
 {
     if(countInCount) {
@@ -131,22 +134,18 @@ void MidiBeatTracker::countInEvent(MidiEvent *nextEvent, jack_position_t &pos, j
                 countStartTime = time + nextEvent->getFrameOffset() + avgBeatPeriod;
             }
         }
-    } else if(countInCount < 4) { // first count in
+    } else { // first count in
         lastCountTime[0] = time + nextEvent->getFrameOffset();
         countInCount = 1;
         std::cout << "* Count 1" << std::endl;
     }
 }
 
-void MidiBeatTracker::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
+/**
+ * process thread
+ */
+void MidiBeatTracker::detectCountIn(jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time, uint32_t eventCount, EventConnection *connection)
 {
-    EventConnection *connection = midiInput.load();
-    uint32_t eventCount = 0;
-    if(connection) {
-        connection->process(rolling, pos, nframes, time);
-        eventCount = connection->getEventCount();
-    }        
-
     // count-in scheduled start
     if(countInCount == 4 && time + nframes >= countStartTime) {
         AudioEngine::instance().transportStart();
@@ -175,12 +174,53 @@ void MidiBeatTracker::process(bool rolling, jack_position_t &pos, jack_nframes_t
             }
         }
     }
+}
 
+/**
+ * process thread
+ */
+void MidiBeatTracker::stopIfSilent(bool rolling, jack_position_t &pos, jack_nframes_t time)
+{
+    // update last event time if not rolling
+    if(!rolling) {
+        lastEventTime = time;
+        return;
+    }
+    // check if stopOnSilence is configured
+    uint32_t seconds = stopSeconds.load();
+    if(seconds) {
+        // time elapsed since last event
+        uint32_t elapsed = (time - lastEventTime) / pos.frame_rate;
+        // greater than threshold: stop transport
+        if(elapsed > seconds) {
+            AudioEngine &ae = AudioEngine::instance();
+            ae.transportStop();
+            ae.transportRelocate(0);
+        }
+    }
+}
+
+void MidiBeatTracker::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
+{
+    // process MIDI input
+    EventConnection *connection = midiInput.load();
+    uint32_t eventCount = 0;
+    if(connection) {
+        connection->process(rolling, pos, nframes, time);
+        eventCount = connection->getEventCount();
+    }        
+
+    // watch out for count in
+    if(!rolling) {
+        detectCountIn(pos, nframes, time, eventCount, connection);
+    }
+
+    // loop over frames
     MidiEvent *nextEvent = eventCount ? connection->getEvent(0) : 0;
     uint32_t eventIndex = 1;
     for(jack_nframes_t i = 0; i < nframes; i++) {
 
-        // add any events at this frame
+        // add events at this frame to current onset
         while(nextEvent && nextEvent->getFrameOffset() == i) {
             if(nextEvent->matches(MidiEvent::TYPE_NOTE_ON)) {
                 currentOnset += nextEvent->getDatabyte2(); // TODO: different weights for different notes
@@ -189,6 +229,7 @@ void MidiBeatTracker::process(bool rolling, jack_position_t &pos, jack_nframes_t
             nextEvent = eventIndex < eventCount ? connection->getEvent(eventIndex++) : 0;
         }
 
+        // full buffer, run beat tracker
         if(frameIndex == BT_HOP_SIZE) {
             // process onset sample
             btrack.processOnsetDetectionFunctionSample(currentOnset);
@@ -202,16 +243,8 @@ void MidiBeatTracker::process(bool rolling, jack_position_t &pos, jack_nframes_t
         frameIndex++;
     }
 
-    // stop transport if no events
-    uint32_t seconds = stopSeconds.load();
-    if(seconds && rolling) {
-        uint32_t elapsed = (time - lastEventTime) / pos.frame_rate;
-        if(elapsed > seconds) {
-            AudioEngine &ae = AudioEngine::instance();
-            ae.transportStop();
-            ae.transportRelocate(0);
-        }
-    }
+    // stop on silence
+    stopIfSilent(rolling, pos, time);
 }
 
 void MidiBeatTracker::reset(double bpm)
