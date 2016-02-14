@@ -17,22 +17,21 @@
 #ifndef TIMEPACKAGE_H
 #define TIMEPACKAGE_H
 
-#include "squirrel.h"
-
 #include "position.h"
 #include "scripthost.h"
+#include "scripttypes.h"
 
 class Time
 {
 public:
     //static Position &now();
-    static void schedule(HSQOBJECT &function, unsigned int bar) {
+    static void schedule(ScriptFunction &function, unsigned int bar) {
         schedule(function, bar, 1);
     }
-    static void schedule(HSQOBJECT &function, unsigned int bar, unsigned int position) {
+    static void schedule(ScriptFunction &function, unsigned int bar, unsigned int position) {
         schedule(function, bar, position, 4); // TODO: base it on time signature
     }
-    static void schedule(HSQOBJECT &function, unsigned int bar, unsigned int position, unsigned int division) {
+    static void schedule(ScriptFunction &function, unsigned int bar, unsigned int position, unsigned int division) {
         ScriptHost::instance().schedule(function, bar, position, division);
     }
 };

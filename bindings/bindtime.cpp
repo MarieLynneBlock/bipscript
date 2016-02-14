@@ -41,9 +41,17 @@ SQInteger Timeschedule(HSQUIRRELVM vm)
         return sq_throwerror(vm, "insufficient parameters, expected at least 2");
     }
     // get parameter 1 "function" as function
-    HSQOBJECT function;
-    sq_getstackobj(vm, 2, &function);
-    sq_addref(vm, &function);
+    HSQOBJECT functionObj;
+    if (SQ_FAILED(sq_getstackobj(vm, 2, &functionObj))) {
+        return sq_throwerror(vm, "argument 1 is not of type function");
+    }
+    if (sq_gettype(vm, 2) != OT_CLOSURE) {
+        return sq_throwerror(vm, "argument 1 is not of type function");
+    }
+    SQUnsignedInteger nparams, nfreevars;
+    sq_getclosureinfo(vm, 2, &nparams, &nfreevars);
+    sq_addref(vm, &functionObj);
+    ScriptFunction function(functionObj, nparams);
 
     // get parameter 2 "bar" as integer
     SQInteger bar;

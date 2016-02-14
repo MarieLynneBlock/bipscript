@@ -74,7 +74,7 @@ static void squirrel_print_function(HSQUIRRELVM sqvm, const SQChar *format, ...)
     va_end(args);
 }
 
-void ScriptHost::schedule(HSQOBJECT &function, unsigned int bar, unsigned int position, unsigned int division)
+void ScriptHost::schedule(ScriptFunction &function, unsigned int bar, unsigned int position, unsigned int division)
 {
     this->asyncFunctions.push_back(AsyncFunction(function, bar, position, division));
 }
@@ -180,8 +180,7 @@ int ScriptHost::run() {
             // push function pointer as closure
             sq_pushobject(vm, it->getFunction());
             // how many params does this function expect?
-            SQUnsignedInteger nparams, nfreevars;
-            sq_getclosureinfo(vm, -1, &nparams, &nfreevars);
+            uint32_t nparams = it->getNumargs();
             // push fresh run table as "this" pointer
             sq_pushobject(vm, freshRunTable);
             // push remaining arguments
@@ -195,8 +194,6 @@ int ScriptHost::run() {
                 sq_pushinteger(vm, it->getDivision());
             }
             // now sleep until time
-            //Position pos(it->getBar(), it->getPosition(), 4);
-            // TODO: break
             if(!waitUntil(*it)) {
                 break; // TODO cleanup
             }

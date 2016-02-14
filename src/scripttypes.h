@@ -68,4 +68,19 @@ public:
     ScriptHashPair &next();
 };
 
+class ScriptFunction
+{
+    HSQOBJECT function;
+    uint32_t numargs;
+public:
+    ScriptFunction(HSQOBJECT &func, uint32_t numargs) :
+        function(func), numargs(numargs) {}
+    HSQOBJECT &getFunction() {
+        return function;
+    }
+    uint32_t getNumargs() {
+        return numargs;
+    }
+};
+
 #endif // SCRIPTTYPES_H

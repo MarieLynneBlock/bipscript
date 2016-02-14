@@ -21,18 +21,15 @@
 #include <atomic>
 #include "squirrel.h"
 
+#include "scripttypes.h"
 #include "position.h"
 #include "objectcache.h"
 
-class AsyncFunction : public Position {
-    HSQOBJECT functionPtr;
+class AsyncFunction : public Position, public ScriptFunction {
 public:
-    AsyncFunction(HSQOBJECT &functionPtr, unsigned int bar,
+    AsyncFunction(ScriptFunction &function, unsigned int bar,
                   unsigned int position, unsigned int division) :
-        Position(bar, position, division), functionPtr(functionPtr) {}
-    HSQOBJECT &getFunction() {
-        return functionPtr;
-    }
+        Position(bar, position, division), ScriptFunction(function) {}
 };
 
 class ScriptHost
@@ -74,7 +71,7 @@ public:
         return folder;
     }
     int run();
-    void schedule(HSQOBJECT &function, unsigned int bar, unsigned int position, unsigned int division);
+    void schedule(ScriptFunction &function, unsigned int bar, unsigned int position, unsigned int division);
     // for AE
     void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
     bool reposition(uint16_t attempt);
