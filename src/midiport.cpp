@@ -22,7 +22,7 @@
 MidiEvent *MidiInputConnection::getEvent(uint32_t i) {
     jack_midi_event_t in_event;
     jack_midi_event_get(&in_event, buffer, i);
-    lastEvent.unpack(in_event.buffer);
+    lastEvent.unpack(in_event.buffer, in_event.size);
     lastEvent.setFrameOffset(in_event.time);
     return &lastEvent;
 }

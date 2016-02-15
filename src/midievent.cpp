@@ -47,12 +47,14 @@ void MidiEvent::pack(void *space) {
     }
 }
 
-void MidiEvent::unpack(const uint8_t *buffer)
+void MidiEvent::unpack(const uint8_t *buffer, size_t size)
 {
     this->type = buffer[0] & 0xf0;
     this->channel = buffer[0] & 0x0f;
-    this->databyte1 = buffer[1];
-    if(dataSize() == 2) {
+    if(size > 1) {
+        this->databyte1 = buffer[1];
+    }
+    if(size > 2) {
         this->databyte2 = buffer[2];
     }
 }

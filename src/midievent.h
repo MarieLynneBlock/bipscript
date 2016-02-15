@@ -54,7 +54,7 @@ public:
     }
     uint8_t dataSize();
     void pack(void *buffer);
-    void unpack(const uint8_t *buffer);
+    void unpack(const uint8_t *buffer, size_t size);
     bool matches(int type);
     bool matches(int type, int databyte1, int low, int high);
 };

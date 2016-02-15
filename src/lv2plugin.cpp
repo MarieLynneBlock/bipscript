@@ -195,7 +195,7 @@ MidiEvent *Lv2MidiOutput::getEvent(uint32_t i)
     LV2_ATOM_SEQUENCE_FOREACH(atomSequence, ev) {
         if (ev->body.type == Lv2MidiEvent::midiEventTypeId) {
             if(counter == i) {
-                event.unpack((const uint8_t*)(ev + 1));
+                event.unpack((const uint8_t*)(ev + 1), ev->body.size);
                 event.setFrameOffset(ev->time.frames);
                 return &event;
             }
