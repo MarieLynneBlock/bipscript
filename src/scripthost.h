@@ -80,7 +80,7 @@ private:
     void objectReposition(bool final);
     void bindModules(HSQUIRRELVM vm);
     bool waitUntil(Position &pos);
-    bool waitForRestart();
+    bool waitForRestart(HSQOBJECT &context);
 };
 
 #endif // SCRIPTHOST_H

@@ -24,6 +24,7 @@
 #include "audioconnection.h"
 #include "eventconnection.h"
 #include "objectcache.h"
+#include "scripttypes.h"
 
 const unsigned int BT_HOP_SIZE = 512;
 
@@ -64,6 +65,15 @@ public:
     bool scriptComplete();
 };
 
+class OnCountClosure : public ScriptFunctionClosure {
+    int count;
+protected:
+    bool addParameters() { addInteger(count); }
+public:
+    OnCountClosure(ScriptFunction function, int count) :
+        ScriptFunctionClosure(function), count(count) {}
+};
+
 class MidiBeatTracker {
     BTrack btrack;
     uint32_t frameIndex;
@@ -75,24 +85,27 @@ class MidiBeatTracker {
     uint8_t countInCount;
     jack_nframes_t lastCountTime[4];
     jack_nframes_t countStartTime;
+    std::atomic<ScriptFunction*> onCountHandler;
     // for stopOnSilence
     std::atomic<uint32_t> stopSeconds;
     jack_nframes_t lastEventTime;
 public:
     MidiBeatTracker(double bpm)
         : frameIndex(0), currentOnset(0), countInNote(0),
-          countInCount(0), lastEventTime(0) {
+          countInCount(0), onCountHandler(0), lastEventTime(0) {
         reset(bpm);
     }
     void connectMidi(EventSource &source) {
         this->midiInput.store(&source.getEventConnection(0));
     }
     void countIn(uint8_t note) { countInNote.store(note); }
+    void onCount(ScriptFunction &handler);
     void stopOnSilence(uint32_t seconds) { stopSeconds.store(seconds); }
     void reset(double bpm);
     void reposition() {}
     void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
 private:
+    void dispatchCountInEvent(uint32_t count);
     void detectCountIn(jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time, uint32_t eventCount, EventConnection *connection);
     void countInEvent(MidiEvent *nextEvent, jack_position_t &pos, jack_nframes_t time);
     void stopIfSilent(bool rolling, jack_position_t &pos, jack_nframes_t time);

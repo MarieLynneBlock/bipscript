@@ -92,3 +92,21 @@ ScriptValue &ScriptArray::operator[](const int index)
     sq_pop(vm, 2); // pop element + array
     return element;
 }
+
+bool ScriptFunctionClosure::execute(HSQOBJECT &context)
+{
+    // push function pointer as closure
+    sq_pushobject(vm, function);
+    // push context as "this" pointer
+    sq_pushobject(vm, context);
+    // sublclasses add optional parameters
+    addParameters();
+    // attempt to call function
+    bool success = true;
+    if(SQ_FAILED(sq_call(vm, numargs, SQFalse, SQTrue))) {
+        success = false;
+    }
+    // pop closure
+    sq_pop(vm, 1);
+    return success;
+}

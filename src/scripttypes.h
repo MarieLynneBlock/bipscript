@@ -19,6 +19,7 @@
 
 #include "squirrel.h"
 #include <stdint.h>
+#include "methodqueue.h"
 
 enum ScriptValueType {
     NULLVALUE, INTEGER, FLOAT, STRING, ARRAY
@@ -70,17 +71,38 @@ public:
 
 class ScriptFunction
 {
+protected:
     HSQOBJECT function;
     uint32_t numargs;
+    HSQUIRRELVM vm;
 public:
-    ScriptFunction(HSQOBJECT &func, uint32_t numargs) :
-        function(func), numargs(numargs) {}
+    ScriptFunction(HSQUIRRELVM &vm, HSQOBJECT &func, uint32_t numargs) :
+        vm(vm), function(func), numargs(numargs) {}
     HSQOBJECT &getFunction() {
         return function;
     }
     uint32_t getNumargs() {
         return numargs;
     }
+    void release() {
+        sq_release(vm, &function);
+    }
+};
+
+class ScriptFunctionClosure : public ScriptFunction
+{
+public:
+    ScriptFunctionClosure(ScriptFunction &function) :
+        ScriptFunction(function) {}
+    bool execute(HSQOBJECT &context);
+    void dispatch() {
+        MethodQueue::instance().dispatch(this);
+    }
+protected:
+    void addInteger(int i) {
+        sq_pushinteger(vm, i);
+    }
+    virtual bool addParameters() = 0;
 };
 
 #endif // SCRIPTTYPES_H

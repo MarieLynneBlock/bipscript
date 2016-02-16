@@ -1411,6 +1411,48 @@ SQInteger MidiBeatTrackercountIn(HSQUIRRELVM vm)
 }
 
 //
+// Midi.BeatTracker onCount
+//
+SQInteger MidiBeatTrackeronCount(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "onCount method needs an instance of BeatTracker");
+    }
+    MidiBeatTracker *obj = static_cast<MidiBeatTracker*>(userPtr);
+
+    // get parameter 1 "handler" as function
+    HSQOBJECT handlerObj;
+    if (SQ_FAILED(sq_getstackobj(vm, 2, &handlerObj))) {
+        return sq_throwerror(vm, "argument 1 is not of type function");
+    }
+    if (sq_gettype(vm, 2) != OT_CLOSURE) {
+        return sq_throwerror(vm, "argument 1 is not of type function");
+    }
+    SQUnsignedInteger nparams, nfreevars;
+    sq_getclosureinfo(vm, 2, &nparams, &nfreevars);
+    sq_addref(vm, &handlerObj);
+    ScriptFunction handler(vm, handlerObj, nparams);
+
+    // call the implementation
+    try {
+        obj->onCount(handler);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // void method, returns no value
+    return 0;
+}
+
+//
 // Midi.BeatTracker stopOnSilence
 //
 SQInteger MidiBeatTrackerstopOnSilence(HSQUIRRELVM vm)
@@ -1695,6 +1737,10 @@ void bindMidi(HSQUIRRELVM vm)
 
     sq_pushstring(vm, _SC("countIn"), -1);
     sq_newclosure(vm, &MidiBeatTrackercountIn, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("onCount"), -1);
+    sq_newclosure(vm, &MidiBeatTrackeronCount, 0);
     sq_newslot(vm, -3, false);
 
     sq_pushstring(vm, _SC("stopOnSilence"), -1);

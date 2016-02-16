@@ -106,7 +106,7 @@ bool ScriptHost::waitUntil(Position &pos)
 }
 
 
-bool ScriptHost::waitForRestart()
+bool ScriptHost::waitForRestart(HSQOBJECT &context)
 {
     running.store(false);
     bool activeObjects = false;
@@ -120,9 +120,18 @@ bool ScriptHost::waitForRestart()
     }
     while(true) {
         if(restart.load()) {
+            // release fresh run table
+            sq_release(vm, &context);
             restart.store(false);
             running.store(true);
             return true;
+        }
+        // run any dispatched methods
+        ScriptFunctionClosure *closure = MethodQueue::instance().next();
+        while(closure) {
+            closure->execute(context);
+            delete closure;
+            closure = MethodQueue::instance().next();
         }
         // free collected objects
         ObjectCollector::instance()->free();
@@ -132,7 +141,6 @@ bool ScriptHost::waitForRestart()
             continue;
         }
     }
-    return true;
 }
 
 int ScriptHost::run() {
@@ -211,10 +219,8 @@ int ScriptHost::run() {
         }
         // clear list
         asyncFunctions.clear();
-        // release fresh run table
-        sq_release(vm, &freshRunTable);
-
-        rerun = waitForRestart();
+        // wait for restart
+        rerun = waitForRestart(freshRunTable);
     }
     // shut down squirrel
     sq_close(vm);

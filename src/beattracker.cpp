@@ -115,7 +115,7 @@ void MidiBeatTracker::countInEvent(MidiEvent *nextEvent, jack_position_t &pos, j
         // check this event is within expect time for count-in
         if(beatDelta >= 60 && beatDelta <= 140) { // TODO: optional parameter for window size
             lastCountTime[countInCount] = time + nextEvent->getFrameOffset();
-            std::cout << "* Count " << (int)(countInCount + 1) << std::endl;
+            dispatchCountInEvent((int)(countInCount + 1));
 
             // is this the last count-in
             if(++countInCount == 4) {
@@ -137,7 +137,8 @@ void MidiBeatTracker::countInEvent(MidiEvent *nextEvent, jack_position_t &pos, j
     } else { // first count in
         lastCountTime[0] = time + nextEvent->getFrameOffset();
         countInCount = 1;
-        std::cout << "* Count 1" << std::endl;
+        // set off handler
+        dispatchCountInEvent(1);
     }
 }
 
@@ -247,10 +248,32 @@ void MidiBeatTracker::process(bool rolling, jack_position_t &pos, jack_nframes_t
     stopIfSilent(rolling, pos, time);
 }
 
+void MidiBeatTracker::dispatchCountInEvent(uint32_t count)
+{
+    ScriptFunction *handler = onCountHandler.load();
+    if(handler) {
+        (new OnCountClosure(*handler, count))->dispatch();
+    }
+}
+
+void MidiBeatTracker::onCount(ScriptFunction &handler)
+{
+    if(handler.getNumargs() != 2) {
+        throw std::logic_error("onCount handler should take one argument");
+    }
+    onCountHandler.store(new ScriptFunction(handler));
+}
+
 void MidiBeatTracker::reset(double bpm)
 {
     master = TransportMasterCache::instance().getTransportMaster(bpm);
     btrack.setTempo(bpm);
+    ScriptFunction *handler = onCountHandler.load();
+    if(handler) {
+        handler->release();
+		delete handler;
+        handler = 0;
+    }
 }
 
 /**

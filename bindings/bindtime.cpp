@@ -51,7 +51,7 @@ SQInteger Timeschedule(HSQUIRRELVM vm)
     SQUnsignedInteger nparams, nfreevars;
     sq_getclosureinfo(vm, 2, &nparams, &nfreevars);
     sq_addref(vm, &functionObj);
-    ScriptFunction function(functionObj, nparams);
+    ScriptFunction function(vm, functionObj, nparams);
 
     // get parameter 2 "bar" as integer
     SQInteger bar;

@@ -182,6 +182,9 @@ classes :
         - name: countIn
           parameters:
             - { name: note, type: integer }
+        - name: onCount
+          parameters:
+            - { name: handler, type: function }
         - name: stopOnSilence
           parameters:
             - { name: seconds, type: integer }
