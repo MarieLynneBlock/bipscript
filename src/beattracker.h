@@ -79,7 +79,8 @@ class MidiBeatTracker {
     uint32_t frameIndex;
     double currentOnset;
     TransportMaster *master;
-    std::atomic<EventConnection*> midiInput;    
+    std::atomic<EventConnection*> midiInput;
+    float noteWeight[128];
     // for count-in
     std::atomic<uint8_t> countInNote;
     uint8_t countInCount;
@@ -98,6 +99,7 @@ public:
     void connectMidi(EventSource &source) {
         this->midiInput.store(&source.getEventConnection(0));
     }
+    void setNoteWeight(uint32_t note, float weight);
     void countIn(uint8_t note) { countInNote.store(note); }
     void onCount(ScriptFunction &handler);
     void stopOnSilence(uint32_t seconds) { stopSeconds.store(seconds); }

@@ -1453,6 +1453,47 @@ SQInteger MidiBeatTrackeronCount(HSQUIRRELVM vm)
 }
 
 //
+// Midi.BeatTracker setNoteWeight
+//
+SQInteger MidiBeatTrackersetNoteWeight(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 3) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 2");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "setNoteWeight method needs an instance of BeatTracker");
+    }
+    MidiBeatTracker *obj = static_cast<MidiBeatTracker*>(userPtr);
+
+    // get parameter 1 "note" as integer
+    SQInteger note;
+    if (SQ_FAILED(sq_getinteger(vm, 2, &note))){
+        return sq_throwerror(vm, "argument 1 is not of type integer");
+    }
+
+    // get parameter 2 "weight" as float
+    SQFloat weight;
+    if (SQ_FAILED(sq_getfloat(vm, 3, &weight))){
+        return sq_throwerror(vm, "argument 2 is not of type float");
+    }
+
+    // call the implementation
+    try {
+        obj->setNoteWeight(note, weight);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // void method, returns no value
+    return 0;
+}
+
+//
 // Midi.BeatTracker stopOnSilence
 //
 SQInteger MidiBeatTrackerstopOnSilence(HSQUIRRELVM vm)
@@ -1741,6 +1782,10 @@ void bindMidi(HSQUIRRELVM vm)
 
     sq_pushstring(vm, _SC("onCount"), -1);
     sq_newclosure(vm, &MidiBeatTrackeronCount, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("setNoteWeight"), -1);
+    sq_newclosure(vm, &MidiBeatTrackersetNoteWeight, 0);
     sq_newslot(vm, -3, false);
 
     sq_pushstring(vm, _SC("stopOnSilence"), -1);

@@ -156,6 +156,7 @@ void MidiBeatTracker::detectCountIn(jack_position_t &pos, jack_nframes_t nframes
 
     // abandon count-in
     else if(countInCount && (time - lastCountTime[countInCount - 1]) > pos.frame_rate) {
+        // TODO: make event handler
         std::cout << "* abandoning count-in" << std::endl;
         countInCount = 0;
     }
@@ -224,7 +225,7 @@ void MidiBeatTracker::process(bool rolling, jack_position_t &pos, jack_nframes_t
         // add events at this frame to current onset
         while(nextEvent && nextEvent->getFrameOffset() == i) {
             if(nextEvent->matches(MidiEvent::TYPE_NOTE_ON)) {
-                currentOnset += nextEvent->getDatabyte2(); // TODO: different weights for different notes
+                currentOnset += nextEvent->getDatabyte2() * noteWeight[nextEvent->getDatabyte1()];
                 lastEventTime = time;
             }
             nextEvent = eventIndex < eventCount ? connection->getEvent(eventIndex++) : 0;
@@ -256,6 +257,14 @@ void MidiBeatTracker::dispatchCountInEvent(uint32_t count)
     }
 }
 
+void MidiBeatTracker::setNoteWeight(uint32_t note, float weight)
+{
+    if(note > 127) {
+        throw std::logic_error("onCount handler should take one argument");
+    }
+    noteWeight[note] = weight;
+}
+
 void MidiBeatTracker::onCount(ScriptFunction &handler)
 {
     if(handler.getNumargs() != 2) {
@@ -266,8 +275,14 @@ void MidiBeatTracker::onCount(ScriptFunction &handler)
 
 void MidiBeatTracker::reset(double bpm)
 {
+    // set bpm on btrack and transport master
     master = TransportMasterCache::instance().getTransportMaster(bpm);
     btrack.setTempo(bpm);
+    // reset note weights
+    for(int i = 0; i < 128; i++) {
+        noteWeight[i] = 1.0;
+    }
+    // release handler
     ScriptFunction *handler = onCountHandler.load();
     if(handler) {
         handler->release();

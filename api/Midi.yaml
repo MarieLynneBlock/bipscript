@@ -185,6 +185,10 @@ classes :
         - name: onCount
           parameters:
             - { name: handler, type: function }
+        - name: setNoteWeight
+          parameters:
+            - { name: note, type: integer }
+            - { name: weight, type: float }
         - name: stopOnSilence
           parameters:
             - { name: seconds, type: integer }
