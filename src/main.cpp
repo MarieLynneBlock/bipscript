@@ -26,6 +26,7 @@
 
 #include "scripthost.h"
 #include "audioengine.h"
+#include "systempackage.h"
 
 #include "lv2plugin.h"
 #include "mixer.h"
@@ -49,6 +50,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    // check given script file
     fs::path filePath(argv[1]);
     if(!exists(filePath)) {
        std::cerr << "error: script file does not exist: " << argv[1] << std::endl;
@@ -59,6 +61,9 @@ int main(int argc, char **argv)
        return 2;
     }
     fs::path parentPath = system_complete(filePath).parent_path();
+
+    // initialize system
+    System::setArguments(argc, argv);
 
     // create script host
     ScriptHost &host = ScriptHost::instance();

@@ -161,6 +161,7 @@ int ScriptHost::run() {
     binding::bindIO(vm);
     binding::bindTime(vm);
     binding::bindMath(vm);
+    binding::bindSystem(vm);
     // pop root table
     sq_pop(vm, 1);
 
