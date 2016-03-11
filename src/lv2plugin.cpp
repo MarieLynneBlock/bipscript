@@ -55,6 +55,16 @@ static const void* stateRetrieve(LV2_State_Handle handle,
     return ((Lv2State*)handle)->retrieveState(key, size, type, flags);
 }
 
+static LV2_Worker_Status scheduleWork(LV2_Worker_Schedule_Handle handle, uint32_t size, const void* data)
+{
+    return ((Lv2Worker*)handle)->scheduleWork(data, size);
+}
+
+static LV2_Worker_Status workerRespond(LV2_Worker_Respond_Handle handle, uint32_t size, const void *data)
+{
+    return ((Lv2Worker*)handle)->queueResponse(data, size);
+}
+
 LV2_URID Lv2UridMapper::uriToId(const char *uri) {
     const std::string uriString(uri);
     const Lv2UridMap::const_iterator iter = uridMap.find(uriString);
@@ -113,6 +123,8 @@ Lv2Constants::Lv2Constants(LilvWorld *world) {
     lv2AtomSupports = lilv_new_uri(world, LV2_ATOM__supports);
     lv2AtomBufferType = lilv_new_uri(world, LV2_ATOM__bufferType);
     lv2Presets = lilv_new_uri(world, LV2_PRESETS__Preset);
+    lv2WorkerSchedule = lilv_new_uri(world, LV2_WORKER__schedule);
+    lv2WorkerInterface = lilv_new_uri(world, LV2_WORKER__interface);
     lv2RdfsLabel = lilv_new_uri(world, LILV_NS_RDFS "label");
 }
 
@@ -238,9 +250,10 @@ void Lv2ControlConnection::reset()
 
 // ----------------------------- Lv2Plugin
 
-Lv2Plugin::Lv2Plugin(const LilvPlugin *plugin, LilvInstance *instance, const Lv2Constants &uris) :
+Lv2Plugin::Lv2Plugin(const LilvPlugin *plugin, LilvInstance *instance,
+                     const Lv2Constants &uris, Lv2Worker *worker) :
     plugin(plugin), instance(instance), processedUntil(0),
-    controlConnections(4), newControlMappingsQueue(16)
+    controlConnections(4), newControlMappingsQueue(16), worker(worker)
 {
     // audio inputs
     audioInputCount = lilv_plugin_get_num_ports_of_class(plugin, uris.lv2AudioPort, uris.lv2InputPort, 0);
@@ -395,6 +408,76 @@ const void *Lv2State::retrieveState(uint32_t key, size_t *size, uint32_t *type, 
         *size = 0;
         return 0;
     }
+}
+
+void *run_worker(void *arg)
+{
+    ((Lv2Worker*)arg)->run();
+}
+
+Lv2Worker::Lv2Worker() {
+    requestBuffer = jack_ringbuffer_create(4096);
+    responseBuffer = jack_ringbuffer_create(4096);
+    sem_init(&semaphore, 0, 0);
+    int result = pthread_create(&thread, NULL, run_worker, this);
+    if(result) {
+        throw std::runtime_error("could not create LV2 worker thread");
+    }
+}
+
+void Lv2Worker::run()
+{
+    void *buffer = 0;
+    while (true) { // TODO: needs break
+        // wait for work
+        sem_wait(&semaphore);       
+        // read data size
+        uint32_t size = 0;
+        jack_ringbuffer_read(requestBuffer, (char*)&size, sizeof(size));
+        // resize buffer to hold incoming data
+        if (!(buffer = realloc(buffer, size))) {
+            throw std::runtime_error("failed to allocate buffer for worker data");
+        }        
+        // read data
+        jack_ringbuffer_read(requestBuffer, (char*)buffer, size);
+        // call back to plugin on the worker interface
+        interface->work(handle, workerRespond, this, size, buffer);
+    }
+    free(buffer);
+}
+
+LV2_Worker_Status Lv2Worker::scheduleWork(const void *data, uint32_t size)
+{
+    printf("scheduling work of size %d\n", size);
+    jack_ringbuffer_write(requestBuffer, (const char*)&size, sizeof(size));
+    jack_ringbuffer_write(requestBuffer, (const char*)data, size);
+    sem_post(&semaphore); // wake up worker
+    return LV2_WORKER_SUCCESS;
+}
+
+LV2_Worker_Status Lv2Worker::queueResponse(const void *data, uint32_t size)
+{
+    jack_ringbuffer_write(responseBuffer, (const char*)&size, sizeof(size));
+    jack_ringbuffer_write(responseBuffer, (const char*)data, size);
+    return LV2_WORKER_SUCCESS;
+}
+
+void Lv2Worker::respond()
+{
+    uint32_t read_space = jack_ringbuffer_read_space(responseBuffer);
+    while (read_space) {
+        uint32_t size = 0;
+        jack_ringbuffer_read(responseBuffer, (char*)&size, sizeof(size));
+        jack_ringbuffer_read(responseBuffer, response, size);
+        interface->work_response(handle, size, response);
+        read_space -= sizeof(size) + size;
+    }
+}
+
+void Lv2Worker::setInstance(LilvInstance *instance)
+{
+    handle = instance->lv2_handle;
+    interface = (LV2_Worker_Interface*)lilv_instance_get_extension_data(instance, LV2_WORKER__interface);
 }
 
 void Lv2Plugin::setPortValue(const char *portname, const void *value, uint32_t type) {
@@ -598,6 +681,11 @@ void Lv2Plugin::process(bool rolling, jack_position_t &pos, jack_nframes_t nfram
     // run the plugin
     lilv_instance_run(instance, nframes);
 
+    // emit worker responses
+    if(worker) {
+        worker->respond();
+    }
+
     // update the processed time
     processedUntil = time;
 }
@@ -674,6 +762,7 @@ Lv2PluginCache::Lv2PluginCache() : world(lilv_world_new()), lv2Constants(world) 
     supported[LV2_OPTIONS__options] = true;
     supported[LV2_BUF_SIZE__boundedBlockLength] = true;
     supported[LV2_STATE__mapPath] = true;
+    supported[LV2_WORKER__schedule] = true;
 
     // URID feature (map/unmap)
     map.map = &uridMap;
@@ -706,8 +795,14 @@ Lv2PluginCache::Lv2PluginCache() : world(lilv_world_new()), lv2Constants(world) 
     static LV2_Feature stateMapPathFeature = { LV2_STATE__mapPath, &mapPath };
     lv2Features[4] = &stateMapPathFeature;
 
+    // worker schedule feature
+    schedule.handle = 0; // assigned in factory method
+    schedule.schedule_work = &scheduleWork;
+    static LV2_Feature workerFeature = { LV2_WORKER__schedule, &schedule };
+    lv2Features[5] = &workerFeature;
+
     // end of features
-    lv2Features[5] = 0;
+    lv2Features[6] = 0;
 
     // URIDs
     Lv2Plugin::atomTypes.intType = uridMapper.uriToId(LV2_ATOM__Int);
@@ -767,11 +862,24 @@ Lv2Plugin *Lv2PluginCache::getPlugin(const char *uri, const char *preset, Lv2Sta
         pluginMap[uriString] = lilvPlugin;
     }
 
+    // create worker if required
+    Lv2Worker *worker = 0;
+    if (lilv_plugin_has_feature(lilvPlugin, lv2Constants.lv2WorkerSchedule)
+        && lilv_plugin_has_extension_data(lilvPlugin, lv2Constants.lv2WorkerInterface)) {
+        worker = new Lv2Worker();
+        ((LV2_Worker_Schedule*)lv2Features[5]->data)->handle = worker;
+    }
+
     // instantiate
     LilvInstance *instance = lilv_plugin_instantiate(lilvPlugin, sampleRate, lv2Features);
 
+    // connect worker with plugin instance
+    if(worker) {
+        worker->setInstance(instance);
+    }
+
     // create plugin object
-    Lv2Plugin *plugin = new Lv2Plugin(lilvPlugin, instance, lv2Constants);
+    Lv2Plugin *plugin = new Lv2Plugin(lilvPlugin, instance, lv2Constants, worker);
 
     // restore baseline default state
     LilvState *defaultState =  lilv_state_new_from_world(world, &map, lilv_plugin_get_uri(lilvPlugin));
@@ -805,7 +913,7 @@ Lv2Plugin *Lv2PluginCache::getPlugin(const char *uri, const char *preset, Lv2Sta
         }
     }
     // restore state
-    else if(state) {
+    else if(state) {    // TODO: what if state is requested on a plugin that doesn't support?
         LV2_State_Interface* iState = (LV2_State_Interface*)lilv_instance_get_extension_data(instance, LV2_STATE__interface);
         if (iState) {
             LV2_State_Status status = iState->restore(instance->lv2_handle, &stateRetrieve,
@@ -821,7 +929,7 @@ Lv2Plugin *Lv2PluginCache::getPlugin(const char *uri, const char *preset, Lv2Sta
     registerObject(key, plugin);
 
     // activate plugin
-    lilv_instance_activate(instance);    
+    lilv_instance_activate(instance);
     return plugin;
 }
 

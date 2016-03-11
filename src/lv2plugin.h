@@ -21,7 +21,10 @@
 #include "lv2/lv2plug.in/ns/ext/atom/util.h"
 #include "lv2/lv2plug.in/ns/ext/state/state.h"
 #include "lv2/lv2plug.in/ns/ext/options/options.h"
+#include "lv2/lv2plug.in/ns/ext/worker/worker.h"
 #include <lilv-0/lilv/lilv.h>
+#include <jack/ringbuffer.h>
+#include <semaphore.h>
 
 #include <map>
 #include <list>
@@ -69,6 +72,9 @@ public:
     LilvNode *lv2AtomBufferType;
     // presets
     LilvNode *lv2Presets;
+    // worker
+    LilvNode *lv2WorkerInterface;
+    LilvNode *lv2WorkerSchedule;
     // rdf
     LilvNode *lv2RdfsLabel;
 };
@@ -222,6 +228,25 @@ public:
     }
 };
 
+class Lv2Worker
+{
+    LV2_Handle handle;
+    LV2_Worker_Interface *interface;
+    jack_ringbuffer_t *requestBuffer;
+    jack_ringbuffer_t *responseBuffer;
+    char response[2048];
+    pthread_t thread;
+    sem_t semaphore;
+public:
+    Lv2Worker();
+    void start();
+    void run();
+    LV2_Worker_Status scheduleWork(const void *, uint32_t size);
+    LV2_Worker_Status queueResponse(const void *, uint32_t size);
+    void respond();
+    void setInstance(LilvInstance *instance);
+};
+
 class Lv2Plugin : public Listable, public AudioSource, public EventSource, public MidiSink
 {
     const LilvPlugin *plugin;
@@ -243,13 +268,15 @@ class Lv2Plugin : public Listable, public AudioSource, public EventSource, publi
     // control ports
     EventBuffer controlBuffer;
     std::map<std::string, Lv2ControlPort *> controlMap;
+    // worker
+    Lv2Worker *worker;
     // control connections
     std::map<EventConnection*,Lv2ControlConnection*> controlConnectionMap;
     QueueList<Lv2ControlConnection> controlConnections;
     boost::lockfree::spsc_queue<Lv2ControlMapping*> newControlMappingsQueue;
 public:
     static Lv2AtomTypes atomTypes;
-    Lv2Plugin(const LilvPlugin *plugin, LilvInstance *instance, const Lv2Constants &uris);
+    Lv2Plugin(const LilvPlugin *plugin, LilvInstance *instance, const Lv2Constants &uris, Lv2Worker *worker);
     ~Lv2Plugin();
     // public methods
     void connect(AudioSource &source);
@@ -293,7 +320,7 @@ class Lv2PluginCache : public ProcessorCache<std::string, Lv2Plugin>
     std::map<std::string, const LilvPlugin*> pluginMap;
     std::map<std::string, int> instanceCount;
     // for features
-    const LV2_Feature* lv2Features[6];
+    const LV2_Feature* lv2Features[7];
     std::map<std::string, bool> supported;
     // options feature
     jack_nframes_t blockLength;
@@ -303,6 +330,8 @@ class Lv2PluginCache : public ProcessorCache<std::string, Lv2Plugin>
     LV2_URID_Unmap unmap;
     Lv2PathMapper pathMapper;
     LV2_State_Map_Path mapPath;
+    // worker schedule feature
+    LV2_Worker_Schedule schedule;
     // use instance()
     Lv2PluginCache();
     void scriptReset() {
