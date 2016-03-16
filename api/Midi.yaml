@@ -173,7 +173,10 @@ classes :
       cppname: MidiBeatTracker
       include: beattracker
       ctor:
-        parameters: { name: bpm, type: float }
+        parameters:
+          - { name: bpm, type: float }
+          - { name: numerator, type: integer, optional: true }
+          - { name: denominator, type: integer, optional: true }
         expression: MidiBeatTrackerCache::instance().getMidiBeatTracker
       methods:
         - name: connectMidi

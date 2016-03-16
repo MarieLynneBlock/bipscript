@@ -1321,12 +1321,56 @@ SQInteger MidiBeatTrackerCtor(HSQUIRRELVM vm)
     }
 
     MidiBeatTracker *obj;
-    // call the implementation
-    try {
-        obj = MidiBeatTrackerCache::instance().getMidiBeatTracker(bpm);
+    // 2 parameters passed in
+    if(numargs == 3) {
+
+        // get parameter 2 "numerator" as integer
+        SQInteger numerator;
+        if (SQ_FAILED(sq_getinteger(vm, 3, &numerator))){
+            return sq_throwerror(vm, "argument 2 is not of type integer");
+        }
+
+        // call the implementation
+        try {
+            obj = MidiBeatTrackerCache::instance().getMidiBeatTracker(bpm, numerator);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
     }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
+
+    // 3 parameters passed in
+    else if(numargs == 4) {
+
+        // get parameter 2 "numerator" as integer
+        SQInteger numerator;
+        if (SQ_FAILED(sq_getinteger(vm, 3, &numerator))){
+            return sq_throwerror(vm, "argument 2 is not of type integer");
+        }
+
+        // get parameter 3 "denominator" as integer
+        SQInteger denominator;
+        if (SQ_FAILED(sq_getinteger(vm, 4, &denominator))){
+            return sq_throwerror(vm, "argument 3 is not of type integer");
+        }
+
+        // call the implementation
+        try {
+            obj = MidiBeatTrackerCache::instance().getMidiBeatTracker(bpm, numerator, denominator);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
+    }
+
+    else {
+        // call the implementation
+        try {
+            obj = MidiBeatTrackerCache::instance().getMidiBeatTracker(bpm);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
     }
 
     // return pointer to new object

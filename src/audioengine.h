@@ -104,7 +104,7 @@ public:
     void transportRelocate(jack_nframes_t frame) {
         jack_transport_locate(client, frame);
     }
-    TransportMaster *getTransportMaster(double bpm);
+    TransportMaster *getTransportMaster(double bpm, float beatsPerBar, float beatUnit);
     void releaseTransportMaster();
 };
 

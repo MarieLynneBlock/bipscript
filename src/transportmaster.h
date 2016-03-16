@@ -31,7 +31,8 @@ class TransportMaster
     double bpm;
     bool doForceBeat;
 public:
-    TransportMaster(double bpm) : beatsPerBar(4.0), beatUnit(4.0),
+    TransportMaster(double bpm, float beatsPerBar, float beatUnit) :
+        beatsPerBar(beatsPerBar), beatUnit(beatUnit),
         ticksPerBeat(1920.0), bpm(bpm), doForceBeat(false) {}
     ~TransportMaster();
     // void scheduleBpm(bpm, bar, position, division)
@@ -61,7 +62,13 @@ public:
         static TransportMasterCache instance;
         return instance;
     }
-    TransportMaster *getTransportMaster(float bpm);
+    TransportMaster *getTransportMaster(float bpm, float beatsPerBar, float beatUnit);
+    TransportMaster *getTransportMaster(float bpm, float beatsPerBar) {
+        return getTransportMaster(bpm, beatsPerBar, 4);
+    }
+    TransportMaster *getTransportMaster(float bpm) {
+        return getTransportMaster(bpm, 4);
+    }
     // object cache interface
     void process(bool, jack_position_t &, jack_nframes_t, jack_nframes_t) {}
     void reposition();

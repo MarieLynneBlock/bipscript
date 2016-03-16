@@ -85,13 +85,13 @@ void TransportMaster::setTime(jack_transport_state_t state, jack_nframes_t nfram
 /**
  * runs in script thread
  */
-TransportMaster *TransportMasterCache::getTransportMaster(float bpm)
+TransportMaster *TransportMasterCache::getTransportMaster(float bpm, float beatsPerBar, float beatUnit)
 {
     TransportMaster *cached = cachedMaster.load();
     if(cached) {
         cached->setBpm(bpm);
     } else {
-        cached = AudioEngine::instance().getTransportMaster(bpm);
+        cached = AudioEngine::instance().getTransportMaster(bpm, beatsPerBar, beatUnit);
         cachedMaster.store(cached);
     }
     active = true;

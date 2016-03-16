@@ -135,10 +135,10 @@ void timebase_callback(jack_transport_state_t state, jack_nframes_t nframes,
     ((TransportMaster*)arg)->setTime(state, nframes, pos, new_pos);
 }
 
-TransportMaster *AudioEngine::getTransportMaster(double bpm)
+TransportMaster *AudioEngine::getTransportMaster(double bpm, float beatsPerBar, float beatUnit)
 {
     if(!transportMaster) {
-        transportMaster = new TransportMaster(bpm);
+        transportMaster = new TransportMaster(bpm, beatsPerBar, beatUnit);
         int error = jack_set_timebase_callback(client, 0, &timebase_callback, transportMaster);
         if (error) {
             throw std::logic_error("Cannot create transport master");

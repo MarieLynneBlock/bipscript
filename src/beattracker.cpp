@@ -19,8 +19,8 @@
 #include "audioengine.h"
 #include <iostream>
 
-void BeatTracker::reset(double bpm) {
-    master = TransportMasterCache::instance().getTransportMaster(bpm);
+void BeatTracker::reset(double bpm, float beatsPerBar, float beatUnit) {
+    master = TransportMasterCache::instance().getTransportMaster(bpm, beatsPerBar, beatUnit);
     btrack.setTempo(bpm);
 }
 
@@ -54,13 +54,13 @@ void BeatTracker::process(bool rolling, jack_position_t &pos, jack_nframes_t nfr
 /**
  * runs in script thread
  */
-BeatTracker *BeatTrackerCache::getBeatTracker(float bpm)
+BeatTracker *BeatTrackerCache::getBeatTracker(float bpm, float beatsPerBar, float beatUnit)
 {
     BeatTracker *cached = cachedTracker.load();
     if(cached) {
-        cached->reset(bpm);
+        cached->reset(bpm, beatsPerBar, beatUnit);
     } else {
-        cached = new BeatTracker(bpm);
+        cached = new BeatTracker(bpm, beatsPerBar, beatUnit);
         cachedTracker.store(cached);
     }
     active = true;
@@ -273,10 +273,10 @@ void MidiBeatTracker::onCount(ScriptFunction &handler)
     onCountHandler.store(new ScriptFunction(handler));
 }
 
-void MidiBeatTracker::reset(double bpm)
+void MidiBeatTracker::reset(double bpm, float beatsPerBar, float beatUnit)
 {
     // set bpm on btrack and transport master
-    master = TransportMasterCache::instance().getTransportMaster(bpm);
+    master = TransportMasterCache::instance().getTransportMaster(bpm, beatsPerBar, beatUnit);
     btrack.setTempo(bpm);
     // reset note weights
     for(int i = 0; i < 128; i++) {
@@ -294,13 +294,13 @@ void MidiBeatTracker::reset(double bpm)
 /**
  * runs in script thread
  */
-MidiBeatTracker *MidiBeatTrackerCache::getMidiBeatTracker(float bpm)
+MidiBeatTracker *MidiBeatTrackerCache::getMidiBeatTracker(float bpm, float beatsPerBar, float beatUnit)
 {
     MidiBeatTracker *cached = cachedTracker.load();
     if(cached) {
-        cached->reset(bpm);
+        cached->reset(bpm, beatsPerBar, beatUnit);
     } else {
-        cached = new MidiBeatTracker(bpm);
+        cached = new MidiBeatTracker(bpm, beatsPerBar, beatUnit);
         cachedTracker.store(cached);
     }
     active = true;

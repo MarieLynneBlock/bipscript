@@ -36,14 +36,15 @@ class BeatTracker
     TransportMaster *master;
     std::atomic<AudioConnection *> audioInput;
 public:
-    BeatTracker(double bpm) : index(0), audioInput(0) {
+    BeatTracker(double bpm, float beatsPerBar, float beatUnit)
+        : index(0), audioInput(0) {
         btbuffer = new double[BT_HOP_SIZE];
-        reset(bpm);
+        reset(bpm, beatsPerBar, beatUnit);
     }
     void connect(AudioSource &source) {
         this->audioInput.store(source.getAudioConnection(0));
     }
-    void reset(double bpm);
+    void reset(double bpm, float beatsPerBar, float beatUnit);
     void reposition() {}
     void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
 };
@@ -58,7 +59,13 @@ public:
         static BeatTrackerCache instance;
         return instance;
     }
-    BeatTracker *getBeatTracker(float bpm);
+    BeatTracker *getBeatTracker(float bpm, float beatsPerBar, float beatUnit);
+    BeatTracker *getBeatTracker(float bpm, float beatsPerBar) {
+        return getBeatTracker(bpm, beatsPerBar, 4);
+    }
+    BeatTracker *getBeatTracker(float bpm) {
+        return getBeatTracker(bpm, 4);
+    }
     // object cache interface
     void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
     void reposition();
@@ -91,10 +98,10 @@ class MidiBeatTracker {
     std::atomic<uint32_t> stopSeconds;
     jack_nframes_t lastEventTime;
 public:
-    MidiBeatTracker(double bpm)
+    MidiBeatTracker(double bpm, float beatsPerBar, float beatUnit)
         : frameIndex(0), currentOnset(0), countInNote(0),
           countInCount(0), onCountHandler(0), lastEventTime(0) {
-        reset(bpm);
+        reset(bpm, beatsPerBar, beatUnit);
     }
     void connectMidi(EventSource &source) {
         this->midiInput.store(&source.getEventConnection(0));
@@ -103,7 +110,7 @@ public:
     void countIn(uint8_t note) { countInNote.store(note); }
     void onCount(ScriptFunction &handler);
     void stopOnSilence(uint32_t seconds) { stopSeconds.store(seconds); }
-    void reset(double bpm);
+    void reset(double bpm, float beatsPerBar, float beatUnit);
     void reposition() {}
     void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
 private:
@@ -122,7 +129,13 @@ public:
         static MidiBeatTrackerCache instance;
         return instance;
     }
-    MidiBeatTracker *getMidiBeatTracker(float bpm);
+    MidiBeatTracker *getMidiBeatTracker(float bpm, float beatsPerBar, float beatUnit);
+    MidiBeatTracker *getMidiBeatTracker(float bpm, float beatsPerBar) {
+        return getMidiBeatTracker(bpm, beatsPerBar, 4);
+    }
+    MidiBeatTracker *getMidiBeatTracker(float bpm) {
+        return getMidiBeatTracker(bpm, 4);
+    }
     // object cache interface
     void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
     void reposition();
