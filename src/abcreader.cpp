@@ -163,7 +163,7 @@ void ABCReader::startSequence(int format, int ntracks, int division)
 }
 
 void ABCReader::startTrack(uint32_t track) {
-    currentPosition = Position(1,1,1);
+    currentPosition = Position(1, 0, 1);
     activeTrack = track;
 }
 

@@ -26,7 +26,7 @@ class Time
 public:
     //static Position &now();
     static void schedule(ScriptFunction &function, unsigned int bar) {
-        schedule(function, bar, 1);
+        schedule(function, bar, 0);
     }
     static void schedule(ScriptFunction &function, unsigned int bar, unsigned int position) {
         schedule(function, bar, position, 4); // TODO: base it on time signature

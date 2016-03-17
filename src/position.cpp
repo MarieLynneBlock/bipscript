@@ -100,15 +100,11 @@ std::ostream& operator<< (std::ostream &out, Duration &duration)
 
 
 Position::Position(unsigned int bar, unsigned int position, unsigned int division) :
-    Duration(bar - 1, position - 1, division)
+    Duration(bar - 1, position, division)
 {
     if(bar == 0) {
         //std::cerr << "position = 0 at " << bar << ":0/" << division << std::endl;
         throw std::logic_error("there is no zero bar");
-    }
-    if(position == 0) {
-        //std::cerr << "position = 0 at " << bar << ":0/" << division << std::endl;
-        throw std::logic_error("zero is not a position");
     }
 }
 

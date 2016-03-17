@@ -50,15 +50,12 @@ public:
 class Position : public Duration
 {
 public:
-    Position() : Duration(0,1,1) {}
+    Position() : Duration(0, 0, 1) {}
     Position(unsigned int bar, unsigned int position, unsigned int division);
     friend std::ostream& operator<< (std::ostream &out, Position &pos);
     long calculateFrameOffset(jack_position_t &pos);
     unsigned int getBar() {
         return whole + 1;
-    }
-    unsigned int getPosition() {
-        return position + 1;
     }
     Position &operator +=(const Duration &duration);
     const Position operator+ (const Duration &duration) {

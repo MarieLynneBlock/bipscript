@@ -40,7 +40,7 @@ public:
         schedule(note, bar, position, 4); // TODO: current time signature
     }
     void schedule(Note &note, unsigned int bar) {
-        schedule(note, bar, 1);
+        schedule(note, bar, 0);
     }
     void schedule(const Note &note, Position &position, unsigned char channel);
     void schedule(Pattern &pattern, unsigned int bar, unsigned int position, unsigned int division, unsigned char channel) {
@@ -54,7 +54,7 @@ public:
         schedule(pattern, bar, position, 4); // TODO: current time signature
     }
     void schedule(Pattern &pattern, unsigned int bar) {
-        schedule(pattern, bar, 1);
+        schedule(pattern, bar, 0);
     }
     void schedule(Pattern &pattern, Position &position, unsigned char channel);
     void schedule(ProgramChange &programChange, uint32_t bar, uint32_t position, uint32_t division);

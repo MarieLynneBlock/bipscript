@@ -110,7 +110,7 @@ void processBar(int bar, const char *channel, const char* line, int len) {
             }
             //printf(" adding %s (=%d/%d) at %d:%d/%d\n", hit.c_str(), notenum, velocity, bar, i, len);
             Note note(notenum, velocity, 1, len);
-            pattern->addNote(note, bar, i + 1, len);
+            pattern->addNote(note, bar, i, len);
         }
     }
 }
