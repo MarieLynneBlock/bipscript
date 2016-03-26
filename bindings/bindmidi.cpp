@@ -24,6 +24,7 @@
 #include "midiport.h"
 #include "module_midi.h"
 #include "midiinputbuffer.h"
+#include "mmlreader.h"
 #include "miditune.h"
 #include "drumtabreader.h"
 #include "beattracker.h"
@@ -36,6 +37,7 @@ HSQOBJECT MidiInputObject;
 HSQOBJECT MidiNoteObject;
 HSQOBJECT MidiControlObject;
 HSQOBJECT MidiInputBufferObject;
+HSQOBJECT MidiMMLReaderObject;
 HSQOBJECT MidiPatternObject;
 HSQOBJECT MidiTuneObject;
 HSQOBJECT MidiOutputObject;
@@ -538,6 +540,69 @@ SQInteger MidiInputBufferlastControlValue(HSQUIRRELVM vm)
 
     // push return value
     sq_pushinteger(vm, ret);
+    return 1;
+}
+
+//
+// Midi.MMLReader class
+//
+SQInteger MidiMMLReaderCtor(HSQUIRRELVM vm)
+{
+    MMLReader *obj;
+    // call the implementation
+    try {
+        obj = new MMLReader();
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // return pointer to new object
+    sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
+    //sq_setreleasehook(vm, 1, release_hook);
+    return 1;
+}
+
+//
+// Midi.MMLReader read
+//
+SQInteger MidiMMLReaderread(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "read method needs an instance of MMLReader");
+    }
+    MMLReader *obj = static_cast<MMLReader*>(userPtr);
+
+    // get parameter 1 "mml" as string
+    const SQChar* mml;
+    if (SQ_FAILED(sq_getstring(vm, 2, &mml))){
+        return sq_throwerror(vm, "argument 1 is not of type string");
+    }
+
+    // return value
+    Pattern* ret;
+    // call the implementation
+    try {
+        ret = obj->read(mml);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushobject(vm, MidiPatternObject);
+    sq_createinstance(vm, -1);
+    sq_remove(vm, -2);
+    sq_setinstanceup(vm, -1, ret);
+    //sq_setreleasehook(vm, -1, &?);
+
     return 1;
 }
 
@@ -1672,6 +1737,25 @@ void bindMidi(HSQUIRRELVM vm)
     sq_newslot(vm, -3, false);
 
     // push InputBuffer to Midi package table
+    sq_newslot(vm, -3, false);
+
+    // create class Midi.MMLReader
+    sq_pushstring(vm, "MMLReader", -1);
+    sq_newclass(vm, false);
+    sq_getstackobj(vm, -1, &MidiMMLReaderObject);
+    sq_settypetag(vm, -1, &MidiMMLReaderObject);
+
+    // ctor for class MMLReader
+    sq_pushstring(vm, _SC("constructor"), -1);
+    sq_newclosure(vm, &MidiMMLReaderCtor, 0);
+    sq_newslot(vm, -3, false);
+
+    // methods for class MMLReader
+    sq_pushstring(vm, _SC("read"), -1);
+    sq_newclosure(vm, &MidiMMLReaderread, 0);
+    sq_newslot(vm, -3, false);
+
+    // push MMLReader to Midi package table
     sq_newslot(vm, -3, false);
 
     // create class Midi.Pattern

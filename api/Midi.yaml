@@ -82,6 +82,15 @@ classes :
           parameters:
             - {name: control, type: integer}
 
+    - name: MMLReader
+      include: mmlreader
+      ctor: {}
+      methods:
+        - name: read
+          returns: Midi.Pattern
+          parameters:
+            - {name: mml, type: string}
+
     - name: Pattern
       ctor:
         parameters:

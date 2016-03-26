@@ -31,20 +31,21 @@ Duration::Duration(unsigned int whole, unsigned int position, unsigned int divis
 
 void Duration::normalize()
 {
-    // std::cout << "normalized from " << *this;
     // over unity
     if(position >= division) {
             whole += position / division;
             position = position % division;
     }
-    // crude fraction simplification
-//    for(int factor = 7; factor > 1; factor--) {
-//        while(position % factor == 0 && division % factor == 0) {
-//            position /= factor;
-//            division /= factor;
-//        }
-//    }
-    // std::cout << " to " << *this << std::endl;
+    // reduce
+    if(division > MAX_DENOMINATOR) {
+        for(int factor = 7; factor > 1; factor--) {
+            while(position % factor == 0 && division % factor == 0) {
+                position /= factor;
+                division /= factor;
+            }
+        }
+    }
+	// TODO: round if still  > MAX_DENOMINATOR
 }
 
 bool Duration::operator<(Duration &other)

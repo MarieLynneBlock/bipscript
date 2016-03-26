@@ -22,6 +22,7 @@
 
 class Duration
 {
+    static const uint32_t MAX_DENOMINATOR = 384000; // frames in a measure 44.1k 60bpm
 protected:
     unsigned int whole;
     unsigned int position;

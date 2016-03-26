@@ -74,20 +74,21 @@ std::ostream& operator<< (std::ostream &out, MidiEvent &evt)
 {
     switch(evt.type) {
     case 0x80:
-        out << "NOTE OFF";
+        out << "NOTE OFF ";
         break;
     case 0x90:
-        out << "NOTE ON";
+        out << "NOTE ON ";
         break;
     case 0xB0:
-        out << "CONTROL";
+        out << "CONTROL ";
         break;
     default:
-        out << "UNK[" << (int)evt.type << "]";
+        out << "UNK[" << (int)evt.type << "] ";
         break;
     }
-    out << (unsigned int)evt.databyte1;
+    out << (unsigned int)evt.databyte1 << ":";
+    out << (unsigned int)evt.databyte2 << " ";
     out << (Position&)evt;
-    out << ":" << evt.getFrameOffset();
+    out << " (" << evt.getFrameOffset() << ")";
     return out;
 }
