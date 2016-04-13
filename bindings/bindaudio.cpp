@@ -22,7 +22,6 @@
 #include "mixer.h"
 #include "audioport.h"
 #include "audioengine.h"
-#include "stereoport.h"
 #include "beattracker.h"
 
 namespace binding {
@@ -531,10 +530,10 @@ SQInteger AudioStereoOutputCtor(HSQUIRRELVM vm)
         return sq_throwerror(vm, "argument 3 is not of type string");
     }
 
-    StereoOutput *obj;
+    AudioStereoOutput *obj;
     // call the implementation
     try {
-        obj = new StereoOutput(name, connectLeft, connectRight);
+        obj = new AudioStereoOutput(name, connectLeft, connectRight);
     }
     catch(std::exception const& e) {
         return sq_throwerror(vm, e.what());
@@ -561,7 +560,7 @@ SQInteger AudioStereoOutputconnect(HSQUIRRELVM vm)
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
         return sq_throwerror(vm, "connect method needs an instance of StereoOutput");
     }
-    StereoOutput *obj = static_cast<StereoOutput*>(userPtr);
+    AudioStereoOutput *obj = static_cast<AudioStereoOutput*>(userPtr);
 
     // get parameter 1 "source" as AudioSource
     SQUserPointer sourceTypeTag, sourcePtr = 0;

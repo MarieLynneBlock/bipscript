@@ -43,7 +43,7 @@ AudioInputPort *AudioInputPortCache::getAudioInputPort(const char *name, const c
         // auto connect output port
     }
     if (connection) {
-        port->systemConnect(name);
+        port->systemConnect(connection);
     }
     return port;
 }
@@ -93,3 +93,20 @@ AudioOutputPort *AudioOutputPortCache::getAudioOutputPort(const char* portName, 
     }
     return port;
 }
+
+AudioStereoOutput::AudioStereoOutput(std::string name, const char *connectLeft, const char *connectRight)
+{
+    portLeft = AudioOutputPortCache::instance().getAudioOutputPort((name + "L").c_str(), connectLeft);
+    portRight = AudioOutputPortCache::instance().getAudioOutputPort((name + "R").c_str(), connectRight);
+}
+
+void AudioStereoOutput::connect(AudioSource &source) {
+    if(source.getAudioOutputCount() == 1) {
+        portLeft->connect(source.getAudioConnection(0));
+        portRight->connect(source.getAudioConnection(0));
+    } else {
+        portLeft->connect(source.getAudioConnection(0));
+        portRight->connect(source.getAudioConnection(1));
+    }
+}
+

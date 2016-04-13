@@ -95,4 +95,13 @@ public:
     }
 };
 
+class AudioStereoOutput
+{
+    AudioOutputPort *portLeft;
+    AudioOutputPort *portRight;
+public:
+    void connect(AudioSource &source);
+    AudioStereoOutput(std::string name, const char *connectLeft, const char *connectRight);
+};
+
 #endif // AUDIOOUTPUT_H
