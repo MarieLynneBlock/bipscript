@@ -31,6 +31,9 @@ namespace binding
         if(typeTag ==  &AudioInputObject) {
             return static_cast<AudioInputPort*>(ptr);
         }
+        if(typeTag ==  &AudioStereoInputObject) {
+            return static_cast<AudioStereoInput*>(ptr);
+        }
         if(typeTag ==  &Lv2PluginObject) {
             return static_cast<Lv2Plugin*>(ptr);
         }        

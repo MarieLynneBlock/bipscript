@@ -83,6 +83,17 @@ classes :
         - { name: connection, type: string, optional: true }
         expression: AudioInputPortCache::instance().getAudioInputPort
 
+    - name: StereoInput
+      super:
+        - AudioSource
+      cppname: AudioStereoInput
+      include: audioport
+      ctor:
+        parameters:
+          - { name: name, type: string }
+          - { name: connectLeft, type: string }
+          - { name: connectRight, type: string }
+
     - name: StereoOutput
       cppname: AudioStereoOutput
       include: audioport

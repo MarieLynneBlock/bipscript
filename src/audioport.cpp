@@ -110,3 +110,25 @@ void AudioStereoOutput::connect(AudioSource &source) {
     }
 }
 
+void AudioStereoInput::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
+{
+    portLeft->process(rolling, pos, nframes, time);
+    portRight->process(rolling, pos, nframes, time);
+}
+
+AudioStereoInput::AudioStereoInput(std::string name, const char *connectLeft, const char *connectRight)
+{
+    portLeft = AudioInputPortCache::instance().getAudioInputPort((name + "L").c_str(), connectLeft);
+    portRight = AudioInputPortCache::instance().getAudioInputPort((name + "R").c_str(), connectRight);
+}
+
+AudioConnection *AudioStereoInput::getAudioConnection(unsigned int index)
+{
+    if(index == 0) {
+        return portLeft->getAudioConnection(0);
+    } else if(index == 1) {
+        return portRight->getAudioConnection(0);
+    } else {
+        throw std::logic_error("stereo port has only two connections");
+    }
+}

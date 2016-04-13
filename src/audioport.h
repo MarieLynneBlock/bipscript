@@ -104,4 +104,18 @@ public:
     AudioStereoOutput(std::string name, const char *connectLeft, const char *connectRight);
 };
 
+class AudioStereoInput : public AudioSource
+{
+    AudioInputPort *portLeft;
+    AudioInputPort *portRight;
+public:
+    AudioStereoInput(std::string name, const char *connectLeft, const char *connectRight);
+    // Source interface
+    bool connectsTo(Source *) { return false; }
+    void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
+    // AudioSource interface
+    unsigned int getAudioOutputCount() { return 2; }
+    AudioConnection *getAudioConnection(unsigned int index);
+};
+
 #endif // AUDIOOUTPUT_H

@@ -30,6 +30,7 @@ namespace binding {
 HSQOBJECT AudioMixerObject;
 HSQOBJECT AudioOutputObject;
 HSQOBJECT AudioInputObject;
+HSQOBJECT AudioStereoInputObject;
 HSQOBJECT AudioStereoOutputObject;
 HSQOBJECT AudioBeatTrackerObject;
 
@@ -503,6 +504,49 @@ SQInteger AudioInputCtor(HSQUIRRELVM vm)
 }
 
 //
+// Audio.StereoInput class
+//
+SQInteger AudioStereoInputCtor(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 4) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 3");
+    }
+    // get parameter 1 "name" as string
+    const SQChar* name;
+    if (SQ_FAILED(sq_getstring(vm, 2, &name))){
+        return sq_throwerror(vm, "argument 1 is not of type string");
+    }
+
+    // get parameter 2 "connectLeft" as string
+    const SQChar* connectLeft;
+    if (SQ_FAILED(sq_getstring(vm, 3, &connectLeft))){
+        return sq_throwerror(vm, "argument 2 is not of type string");
+    }
+
+    // get parameter 3 "connectRight" as string
+    const SQChar* connectRight;
+    if (SQ_FAILED(sq_getstring(vm, 4, &connectRight))){
+        return sq_throwerror(vm, "argument 3 is not of type string");
+    }
+
+    AudioStereoInput *obj;
+    // call the implementation
+    try {
+        obj = new AudioStereoInput(name, connectLeft, connectRight);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // return pointer to new object
+    sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
+    //sq_setreleasehook(vm, 1, release_hook);
+    return 1;
+}
+
+//
 // Audio.StereoOutput class
 //
 SQInteger AudioStereoOutputCtor(HSQUIRRELVM vm)
@@ -722,6 +766,21 @@ void bindAudio(HSQUIRRELVM vm)
 
     // methods for class Input
     // push Input to Audio package table
+    sq_newslot(vm, -3, false);
+
+    // create class Audio.StereoInput
+    sq_pushstring(vm, "StereoInput", -1);
+    sq_newclass(vm, false);
+    sq_getstackobj(vm, -1, &AudioStereoInputObject);
+    sq_settypetag(vm, -1, &AudioStereoInputObject);
+
+    // ctor for class StereoInput
+    sq_pushstring(vm, _SC("constructor"), -1);
+    sq_newclosure(vm, &AudioStereoInputCtor, 0);
+    sq_newslot(vm, -3, false);
+
+    // methods for class StereoInput
+    // push StereoInput to Audio package table
     sq_newslot(vm, -3, false);
 
     // create class Audio.StereoOutput

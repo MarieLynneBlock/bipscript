@@ -25,6 +25,7 @@ namespace binding
 extern HSQOBJECT AudioMixerObject;
 extern HSQOBJECT AudioOutputObject;
 extern HSQOBJECT AudioInputObject;
+extern HSQOBJECT AudioStereoInputObject;
 extern HSQOBJECT AudioStereoOutputObject;
 extern HSQOBJECT AudioBeatTrackerObject;
 }
