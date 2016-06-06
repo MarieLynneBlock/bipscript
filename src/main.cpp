@@ -33,12 +33,14 @@
 #include "midiinputbuffer.h"
 #include "audioport.h"
 #include "beattracker.h"
+#include "extension.h"
 
 namespace fs = boost::filesystem;
 
 void signal_handler(int sig)
 {
     std::cerr << "caught signal " << sig << ", exiting" << std::endl;
+    ExtensionManager::instance().shutdown();
     AudioEngine::instance().shutdown();
     exit(0);
 }

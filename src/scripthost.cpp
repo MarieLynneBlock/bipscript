@@ -24,6 +24,7 @@
 #include "bindings.h"
 
 #include "scripthost.h"
+#include "extension.h"
 #include "audioengine.h"
 #include "objectcollector.h"
 #include <iostream>
@@ -116,6 +117,9 @@ bool ScriptHost::waitForRestart(HSQOBJECT &context)
         }
     }
     if(!activeObjects) {
+        activeObjects = ExtensionManager::instance().scriptComplete();
+    }
+    if(!activeObjects) {
         return false;
     }
     while(true) {
@@ -151,6 +155,14 @@ int ScriptHost::run() {
     sq_setprintfunc(vm, squirrel_print_function, squirrel_print_function);
     // standard library modules
     sq_pushroottable(vm);
+    // load extensions first
+    try {
+        ExtensionManager::instance().bindAll(vm);
+    }
+    catch(std::logic_error e) {
+        std::cerr << "warning: extension loading failed: " << e.what() << std::endl;
+    }
+    // standard library modules
     sqstd_register_mathlib(vm);
     sqstd_register_iolib(vm);
     // add local modules to squirrel
@@ -223,6 +235,8 @@ int ScriptHost::run() {
         // wait for restart
         rerun = waitForRestart(freshRunTable);
     }
+    // shut down extensions
+    ExtensionManager::instance().shutdown();
     // shut down squirrel
     sq_close(vm);
     return 0;
