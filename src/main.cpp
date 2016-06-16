@@ -33,6 +33,7 @@
 #include "midiinputbuffer.h"
 #include "audioport.h"
 #include "beattracker.h"
+#include "oscoutput.h"
 #include "extension.h"
 
 namespace fs = boost::filesystem;
@@ -41,6 +42,7 @@ void signal_handler(int sig)
 {
     std::cerr << "caught signal " << sig << ", exiting" << std::endl;
     ExtensionManager::instance().shutdown();
+    OscOutputFactory::instance().shutdown();
     AudioEngine::instance().shutdown();
     exit(0);
 }
@@ -80,9 +82,10 @@ int main(int argc, char **argv)
                             &MidiInputBufferCache::instance(),
                             &TransportMasterCache::instance(),
                             &BeatTrackerCache::instance(),
-                            &MidiBeatTrackerCache::instance()
+                            &MidiBeatTrackerCache::instance(),
+                            &OscOutputFactory::instance()
                             };
-    host.setObjectCaches(8, caches);
+    host.setObjectCaches(9, caches);
 
     // create and  start audioengine
     AudioEngine &audioEngine = AudioEngine::instance();

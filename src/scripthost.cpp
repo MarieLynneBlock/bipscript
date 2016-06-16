@@ -36,34 +36,30 @@ void ScriptHost::process(bool rolling, jack_position_t &pos, jack_nframes_t nfra
     }
 }
 
-void ScriptHost::objectReposition(bool final)
-{
-    for(uint16_t i = 0; i < objectCacheCount; i++) {
-        objectCacheList[i]->reposition();
-    }
-}
-
 // from the API docs: TRUE (non-zero) when ready to roll
 bool ScriptHost::reposition(uint16_t attempt)
 {
-    if(running.load()) {
-        if(!attempt) {
-            // notify script thread
+    if(!attempt) { // first run- notify
+        if(running.load()) {
             abort.store(true);
         }
-        this->objectReposition(false); // kill some time
+        for(uint16_t i = 0; i < objectCacheCount; i++) {
+            objectCacheList[i]->reposition();
+        }
     }
-
     // check that the script is ready
     if(running.load()) {
         return false; // it's not
     }
-
-    this->objectReposition(true); // final object reposition
+    // check script objects are ready
+    for(uint16_t i = 0; i < objectCacheCount; i++) {
+        if(!objectCacheList[i]->repositionComplete()) {
+            return false;
+        }
+    }
+    // ready to roll
     abort.store(false);
     restart.store(true);
-
-    // ready to roll
     return true;
 }
 
@@ -171,6 +167,7 @@ int ScriptHost::run() {
     binding::bindMidi(vm);
     binding::bindLv2(vm);    
     binding::bindIO(vm);
+    binding::bindOsc(vm);
     binding::bindTime(vm);
     binding::bindMath(vm);
     binding::bindSystem(vm);

@@ -14,22 +14,33 @@
  * You should have received a copy of the GNU General Public License
  * along with Bipscript.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef BINDINGS_H
-#define BINDINGS_H
+#ifndef OSCMESSAGE_H
+#define OSCMESSAGE_H
 
-#include "squirrel.h"
+#include "event.h"
 
-namespace binding
+#include <string>
+
+class OscMessage
 {
-    // package binding methods
-    void bindAudio(HSQUIRRELVM vm);
-    void bindIO(HSQUIRRELVM vm);
-    void bindLv2(HSQUIRRELVM vm);
-    void bindMath(HSQUIRRELVM vm);
-    void bindMidi(HSQUIRRELVM vm);
-    void bindOsc(HSQUIRRELVM vm);
-    void bindSystem(HSQUIRRELVM vm);
-    void bindTime(HSQUIRRELVM vm);
-}
+    std::string path;
+public:
+    OscMessage(std::string path)
+        : path(path) {}
+    const char *getPath() {
+        return path.c_str();
+    }
+};
 
-#endif // BINDINGS_H
+class OscEvent : public Event
+{
+    OscMessage message;
+public:
+    OscEvent(Position &pos, OscMessage &message)
+        : Event(pos), message(message) {}
+    OscMessage &getMessage() {
+        return message;
+    }
+};
+
+#endif // OSCMESSAGE_H

@@ -36,6 +36,8 @@ public:
     /**
      * Called after the script has completed so factories can reset for the next run.
      *
+     * Returns true if there are active objects and the application should stay alive.
+     *
      * Runs in the script thread.
      */
     virtual bool scriptComplete() = 0;
@@ -45,6 +47,14 @@ public:
      * Runs in the process thread.
      */
     virtual void reposition() = 0;
+    /**
+     * Called after a reposition has been requested until all objects return true.
+     *
+     * Returns true when the reposition is complete.
+     *
+     * Runs in the process thread.
+     */
+    virtual bool repositionComplete() = 0;
 };
 
 template <class K, class T> class ProcessorCache : public ObjectCache
@@ -146,6 +156,11 @@ public:
             obj->reposition();
             obj = activeProcessObjects.getNext(obj);
         }
+    }
+
+    bool repositionComplete()
+    {
+        return true;
     }
 
 };

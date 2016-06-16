@@ -69,6 +69,7 @@ public:
     // object cache interface
     void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
     void reposition();
+	bool repositionComplete() { return true; }
     bool scriptComplete();
 };
 
@@ -139,6 +140,7 @@ public:
     // object cache interface
     void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
     void reposition();
+	bool repositionComplete() { return true; }
     bool scriptComplete();
 };
 

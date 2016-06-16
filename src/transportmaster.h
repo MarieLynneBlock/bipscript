@@ -72,6 +72,7 @@ public:
     // object cache interface
     void process(bool, jack_position_t &, jack_nframes_t, jack_nframes_t) {}
     void reposition();
+	bool repositionComplete() { return true; }
     bool scriptComplete();
 };
 
