@@ -24,6 +24,24 @@ classes:
       ctor:
         parameters:
         - { name: path, type: string }
+      methods:
+        - name: add
+          parameters:
+          - { name: value, type: integer }
+          cppname: addInteger
+        - name: add
+          parameters:
+          - { name: value, type: float }
+          cppname: addFloat
+        - name: add
+          parameters:
+          - { name: value, type: string }
+          cppname: addString
+        - name: add
+          parameters:
+          - { name: value, type: bool }
+          cppname: addBoolean
+
 
     - name: Output
       cppname: OscOutput

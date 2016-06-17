@@ -65,8 +65,24 @@ void OscOutput::run()
 
             OscEvent *event = static_cast<OscEvent*>(eventBuffer.getNextEvent(rolling, jack_pos, nframes));
             while(event) {
-                std::cout << "sending OSC: " << event->getMessage().getPath() << std::endl;
-                lo_send(loAddress, event->getMessage().getPath(), 0);
+                OscMessage &message = event->getMessage();
+                lo_message mesg = lo_message_new();
+                for(int i = 0; i < message.getParameterCount(); i++) {
+                    OscParameter param = message.getParameter(i);
+                    if(param.type == 'i') {
+                        lo_message_add_int32(mesg, param.value.intValue);
+                    } else if(param.type == 'f') {
+                        lo_message_add_float(mesg, param.value.floatValue);
+                    } else if(param.type == 's') {
+                        lo_message_add_string(mesg, param.value.stringValue);
+                    } else if(param.type == 'T') {
+                        lo_message_add_true(mesg);
+                    } else if(param.type == 'F') {
+                        lo_message_add_false(mesg);
+                    }
+                }
+                lo_send_message (loAddress, event->getMessage().getPath(), mesg);
+                lo_message_free (mesg);
                 ObjectCollector::instance()->recycle(event);
                 event = static_cast<OscEvent*>(eventBuffer.getNextEvent(rolling, jack_pos, nframes));
             }

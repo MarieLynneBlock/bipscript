@@ -18,10 +18,11 @@
 #define OBJECTCOLLECTOR_H
 
 #include "eventlist.h"
+#include <boost/lockfree/queue.hpp>
 
 class ObjectCollector
 {
-    boost::lockfree::spsc_queue<Listable*> objectQueue; // script thread -> collector thread
+    boost::lockfree::queue<Listable*> objectQueue; // script thread -> collector thread
     ListImpl waitingList;
     // singleton
     ObjectCollector() : objectQueue(4096) {}

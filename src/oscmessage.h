@@ -21,14 +21,49 @@
 
 #include <string>
 
+struct OscParameter
+{
+    char type;
+    union {
+        int intValue;
+        float floatValue;
+        const char *stringValue;
+    } value;
+    OscParameter(char type) : type(type) {}
+};
+
 class OscMessage
 {
     std::string path;
+    std::vector<OscParameter> parameters;
 public:
     OscMessage(std::string path)
         : path(path) {}
-    const char *getPath() {
-        return path.c_str();
+    const char *getPath() { return path.c_str(); }
+    void addInteger(int value) {
+        OscParameter param('i');
+        param.value.intValue = value;
+        parameters.push_back(param);
+    }
+    void addFloat(float value) {
+        OscParameter param('f');
+        param.value.floatValue = value;
+        parameters.push_back(param);
+    }
+    void addString(const char *value) {
+        OscParameter param('s');
+        param.value.stringValue = value;
+        parameters.push_back(param);
+    }
+    void addBoolean(bool value) {
+        OscParameter param(value ? 'T' : 'F');
+        parameters.push_back(param);
+    }
+    int getParameterCount() {
+        return parameters.size();
+    }
+    OscParameter getParameter(int i) {
+        return parameters[i];
     }
 };
 

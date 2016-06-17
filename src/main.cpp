@@ -110,6 +110,8 @@ int main(int argc, char **argv)
     status = host.run();
 
     // script has ended
+    ExtensionManager::instance().shutdown();
+    OscOutputFactory::instance().shutdown();
     audioEngine.shutdown();
     return status;
 }
