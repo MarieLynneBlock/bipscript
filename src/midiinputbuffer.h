@@ -49,7 +49,7 @@ public:
     void reposition() {}
 };
 
-class MidiInputBufferCache : public ProcessorCache<EventSource *, MidiInputBuffer>
+class MidiInputBufferCache : public ProcessorCache<MidiInputBuffer>
 {
     MidiInputBuffer *createObject(EventSource *source) {
         return new MidiInputBuffer(*source);
@@ -59,9 +59,7 @@ public:
         static MidiInputBufferCache instance;
         return instance;
     }
-    MidiInputBuffer *getMidiInputBuffer(EventSource &source) {
-        return getObject(&source);
-    }
+    MidiInputBuffer *getMidiInputBuffer(EventSource &source);
 };
 
 #endif // MIDIINPUTBUFFER_H

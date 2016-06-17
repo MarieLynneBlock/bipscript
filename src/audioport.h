@@ -81,9 +81,8 @@ public:
     void systemConnect(const char *connection);
 };
 
-class AudioOutputPortCache : public ProcessorCache<std::string, AudioOutputPort>
+class AudioOutputPortCache : public ProcessorCache<AudioOutputPort>
 {
-    AudioOutputPort *createObject(std::string key);
 public:
     static AudioOutputPortCache &instance() {
         static AudioOutputPortCache instance;

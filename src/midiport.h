@@ -98,9 +98,8 @@ public:
     void systemConnect(const char *connection);
 };
 
-class MidiOutputPortCache : public ProcessorCache<std::string, MidiOutputPort>
+class MidiOutputPortCache : public ProcessorCache<MidiOutputPort>
 {
-    MidiOutputPort *createObject(std::string key);
 public:
     static MidiOutputPortCache &instance() {
         static MidiOutputPortCache instance;

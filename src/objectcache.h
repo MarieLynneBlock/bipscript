@@ -57,31 +57,19 @@ public:
     virtual bool repositionComplete() = 0;
 };
 
-template <class K, class T> class ProcessorCache : public ObjectCache
+template <class T> class ProcessorCache : public ObjectCache
 {
-    std::map<K, T*> instanceMap;
+    std::map<int, T*> instanceMap;
     std::set<T*> activeScriptObjects;
     QueueList<T> activeProcessObjects;
     boost::lockfree::spsc_queue<T*> deletedObjects;
-    virtual T *createObject(K) { return 0; }
     virtual void scriptReset() {}
 protected:
     ProcessorCache() : activeProcessObjects(16), deletedObjects(4) {}
-    T *getObject(K key)
-    {
-        T *obj = instanceMap[key];
-        if (!obj) {
-            obj = createObject(key);
-            instanceMap[key] = obj;
-            activeProcessObjects.add(obj);
-        }
-        activeScriptObjects.insert(obj);
-        return obj;
-    }
     /**
-     * used by subclasses that don't implement createObject
+     * find an existing object with this key
      */
-    T *findObject(K key) {
+    T *findObject(int key) {
         T *ret = instanceMap[key];
         if(ret) {
             activeScriptObjects.insert(ret);
@@ -89,12 +77,12 @@ protected:
         return ret;
     }
     /**
-     * used by subclasses that don't implement createObject
+     * add a new object with key
      */
-    void registerObject(std::string &key, T *obj) {
-        activeScriptObjects.insert(obj);
-        activeProcessObjects.add(obj);
+    void registerObject(int key, T *obj) {
         instanceMap[key] = obj;
+        activeProcessObjects.add(obj);
+        activeScriptObjects.insert(obj);
     }
 
 public:

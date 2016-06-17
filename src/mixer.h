@@ -121,9 +121,9 @@ private:
     void validateOutputChannel(uint32_t output);
 };
 
-class MixerCache : public ProcessorCache<std::string, Mixer>
+class MixerCache : public ProcessorCache<Mixer>
 {
-    std::map<std::string, int> instanceCount;
+    std::map<int, int> instanceCount;
     void scriptReset() {
         instanceCount.clear();
     }

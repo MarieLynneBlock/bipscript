@@ -434,12 +434,13 @@ void Mixer::validateOutputChannel(uint32_t output)
  */
 Mixer *MixerCache::getMixer(uint16_t inputs, uint16_t outputs)
 {
-    std::string ioString(std::to_string(inputs) + ":" + std::to_string(outputs));
+	// TODO: better hash
+    int ioHash = ((int)inputs << 4) | ((int)outputs << 16);
     // count tells how many instances of this mixer io shape
-    int count = instanceCount[ioString];
-    instanceCount[ioString] = count + 1;
+    int count = instanceCount[ioHash];
+    instanceCount[ioHash] = count + 1;
     // key for this mixer instance
-    std::string key = ioString + ":" + std::to_string(count);
+    int key = ioHash + count;
     Mixer *mixer = findObject(key);
     if (mixer) {
         mixer->restore();

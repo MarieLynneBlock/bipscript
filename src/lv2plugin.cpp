@@ -410,6 +410,17 @@ const void *Lv2State::retrieveState(uint32_t key, size_t *size, uint32_t *type, 
     }
 }
 
+const int Lv2State::getHash()
+{
+    int hash = 0;
+    for(auto const &entry : stateMap) {
+        hash = hash ^ (entry.first << 1);
+        int valueHash = std::hash<std::string>()(entry.second);
+        hash = hash ^ (valueHash << 1);
+    }
+    return hash;
+}
+
 void *run_worker(void *arg)
 {
     ((Lv2Worker*)arg)->run();
@@ -817,20 +828,20 @@ Lv2PluginCache::Lv2PluginCache() : world(lilv_world_new()), lv2Constants(world) 
 Lv2Plugin *Lv2PluginCache::getPlugin(const char *uri, const char *preset, Lv2State *state) {
     // create a unique key for uri/preset/state
     std::string keyString(uri);
-    keyString.append(":");
     if(preset) {
+        keyString.append(":");
         keyString.append(preset);
     }
-    keyString.append(":");
+    std::size_t hash = std::hash<std::string>()(keyString);
     if(state) {
-        keyString.append(state->getHash());
+        hash = hash ^ (state->getHash() << 1);
     }
 
     // count tells how many instances of this type of plugin
-    int count = ++instanceCount[keyString];
+    int count = ++instanceCount[hash];
 
     // return cached plugin instance if available
-    std::string key = keyString + ":" + std::to_string(count);
+    int key = hash + count;
     Lv2Plugin *cachedPlugin = findObject(key);
     if(cachedPlugin) {
         cachedPlugin->restore();

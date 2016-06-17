@@ -74,20 +74,20 @@ void AudioOutputPort::systemConnect(const char *connection) {
     }
 }
 
-AudioOutputPort *AudioOutputPortCache::createObject(std::string key)
-{
-    // create system port
-    jack_port_t *jackPort = AudioEngine::instance().registerAudioOutputPort(key.c_str());
-    if(!jackPort) {
-        throw std::logic_error(std::string("Failed to register port ") + key);
-    }
-    return new AudioOutputPort(jackPort);
-}
-
 AudioOutputPort *AudioOutputPortCache::getAudioOutputPort(const char* portName, const char* connection)
 {
+    int key = std::hash<std::string>()(portName);
     // see if port already exists in map
-    AudioOutputPort *port = getObject(portName);
+    AudioOutputPort *port = findObject(key);
+    if(!port) {
+        // create system port
+        jack_port_t *jackPort = AudioEngine::instance().registerAudioOutputPort(portName);
+        if(!jackPort) {
+            throw std::logic_error(std::string("Failed to register port ") + portName);
+        }
+        port = new AudioOutputPort(jackPort);
+		registerObject(key, port);
+    }
     if(connection) {
         port->systemConnect(connection);
     }

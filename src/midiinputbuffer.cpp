@@ -183,3 +183,15 @@ void MidiInputBuffer::processAll(bool rolling, jack_position_t &pos, jack_nframe
 //    }
 //    pthread_mutex_unlock(&activeMutex);
 }
+
+
+MidiInputBuffer *MidiInputBufferCache::getMidiInputBuffer(EventSource &source) {
+    // hash on pointer
+    int key = static_cast<int>(reinterpret_cast<intptr_t>(&source));
+    MidiInputBuffer *inputBuffer = findObject(key);
+    if(!inputBuffer) {
+        inputBuffer = new MidiInputBuffer(source);
+        registerObject(key, inputBuffer);
+    }
+    return inputBuffer;
+}

@@ -81,20 +81,20 @@ void MidiOutputPort::systemConnect(const char *connection) {
     }
 }
 
-MidiOutputPort *MidiOutputPortCache::createObject(std::string key)
-{
-    // create system port
-    jack_port_t *jackPort = AudioEngine::instance().registerMidiOutputPort(key.c_str());
-    if(!jackPort) {
-        throw std::logic_error(std::string("Failed to register port ") + key);
-    }
-    return new MidiOutputPort(jackPort);
-}
-
 MidiOutputPort *MidiOutputPortCache::getMidiOutputPort(const char* portName, const char* connection)
 {
+    int key = std::hash<std::string>()(portName);
     // see if port already exists in map
-    MidiOutputPort *port = getObject(portName);
+    MidiOutputPort *port = findObject(key);
+    if(!port) {
+        // create system port
+        jack_port_t *jackPort = AudioEngine::instance().registerMidiOutputPort(portName);
+        if(!jackPort) {
+            throw std::logic_error(std::string("Failed to register port ") + portName);
+        }
+        port = new MidiOutputPort(jackPort);
+        registerObject(key, port);
+    }
     if(connection) {
         port->systemConnect(connection);
     }

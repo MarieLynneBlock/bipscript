@@ -223,9 +223,7 @@ public:
     Lv2State(const char *filename);
     Lv2State(ScriptHashIterator &state);
     const void* retrieveState(uint32_t key, size_t* size, uint32_t* type, uint32_t* flags);
-    const char* getHash() {
-        return "statehash"; // TODO: implement
-    }
+    const int getHash();
 };
 
 class Lv2Worker
@@ -310,7 +308,7 @@ private:
     void print();
 };
 
-class Lv2PluginCache : public ProcessorCache<std::string, Lv2Plugin>
+class Lv2PluginCache : public ProcessorCache<Lv2Plugin>
 {
     LilvWorld* world;
     const LilvPlugins* plugins; // lilv_world_get_all_plugins
@@ -318,7 +316,7 @@ class Lv2PluginCache : public ProcessorCache<std::string, Lv2Plugin>
     const Lv2Constants lv2Constants;
     // for caching
     std::map<std::string, const LilvPlugin*> pluginMap;
-    std::map<std::string, int> instanceCount;
+    std::map<int, int> instanceCount;
     // for features
     const LV2_Feature* lv2Features[7];
     std::map<std::string, bool> supported;
