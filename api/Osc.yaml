@@ -56,3 +56,5 @@ classes:
           parameters:
             - {name: message, type: Osc.Message}
             - {name: bar, type: integer}
+            - {name: position, type: integer, optional: true }
+            - {name: division, type: integer, optional: true }

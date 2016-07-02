@@ -267,12 +267,56 @@ SQInteger OscOutputschedule(HSQUIRRELVM vm)
         return sq_throwerror(vm, "argument 2 is not of type integer");
     }
 
-    // call the implementation
-    try {
-        obj->schedule(*message, bar);
+    // 3 parameters passed in
+    if(numargs == 4) {
+
+        // get parameter 3 "position" as integer
+        SQInteger position;
+        if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
+            return sq_throwerror(vm, "argument 3 is not of type integer");
+        }
+
+        // call the implementation
+        try {
+            obj->schedule(*message, bar, position);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
     }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
+
+    // 4 parameters passed in
+    else if(numargs == 5) {
+
+        // get parameter 3 "position" as integer
+        SQInteger position;
+        if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
+            return sq_throwerror(vm, "argument 3 is not of type integer");
+        }
+
+        // get parameter 4 "division" as integer
+        SQInteger division;
+        if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
+            return sq_throwerror(vm, "argument 4 is not of type integer");
+        }
+
+        // call the implementation
+        try {
+            obj->schedule(*message, bar, position, division);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
+    }
+
+    else {
+        // call the implementation
+        try {
+            obj->schedule(*message, bar);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
     }
 
     // void method, returns no value

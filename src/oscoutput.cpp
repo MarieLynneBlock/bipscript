@@ -41,9 +41,9 @@ OscOutput::OscOutput(const char *host, int port) : cancelled(false)
     }
 }
 
-void OscOutput::schedule(OscMessage &message, int bar)
+void OscOutput::schedule(OscMessage &message, int bar, int position, int division)
 {
-    Position pos(bar, 0, 1);
+    Position pos(bar, position, division);
     eventBuffer.addEvent(new OscEvent(pos, message));
 }
 

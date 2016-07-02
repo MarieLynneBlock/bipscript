@@ -34,7 +34,13 @@ class OscOutput : public Listable
     EventBuffer eventBuffer;
 public:
     OscOutput(const char *host, int port);
-    void schedule(OscMessage &message, int bar);
+    void schedule(OscMessage &message, int bar, int position, int division);
+    void schedule(OscMessage &message, int bar, int position) {
+        schedule(message, bar, position, 4); // TODO: current time signature?
+    }
+    void schedule(OscMessage &message, int bar) {
+        schedule(message, bar, 0);
+    }
     void run();
     void reset();
     void reposition() { repositionNeeded.store(true); }
