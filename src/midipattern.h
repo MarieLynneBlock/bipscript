@@ -53,9 +53,7 @@ public:
     unsigned int getSize() {
         return noteList.size();
     }
-    Note *getNote(uint32_t index) {
-        return noteList[index].getNote();
-    }
+    Note *getNote(uint32_t index);
     const PatternNote &get(unsigned int index) {
         return noteList[index];
     }

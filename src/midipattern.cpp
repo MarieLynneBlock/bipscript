@@ -30,6 +30,16 @@ void Pattern::addNote(Note &note, Position &position) {
     noteList.push_back(PatternNote(note, position));
 }
 
+Note *Pattern::getNote(uint32_t index) {
+    if(index >= noteList.size()) {
+        std::string error("pattern has ");
+        error.append(std::to_string(index));
+        error.append(" notes");
+        throw std::logic_error(error);
+    }
+    return noteList[index].getNote();
+}
+
 std::string Pattern::print() {
     std::stringstream sstream;
     sstream << noteList.size() << " events" << std::endl;
