@@ -102,6 +102,7 @@ int lineposition;		/* [SS] 2011-07-18 */
 char timesigstring[16];		/* [SS] 2011-08-19 links with stresspat.c */
 
 int nokey = 0;			/* K: none was encountered */
+int nokeysig = 0;               /* links with toabc.c [SS] 2016-03-03 */
 int chord_n, chord_m;		/* for event_chordoff */
 int fileline_number = 1;
 int intune = 1;
@@ -1129,6 +1130,7 @@ parsekey (str)
   modeindex = 0;
   explict = 0;
   modnotes = 0;
+  nokey = nokeysig; /* [SS] 2016-03-03 */
   for (i = 0; i < 7; i++)
     {
       modmap[i] = ' ';
@@ -2045,7 +2047,12 @@ parsefield (key, field)
 	      };
 	    if ((num != 0) && (denom != 0))
 	      {
-		event_timesig (num, denom, 1);
+		/* [code contributed by Larry Myerscough 2015-11-5]
+		 * Specify checkbars = 1 for numeric time signature
+		 * or checkbars = 2 for 'common' time signature to
+		 * remain faithful to style of input abc file.
+		 */
+		event_timesig (num, denom, 1 + ((*place == 'C') || (*place == 'c')));
 	      };
 	  };
 	break;
