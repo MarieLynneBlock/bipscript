@@ -45,7 +45,7 @@ public:
     bool operator< (Duration &other);
     bool operator<= (Duration &other);
     const Duration operator+ (Duration &other);
-    const Duration operator- (Duration &other);
+    const Duration operator- (const Duration &other);
 };
 
 class Position : public Duration

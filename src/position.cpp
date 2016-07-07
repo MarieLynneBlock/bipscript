@@ -70,8 +70,7 @@ bool Duration::operator<=(Duration &other)
     return false;
 }
 
-
-const Duration Duration::operator-(Duration &other)
+const Duration Duration::operator-(const Duration &other)
 {
     Duration result = *this;
     if(result.division == other.division) {

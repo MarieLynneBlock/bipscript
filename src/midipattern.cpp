@@ -44,7 +44,7 @@ std::string Pattern::print() {
     std::stringstream sstream;
     sstream << noteList.size() << " events" << std::endl;
     for(auto it = noteList.begin(); it != noteList.end(); it++) {
-        sstream << "N" << it->note.note;
+        sstream << "N" << it->note.pitch;
         sstream << " duration " << it->note.duration;
         sstream << " " << it->position;
         sstream << std::endl;

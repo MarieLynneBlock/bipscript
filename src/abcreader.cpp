@@ -164,6 +164,7 @@ void ABCReader::startSequence(int format, int ntracks, int division)
 
 void ABCReader::startTrack(uint32_t track) {
     currentPosition = Position(1, 0, 1);
+    activeNote.clear();
     activeTrack = track;
 }
 
@@ -191,8 +192,22 @@ int ABCReader::writeMidiEvent(long delta_time, int type, int chan, char *data, i
 {
     // printf("got midi event type:0x%x delta:%ld [%d:%d]\n", type, delta_time, data[0], data[1]);
     currentPosition += Duration(0, delta_time, ticksPerBeat * beatsPerBar);
-    MidiEvent *event = new MidiEvent(currentPosition, data[0], data[1], type, chan);
-    currentTune()->addMidiEvent(activeTrack, event);
+    if(type == MidiEvent::TYPE_NOTE_ON) {
+        int key = data[0] | chan << 8;
+        activeNote.insert(std::pair<int,Note>(key, Note(data[0], data[1], chan)));
+        noteStart[key] = currentPosition;
+    } else if(type == MidiEvent::TYPE_NOTE_OFF) {
+        int key = data[0] | chan << 8;
+        auto it = activeNote.find(key);
+        if(it != activeNote.end()) {
+            Note note = it->second;
+            note.setDuration((Duration)currentPosition - (Duration)noteStart[key]);
+            currentTune()->addMidiNote(activeTrack, note, noteStart[key]);
+            activeNote.erase(key);
+        }
+    } else {
+        addWarning("MIDI event type not yet implemented", 0, 0);
+    }
     return 0;
 }
 

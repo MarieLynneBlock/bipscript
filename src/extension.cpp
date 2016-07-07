@@ -72,6 +72,7 @@ void ExtensionManager::shutdown()
 
 bool ExtensionManager::scriptComplete()
 {
+    bool active = false;
     // TODO: call on extensions
-    return true;
+    return active;
 }

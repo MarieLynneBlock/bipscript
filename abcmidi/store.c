@@ -6047,6 +6047,7 @@ int n;
     if (userfilename == 0) {
       if (outname != NULL) {
         free(outname);
+        outname = NULL;
       };
       sprintf(numstr, "%d", n);
       if ( (int) strlen(numstr) > namelimit - 1) {
@@ -6086,6 +6087,7 @@ void event_eof()
   free(feature);
   free(words);
   free(outname);
+  outname = NULL;
   free(outbase);
 }
 

@@ -58,9 +58,6 @@ public:
         return noteList[index];
     }
     // methods for events
-    void addEvent(MidiEvent *event) {
-        eventList.add(event);
-    }
     MidiEvent* getFirstEvent() {
         return static_cast<MidiEvent*>(eventList.getFirst());
     }

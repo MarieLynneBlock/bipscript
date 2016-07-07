@@ -24,32 +24,37 @@
 class Note
 {
 public:
-    int note;
+    int pitch;
     int velocity;
     Duration duration;
     int channel;
-    Note(int note, int velocity, int duration, int division)  :
-        note(note), velocity(velocity), duration(0, duration, division), channel(0) {}
-    Note(int note, int velocity, Duration duration)  :
-        note(note), velocity(velocity), duration(duration), channel(0) {}
+    Note(int pitch, int velocity, int duration, int division)  :
+        pitch(pitch), velocity(velocity), duration(0, duration, division), channel(0) {}
+    Note(int pitch, int velocity, Duration duration)  :
+        pitch(pitch), velocity(velocity), duration(duration), channel(0) {}
+    Note(int pitch, int velocity, int channel) :
+        pitch(pitch), velocity(velocity), duration(0, 0, 1), channel(channel) {}
     unsigned int getPitch() {
-        return note;
+        return pitch;
     }
     void transpose(int amount) {
-        int value = amount + note;
+        int value = amount + pitch;
         if(value < 0) {
             throw std::logic_error("Cannot transpose this note that low");
         }
         else if(value > 127) {
             throw std::logic_error("Cannot transpose this note that high");
         }
-        note = value;
+        pitch = value;
     }
     void setVelocity(uint32_t velocity) {
         if(velocity > 127) {
             throw std::logic_error("Velocity value cannot be greater than 127");
         }
         this->velocity = velocity;
+    }
+    void setDuration(const Duration &duration) {
+        this->duration = duration;
     }
 };
 

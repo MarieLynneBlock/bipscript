@@ -18,8 +18,8 @@ public:
     }
     void setTitle(const char *t) { title = t; }
     const char *getTitle() { return title.c_str(); }
-    void addMidiEvent(uint32_t tracknum, MidiEvent *event) {
-        tracks[tracknum].addEvent(event);
+    void addMidiNote(uint32_t tracknum, Note &note, Position &position) {
+        tracks[tracknum].addNote(note, position);
     }
     uint32_t getTrackCount() {
         return numTracks;

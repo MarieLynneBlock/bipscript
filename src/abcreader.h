@@ -19,6 +19,7 @@
 
 #include "miditune.h"
 #include <vector>
+#include <map>
 
 struct ABCError
 {
@@ -38,6 +39,8 @@ class ABCReader
     uint32_t beatUnit;
     uint32_t activeTrack;
     Position currentPosition;
+    std::map<int, Note> activeNote;
+    std::map<int, Position> noteStart;
     std::vector<MidiTune*> tunes;
     std::vector<ABCError> errors;
     bool verbose; // TODO: parameterize
