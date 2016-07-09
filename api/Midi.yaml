@@ -36,6 +36,17 @@ classes :
           parameters:
             - {name: abc, type: string}
 
+    - name: ChordReader
+      include: chordreader
+      ctor: {}
+      methods:
+        - name: read
+          returns: Midi.Pattern
+          parameters:
+            - { name: chord, type: string }
+            - {name: duration, type: integer}
+            - {name: division, type: integer}
+
     - name: Input
       cppname: MidiInputPort
       super: EventSource
@@ -61,7 +72,8 @@ classes :
         - name: setVelocity
           parameters:
             - {name: velocity, type: integer}
-
+        - name: getPitch
+          returns: integer
 
     - name: Control
       ctor:
@@ -103,7 +115,7 @@ classes :
             - {name: position, type: integer}
             - {name: division, type: integer}
           cppname: addNote
-        - name: getSize
+        - name: size
           returns: integer
         - name: getNote
           parameters: {name: index, type: integer}

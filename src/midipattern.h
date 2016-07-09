@@ -47,10 +47,7 @@ public:
     // methods for notes
     void addNote(Note &note, int bar, int position, int division);
     void addNote(Note &note, Position &position);
-    void addNote(Note &note) { // TODO: expose when binding supports method overload
-        addNote(note, 1, 1, 1);
-    }
-    unsigned int getSize() {
+    unsigned int size() {
         return noteList.size();
     }
     Note *getNote(uint32_t index);

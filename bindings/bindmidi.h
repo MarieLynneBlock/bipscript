@@ -23,6 +23,7 @@ namespace binding
 {
 // object references to types in this package
 extern HSQOBJECT MidiABCReaderObject;
+extern HSQOBJECT MidiChordReaderObject;
 extern HSQOBJECT MidiInputObject;
 extern HSQOBJECT MidiNoteObject;
 extern HSQOBJECT MidiControlObject;
