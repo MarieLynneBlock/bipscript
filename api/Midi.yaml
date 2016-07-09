@@ -47,6 +47,19 @@ classes :
             - {name: duration, type: integer}
             - {name: division, type: integer}
 
+    - name: DrumTabReader
+      include: drumtabreader
+      ctor: {}
+      methods:
+      - name: read
+        returns: Midi.Pattern
+        parameters: {name: tab, type: string}
+      - name: setVelocity
+        parameters:
+          - {name: pitch, type: integer}
+          - {name: code, type: string}
+          - {name: velocity, type: integer}
+
     - name: Input
       cppname: MidiInputPort
       super: EventSource
@@ -182,13 +195,6 @@ classes :
       ctor:
         parameters:
           - {name: program, type: integer}
-
-    - name: DrumTabReader
-      include: drumtabreader
-      methods:
-      - name: read
-        returns: Midi.Pattern
-        parameters: {name: tab, type: string}
 
     - name: BeatTracker
       cppname: MidiBeatTracker

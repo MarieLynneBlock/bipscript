@@ -20,17 +20,9 @@
 
 #include <stdio.h>
 #include <ctype.h>
-#include <string>
-#include <map>
 
-using namespace std;
-
-Pattern *pattern; // make it a member
-
-map<string, int> noteValue;
-map<string, int> noteVelocity;
-
-void init() {
+DrumTabReader::DrumTabReader()
+{
     noteValue["SDo"] = 38;
     noteValue["SNo"] = 38;
     noteValue["SNO"] = 38;
@@ -85,28 +77,29 @@ void init() {
 }
 
 
-void processBar(int bar, const char *channel, const char* line, int len) {
+void DrumTabReader::processBar(int bar, const char *channel, const char* line, int len) {
     //printf("got bar for %.*s, length %d: %.*s\n", 2, channel, len, len, bar);
     for(int i = 0; i < len; i++) {
         if(line[i] != '-') {
             int notenum, velocity;
-            string hit;
+            std::string hit;
             hit += toupper(channel[0]);
             hit += toupper(channel[1]);
+            // hit now contains pitch code or number
             if(isdigit(channel[0]) && isdigit(channel[1])) {
                 notenum = atoi(hit.c_str());
-                velocity = 127; // TODO: look at actual hit notation
             }
             else {
-                hit += line[i];
                 notenum = noteValue[hit];
                 if(notenum == 0) {
                     printf("!!notevalue for %s is %d\n", hit.c_str(), notenum);
                 }
-                velocity = noteVelocity[hit];
-                if(velocity == 0) {
-                    velocity = 127; // default
-                }
+            }
+            // now add actual strike e.g. 'x'
+            hit += line[i];
+            velocity = noteVelocity[hit];
+            if(velocity == 0) {
+                velocity = 127; // default
             }
             //printf(" adding %s (=%d/%d) at %d:%d/%d\n", hit.c_str(), notenum, velocity, bar, i, len);
             Note note(notenum, velocity, 1, len);
@@ -115,7 +108,7 @@ void processBar(int bar, const char *channel, const char* line, int len) {
     }
 }
 
-int processTabLine(int startBar, const char *line, int len) {
+int DrumTabReader::processTabLine(int startBar, const char *line, int len) {
     // grab the channel
     const char *channel = line;
     line += 3;
@@ -131,15 +124,21 @@ int processTabLine(int startBar, const char *line, int len) {
     return barCounter - startBar;
 }
 
-void DrumTabReader::define(string code, string hit, int note, int velocity) {
-    string key = code + hit;
+
+void DrumTabReader::define(std::string code, std::string hit, int note, int velocity) {
+    std::string key = code + hit;
     noteValue[key] = note;
+    noteVelocity[key] = velocity;
+}
+
+void DrumTabReader::define(int note, std::string hit, int velocity)
+{
+    std::string key = std::to_string(note) + hit;
     noteVelocity[key] = velocity;
 }
 
 Pattern* DrumTabReader::read(const char*tab)
 {
-    init();
     pattern = new Pattern();
     int last = 0;
     int lineBars = 0;

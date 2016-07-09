@@ -22,12 +22,12 @@
 
 #include "abcreader.h"
 #include "chordreader.h"
+#include "drumtabreader.h"
 #include "midiport.h"
 #include "module_midi.h"
 #include "midiinputbuffer.h"
 #include "mmlreader.h"
 #include "miditune.h"
-#include "drumtabreader.h"
 #include "beattracker.h"
 
 namespace binding {
@@ -35,6 +35,7 @@ namespace binding {
 // object references to types in this package
 HSQOBJECT MidiABCReaderObject;
 HSQOBJECT MidiChordReaderObject;
+HSQOBJECT MidiDrumTabReaderObject;
 HSQOBJECT MidiInputObject;
 HSQOBJECT MidiNoteObject;
 HSQOBJECT MidiControlObject;
@@ -45,7 +46,6 @@ HSQOBJECT MidiTuneObject;
 HSQOBJECT MidiOutputObject;
 HSQOBJECT MidiPitchBendObject;
 HSQOBJECT MidiProgramChangeObject;
-HSQOBJECT MidiDrumTabReaderObject;
 HSQOBJECT MidiBeatTrackerObject;
 
 //
@@ -337,6 +337,116 @@ SQInteger MidiChordReaderread(HSQUIRRELVM vm)
     //sq_setreleasehook(vm, -1, &?);
 
     return 1;
+}
+
+//
+// Midi.DrumTabReader class
+//
+SQInteger MidiDrumTabReaderCtor(HSQUIRRELVM vm)
+{
+    DrumTabReader *obj;
+    // call the implementation
+    try {
+        obj = new DrumTabReader();
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // return pointer to new object
+    sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
+    //sq_setreleasehook(vm, 1, release_hook);
+    return 1;
+}
+
+//
+// Midi.DrumTabReader read
+//
+SQInteger MidiDrumTabReaderread(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "read method needs an instance of DrumTabReader");
+    }
+    DrumTabReader *obj = static_cast<DrumTabReader*>(userPtr);
+
+    // get parameter 1 "tab" as string
+    const SQChar* tab;
+    if (SQ_FAILED(sq_getstring(vm, 2, &tab))){
+        return sq_throwerror(vm, "argument 1 is not of type string");
+    }
+
+    // return value
+    Pattern* ret;
+    // call the implementation
+    try {
+        ret = obj->read(tab);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushobject(vm, MidiPatternObject);
+    sq_createinstance(vm, -1);
+    sq_remove(vm, -2);
+    sq_setinstanceup(vm, -1, ret);
+    //sq_setreleasehook(vm, -1, &?);
+
+    return 1;
+}
+
+//
+// Midi.DrumTabReader setVelocity
+//
+SQInteger MidiDrumTabReadersetVelocity(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 4) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 3");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "setVelocity method needs an instance of DrumTabReader");
+    }
+    DrumTabReader *obj = static_cast<DrumTabReader*>(userPtr);
+
+    // get parameter 1 "pitch" as integer
+    SQInteger pitch;
+    if (SQ_FAILED(sq_getinteger(vm, 2, &pitch))){
+        return sq_throwerror(vm, "argument 1 is not of type integer");
+    }
+
+    // get parameter 2 "code" as string
+    const SQChar* code;
+    if (SQ_FAILED(sq_getstring(vm, 3, &code))){
+        return sq_throwerror(vm, "argument 2 is not of type string");
+    }
+
+    // get parameter 3 "velocity" as integer
+    SQInteger velocity;
+    if (SQ_FAILED(sq_getinteger(vm, 4, &velocity))){
+        return sq_throwerror(vm, "argument 3 is not of type integer");
+    }
+
+    // call the implementation
+    try {
+        obj->setVelocity(pitch, code, velocity);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // void method, returns no value
+    return 0;
 }
 
 //
@@ -1427,53 +1537,6 @@ SQInteger MidiProgramChangeCtor(HSQUIRRELVM vm)
 }
 
 //
-// Midi.DrumTabReader class
-//
-
-//
-// Midi.DrumTabReader read
-//
-SQInteger MidiDrumTabReaderread(HSQUIRRELVM vm)
-{
-    SQInteger numargs = sq_gettop(vm);
-    // check parameter count
-    if(numargs < 2) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
-    }
-    // get "this" pointer
-    SQUserPointer userPtr = 0;
-    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "read method needs an instance of DrumTabReader");
-    }
-    DrumTabReader *obj = static_cast<DrumTabReader*>(userPtr);
-
-    // get parameter 1 "tab" as string
-    const SQChar* tab;
-    if (SQ_FAILED(sq_getstring(vm, 2, &tab))){
-        return sq_throwerror(vm, "argument 1 is not of type string");
-    }
-
-    // return value
-    Pattern* ret;
-    // call the implementation
-    try {
-        ret = obj->read(tab);
-    }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
-    }
-
-    // push return value
-    sq_pushobject(vm, MidiPatternObject);
-    sq_createinstance(vm, -1);
-    sq_remove(vm, -2);
-    sq_setinstanceup(vm, -1, ret);
-    //sq_setreleasehook(vm, -1, &?);
-
-    return 1;
-}
-
-//
 // Midi.BeatTracker class
 //
 SQInteger MidiBeatTrackerCtor(HSQUIRRELVM vm)
@@ -1790,6 +1853,29 @@ void bindMidi(HSQUIRRELVM vm)
     // push ChordReader to Midi package table
     sq_newslot(vm, -3, false);
 
+    // create class Midi.DrumTabReader
+    sq_pushstring(vm, "DrumTabReader", -1);
+    sq_newclass(vm, false);
+    sq_getstackobj(vm, -1, &MidiDrumTabReaderObject);
+    sq_settypetag(vm, -1, &MidiDrumTabReaderObject);
+
+    // ctor for class DrumTabReader
+    sq_pushstring(vm, _SC("constructor"), -1);
+    sq_newclosure(vm, &MidiDrumTabReaderCtor, 0);
+    sq_newslot(vm, -3, false);
+
+    // methods for class DrumTabReader
+    sq_pushstring(vm, _SC("read"), -1);
+    sq_newclosure(vm, &MidiDrumTabReaderread, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("setVelocity"), -1);
+    sq_newclosure(vm, &MidiDrumTabReadersetVelocity, 0);
+    sq_newslot(vm, -3, false);
+
+    // push DrumTabReader to Midi package table
+    sq_newslot(vm, -3, false);
+
     // create class Midi.Input
     sq_pushstring(vm, "Input", -1);
     sq_newclass(vm, false);
@@ -1998,21 +2084,6 @@ void bindMidi(HSQUIRRELVM vm)
 
     // methods for class ProgramChange
     // push ProgramChange to Midi package table
-    sq_newslot(vm, -3, false);
-
-    // create class Midi.DrumTabReader
-    sq_pushstring(vm, "DrumTabReader", -1);
-    sq_newclass(vm, false);
-    sq_getstackobj(vm, -1, &MidiDrumTabReaderObject);
-    sq_settypetag(vm, -1, &MidiDrumTabReaderObject);
-
-
-    // methods for class DrumTabReader
-    sq_pushstring(vm, _SC("read"), -1);
-    sq_newclosure(vm, &MidiDrumTabReaderread, 0);
-    sq_newslot(vm, -3, false);
-
-    // push DrumTabReader to Midi package table
     sq_newslot(vm, -3, false);
 
     // create class Midi.BeatTracker

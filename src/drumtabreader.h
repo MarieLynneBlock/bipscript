@@ -18,12 +18,26 @@
 #define DRUMTABPARSER_H
 
 #include "midipattern.h"
+#include <string>
+#include <map>
+
 
 class DrumTabReader
 {
+    std::map<std::string, int> noteValue;
+    std::map<std::string, int> noteVelocity;
+    Pattern *pattern;
 public:
-    void define(std::string code, std::string hit, int note, int velocity);
+    DrumTabReader();
     Pattern *read(const char*);
+    void setVelocity(int note, const char *hit, int velocity) {
+        define(note, hit, velocity);
+    }
+private:
+    int processTabLine(int startBar, const char *line, int len);
+    void processBar(int bar, const char *channel, const char *line, int len);
+    void define(std::string code, std::string hit, int note, int velocity);
+    void define(int note, std::string hit, int velocity);
 };
 
 #endif // DRUMTABPARSER_H
