@@ -55,6 +55,24 @@ classes :
             - { name: position, type: integer}
             - { name: division, type: integer}
 
+    - name: OnsetDetector
+      include: onsetdetector
+      ctor:
+        parameters: { name: type, type: string, optional: true }
+        expression: OnsetDetectorCache::instance().getOnsetDetector
+      methods:
+      - name: onOnset
+        parameters:
+          - { name: handler, type: function }
+      - name: connect
+        parameters:
+        - { name: source, type: AudioSource }
+      - name: setThreshold
+        parameters:
+        - { name: threshold, type: float }
+      - name: setSilence
+        parameters:
+        - { name: threshold, type: float }
 
     - name: Output
       cppname: AudioOutputPort

@@ -20,6 +20,7 @@
 #include "bindings.h"
 
 #include "mixer.h"
+#include "onsetdetector.h"
 #include "audioport.h"
 #include "audioengine.h"
 #include "beattracker.h"
@@ -28,6 +29,7 @@ namespace binding {
 
 // object references to types in this package
 HSQOBJECT AudioMixerObject;
+HSQOBJECT AudioOnsetDetectorObject;
 HSQOBJECT AudioOutputObject;
 HSQOBJECT AudioInputObject;
 HSQOBJECT AudioStereoInputObject;
@@ -352,6 +354,199 @@ SQInteger AudioMixerscheduleGain(HSQUIRRELVM vm)
     // call the implementation
     try {
         obj->scheduleGain(input, output, gain, bar, position, division);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // void method, returns no value
+    return 0;
+}
+
+//
+// Audio.OnsetDetector class
+//
+SQInteger AudioOnsetDetectorCtor(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    OnsetDetector *obj;
+    // 1 parameters passed in
+    if(numargs == 2) {
+
+        // get parameter 1 "type" as string
+        const SQChar* type;
+        if (SQ_FAILED(sq_getstring(vm, 2, &type))){
+            return sq_throwerror(vm, "argument 1 is not of type string");
+        }
+
+        // call the implementation
+        try {
+            obj = OnsetDetectorCache::instance().getOnsetDetector(type);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
+    }
+
+    else {
+        // call the implementation
+        try {
+            obj = OnsetDetectorCache::instance().getOnsetDetector();
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
+    }
+
+    // return pointer to new object
+    sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
+    //sq_setreleasehook(vm, 1, release_hook);
+    return 1;
+}
+
+//
+// Audio.OnsetDetector onOnset
+//
+SQInteger AudioOnsetDetectoronOnset(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "onOnset method needs an instance of OnsetDetector");
+    }
+    OnsetDetector *obj = static_cast<OnsetDetector*>(userPtr);
+
+    // get parameter 1 "handler" as function
+    HSQOBJECT handlerObj;
+    if (SQ_FAILED(sq_getstackobj(vm, 2, &handlerObj))) {
+        return sq_throwerror(vm, "argument 1 is not of type function");
+    }
+    if (sq_gettype(vm, 2) != OT_CLOSURE) {
+        return sq_throwerror(vm, "argument 1 is not of type function");
+    }
+    SQUnsignedInteger nparams, nfreevars;
+    sq_getclosureinfo(vm, 2, &nparams, &nfreevars);
+    sq_addref(vm, &handlerObj);
+    ScriptFunction handler(vm, handlerObj, nparams);
+
+    // call the implementation
+    try {
+        obj->onOnset(handler);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // void method, returns no value
+    return 0;
+}
+
+//
+// Audio.OnsetDetector connect
+//
+SQInteger AudioOnsetDetectorconnect(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "connect method needs an instance of OnsetDetector");
+    }
+    OnsetDetector *obj = static_cast<OnsetDetector*>(userPtr);
+
+    // get parameter 1 "source" as AudioSource
+    SQUserPointer sourceTypeTag, sourcePtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, 0))) {
+        return sq_throwerror(vm, "argument 1 is not an object of type AudioSource");
+    }
+    sq_gettypetag(vm, 2, &sourceTypeTag);
+    AudioSource *source = getAudioSource(sourcePtr, sourceTypeTag);
+    if(source == 0) {
+        return sq_throwerror(vm, "argument 1 is not of type AudioSource");
+    }
+
+    // call the implementation
+    try {
+        obj->connect(*source);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // void method, returns no value
+    return 0;
+}
+
+//
+// Audio.OnsetDetector setThreshold
+//
+SQInteger AudioOnsetDetectorsetThreshold(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "setThreshold method needs an instance of OnsetDetector");
+    }
+    OnsetDetector *obj = static_cast<OnsetDetector*>(userPtr);
+
+    // get parameter 1 "threshold" as float
+    SQFloat threshold;
+    if (SQ_FAILED(sq_getfloat(vm, 2, &threshold))){
+        return sq_throwerror(vm, "argument 1 is not of type float");
+    }
+
+    // call the implementation
+    try {
+        obj->setThreshold(threshold);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // void method, returns no value
+    return 0;
+}
+
+//
+// Audio.OnsetDetector setSilence
+//
+SQInteger AudioOnsetDetectorsetSilence(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "setSilence method needs an instance of OnsetDetector");
+    }
+    OnsetDetector *obj = static_cast<OnsetDetector*>(userPtr);
+
+    // get parameter 1 "threshold" as float
+    SQFloat threshold;
+    if (SQ_FAILED(sq_getfloat(vm, 2, &threshold))){
+        return sq_throwerror(vm, "argument 1 is not of type float");
+    }
+
+    // call the implementation
+    try {
+        obj->setSilence(threshold);
     }
     catch(std::exception const& e) {
         return sq_throwerror(vm, e.what());
@@ -732,6 +927,37 @@ void bindAudio(HSQUIRRELVM vm)
     sq_newslot(vm, -3, false);
 
     // push Mixer to Audio package table
+    sq_newslot(vm, -3, false);
+
+    // create class Audio.OnsetDetector
+    sq_pushstring(vm, "OnsetDetector", -1);
+    sq_newclass(vm, false);
+    sq_getstackobj(vm, -1, &AudioOnsetDetectorObject);
+    sq_settypetag(vm, -1, &AudioOnsetDetectorObject);
+
+    // ctor for class OnsetDetector
+    sq_pushstring(vm, _SC("constructor"), -1);
+    sq_newclosure(vm, &AudioOnsetDetectorCtor, 0);
+    sq_newslot(vm, -3, false);
+
+    // methods for class OnsetDetector
+    sq_pushstring(vm, _SC("onOnset"), -1);
+    sq_newclosure(vm, &AudioOnsetDetectoronOnset, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("connect"), -1);
+    sq_newclosure(vm, &AudioOnsetDetectorconnect, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("setThreshold"), -1);
+    sq_newclosure(vm, &AudioOnsetDetectorsetThreshold, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("setSilence"), -1);
+    sq_newclosure(vm, &AudioOnsetDetectorsetSilence, 0);
+    sq_newslot(vm, -3, false);
+
+    // push OnsetDetector to Audio package table
     sq_newslot(vm, -3, false);
 
     // create class Audio.Output
