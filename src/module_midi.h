@@ -23,17 +23,17 @@
 
 class Note
 {
+    uint8_t vel;
 public:
     int pitch;
-    int velocity;
     Duration duration;
     int channel;
-    Note(int pitch, int velocity, int duration, int division)  :
-        pitch(pitch), velocity(velocity), duration(0, duration, division), channel(0) {}
-    Note(int pitch, int velocity, Duration duration)  :
-        pitch(pitch), velocity(velocity), duration(duration), channel(0) {}
-    Note(int pitch, int velocity, int channel) :
-        pitch(pitch), velocity(velocity), duration(0, 0, 1), channel(channel) {}
+    Note(int pitch, uint8_t velocity, int duration, int division)  :
+        pitch(pitch), vel(velocity), duration(0, duration, division), channel(0) {}
+    Note(int pitch, uint8_t velocity, Duration duration)  :
+        pitch(pitch), vel(velocity), duration(duration), channel(0) {}
+    Note(int pitch, uint8_t velocity, int channel) :
+        pitch(pitch), vel(velocity), duration(0, 0, 1), channel(channel) {}
     unsigned int getPitch() {
         return pitch;
     }
@@ -47,11 +47,15 @@ public:
         }
         pitch = value;
     }
-    void setVelocity(uint32_t velocity) {
+    uint8_t velocity() const {
+        return vel;
+    }
+    uint8_t velocity(uint8_t velocity) {
         if(velocity > 127) {
             throw std::logic_error("Velocity value cannot be greater than 127");
         }
-        this->velocity = velocity;
+        this->vel = velocity;
+        return velocity;
     }
     void setDuration(const Duration &duration) {
         this->duration = duration;

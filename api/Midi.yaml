@@ -82,9 +82,9 @@ classes :
         - name: transpose
           parameters:
             - {name: amount, type: integer}
-        - name: setVelocity
+        - name: velocity
           parameters:
-            - {name: velocity, type: integer}
+            - {name: value, type: integer, optional: true}
         - name: getPitch
           returns: integer
 
@@ -130,9 +130,10 @@ classes :
           cppname: addNote
         - name: size
           returns: integer
-        - name: getNote
+        - name: note
           parameters: {name: index, type: integer}
           returns: Midi.Note
+          cppname: getNote
         - name: print
         - name: transpose
           parameters:

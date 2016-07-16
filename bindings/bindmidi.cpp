@@ -585,34 +585,44 @@ SQInteger MidiNotetranspose(HSQUIRRELVM vm)
 }
 
 //
-// Midi.Note setVelocity
+// Midi.Note velocity
 //
-SQInteger MidiNotesetVelocity(HSQUIRRELVM vm)
+SQInteger MidiNotevelocity(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
-    // check parameter count
-    if(numargs < 2) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
-    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "setVelocity method needs an instance of Note");
+        return sq_throwerror(vm, "velocity method needs an instance of Note");
     }
     Note *obj = static_cast<Note*>(userPtr);
 
-    // get parameter 1 "velocity" as integer
-    SQInteger velocity;
-    if (SQ_FAILED(sq_getinteger(vm, 2, &velocity))){
-        return sq_throwerror(vm, "argument 1 is not of type integer");
+    // 1 parameters passed in
+    if(numargs == 2) {
+
+        // get parameter 1 "value" as integer
+        SQInteger value;
+        if (SQ_FAILED(sq_getinteger(vm, 2, &value))){
+            return sq_throwerror(vm, "argument 1 is not of type integer");
+        }
+
+        // call the implementation
+        try {
+            obj->velocity(value);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
     }
 
-    // call the implementation
-    try {
-        obj->setVelocity(velocity);
-    }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
+    else {
+        // call the implementation
+        try {
+            obj->velocity();
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
     }
 
     // void method, returns no value
@@ -954,9 +964,9 @@ SQInteger MidiPatternsize(HSQUIRRELVM vm)
 }
 
 //
-// Midi.Pattern getNote
+// Midi.Pattern note
 //
-SQInteger MidiPatterngetNote(HSQUIRRELVM vm)
+SQInteger MidiPatternnote(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
@@ -966,7 +976,7 @@ SQInteger MidiPatterngetNote(HSQUIRRELVM vm)
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "getNote method needs an instance of Pattern");
+        return sq_throwerror(vm, "note method needs an instance of Pattern");
     }
     Pattern *obj = static_cast<Pattern*>(userPtr);
 
@@ -1907,8 +1917,8 @@ void bindMidi(HSQUIRRELVM vm)
     sq_newclosure(vm, &MidiNotetranspose, 0);
     sq_newslot(vm, -3, false);
 
-    sq_pushstring(vm, _SC("setVelocity"), -1);
-    sq_newclosure(vm, &MidiNotesetVelocity, 0);
+    sq_pushstring(vm, _SC("velocity"), -1);
+    sq_newclosure(vm, &MidiNotevelocity, 0);
     sq_newslot(vm, -3, false);
 
     sq_pushstring(vm, _SC("getPitch"), -1);
@@ -1991,8 +2001,8 @@ void bindMidi(HSQUIRRELVM vm)
     sq_newclosure(vm, &MidiPatternsize, 0);
     sq_newslot(vm, -3, false);
 
-    sq_pushstring(vm, _SC("getNote"), -1);
-    sq_newclosure(vm, &MidiPatterngetNote, 0);
+    sq_pushstring(vm, _SC("note"), -1);
+    sq_newclosure(vm, &MidiPatternnote, 0);
     sq_newslot(vm, -3, false);
 
     sq_pushstring(vm, _SC("print"), -1);
