@@ -18,14 +18,6 @@
 name : Time
 
 methods:
-    - name: schedule
-      include: timepackage
-      parameters:
-        - {name: function, type: function}
-        - {name: bar, type: integer}
-        - {name: position, type: integer, optional: true }
-        - {name: division, type: integer, optional: true }
-
     - name: start
       include: audioengine
       expression: AudioEngine::instance().transportStart

@@ -19,7 +19,6 @@
 #include "bindtypes.h"
 #include "bindings.h"
 
-#include "timepackage.h"
 #include "audioengine.h"
 #include "timesignature.h"
 #include "transportmaster.h"
@@ -30,90 +29,6 @@ namespace binding {
 HSQOBJECT TimePositionObject;
 HSQOBJECT TimeSignatureObject;
 HSQOBJECT TimeTransportMasterObject;
-//
-// Time schedule
-//
-SQInteger Timeschedule(HSQUIRRELVM vm)
-{
-    SQInteger numargs = sq_gettop(vm);
-    // check parameter count
-    if(numargs < 3) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 2");
-    }
-    // get parameter 1 "function" as function
-    HSQOBJECT functionObj;
-    if (SQ_FAILED(sq_getstackobj(vm, 2, &functionObj))) {
-        return sq_throwerror(vm, "argument 1 is not of type function");
-    }
-    if (sq_gettype(vm, 2) != OT_CLOSURE) {
-        return sq_throwerror(vm, "argument 1 is not of type function");
-    }
-    SQUnsignedInteger nparams, nfreevars;
-    sq_getclosureinfo(vm, 2, &nparams, &nfreevars);
-    sq_addref(vm, &functionObj);
-    ScriptFunction function(vm, functionObj, nparams);
-
-    // get parameter 2 "bar" as integer
-    SQInteger bar;
-    if (SQ_FAILED(sq_getinteger(vm, 3, &bar))){
-        return sq_throwerror(vm, "argument 2 is not of type integer");
-    }
-
-    // 3 parameters passed in
-    if(numargs == 4) {
-
-        // get parameter 3 "position" as integer
-        SQInteger position;
-        if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
-            return sq_throwerror(vm, "argument 3 is not of type integer");
-        }
-
-        // call the implementation
-        try {
-            Time::schedule(function, bar, position);
-        }
-        catch(std::exception const& e) {
-            return sq_throwerror(vm, e.what());
-        }
-    }
-
-    // 4 parameters passed in
-    else if(numargs == 5) {
-
-        // get parameter 3 "position" as integer
-        SQInteger position;
-        if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
-            return sq_throwerror(vm, "argument 3 is not of type integer");
-        }
-
-        // get parameter 4 "division" as integer
-        SQInteger division;
-        if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
-            return sq_throwerror(vm, "argument 4 is not of type integer");
-        }
-
-        // call the implementation
-        try {
-            Time::schedule(function, bar, position, division);
-        }
-        catch(std::exception const& e) {
-            return sq_throwerror(vm, e.what());
-        }
-    }
-
-    else {
-        // call the implementation
-        try {
-            Time::schedule(function, bar);
-        }
-        catch(std::exception const& e) {
-            return sq_throwerror(vm, e.what());
-        }
-    }
-
-    // void method, returns no value
-    return 0;
-}
 //
 // Time start
 //
@@ -373,11 +288,6 @@ void bindTime(HSQUIRRELVM vm)
     // create package table
     sq_pushstring(vm, "Time", -1);
     sq_newtable(vm);
-
-    // static method schedule
-    sq_pushstring(vm, _SC("schedule"), -1);
-    sq_newclosure(vm, &Timeschedule, 0);
-    sq_newslot(vm, -3, false);
 
     // static method start
     sq_pushstring(vm, _SC("start"), -1);

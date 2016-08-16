@@ -15,7 +15,7 @@
  * along with Bipscript.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "chordreader.h"
-// #include <cstring>
+#include <cstring>
 
 ChordReader::ChordReader()
 {

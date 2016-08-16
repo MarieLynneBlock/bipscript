@@ -14,26 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with Bipscript.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef TIMEPACKAGE_H
-#define TIMEPACKAGE_H
+#ifndef BINDTRANSPORT_H
+#define BINDTRANSPORT_H
 
-#include "position.h"
-#include "scripthost.h"
-#include "scripttypes.h"
+#include "squirrel.h"
 
-class Time
+namespace binding
 {
-public:
-    //static Position &now();
-    static void schedule(ScriptFunction &function, unsigned int bar) {
-        schedule(function, bar, 0);
-    }
-    static void schedule(ScriptFunction &function, unsigned int bar, unsigned int position) {
-        schedule(function, bar, position, 4); // TODO: base it on time signature
-    }
-    static void schedule(ScriptFunction &function, unsigned int bar, unsigned int position, unsigned int division) {
-        ScriptHost::instance().schedule(function, bar, position, division);
-    }
-};
+// object references to types in this package
+}
 
-#endif // TIMEPACKAGE_H
+#endif // BINDTRANSPORT_H

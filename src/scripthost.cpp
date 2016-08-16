@@ -20,6 +20,7 @@
 #include "sqstdaux.h"
 #include "sqstdmath.h"
 #include "sqstdio.h"
+#include "sqstdstring.h"
 
 #include "bindings.h"
 
@@ -70,38 +71,6 @@ static void squirrel_print_function(HSQUIRRELVM sqvm, const SQChar *format, ...)
     vfprintf(stdout, format, args);
     va_end(args);
 }
-
-void ScriptHost::schedule(ScriptFunction &function, unsigned int bar, unsigned int position, unsigned int division)
-{
-    this->asyncFunctions.push_back(AsyncFunction(function, bar, position, division));
-}
-
-bool ScriptHost::waitUntil(Position &pos)
-{
-    jack_position_t jack_pos;
-    AudioEngine &ae = AudioEngine::instance();
-    bool rolling(ae.getPosition(jack_pos));
-    // how many frames = 1/20th of a second
-    jack_nframes_t gap = ae.getSampleRate() / 20;
-    while(!rolling || pos.calculateFrameOffset(jack_pos) > gap) {
-        // first check we don't have to restart
-        if(abort.load()) {
-            return false;
-        }
-        // free collected objects
-        ObjectCollector::instance()->free();
-        // sleep
-        struct timespec req = {0, 25000};
-        while(nanosleep(&req,&req)==-1) {
-            if(abort.load()) { return false; }
-            continue;
-        }
-        rolling = (ae.getPosition(jack_pos));
-    }
-    // std::cout << " -- wait is over, frames until " << pos << " is " << pos.calculateFrameOffset(jack_pos) << std::endl;
-    return true;
-}
-
 
 bool ScriptHost::waitForRestart(HSQOBJECT &context)
 {
@@ -161,6 +130,7 @@ int ScriptHost::run() {
     // standard library modules
     sqstd_register_mathlib(vm);
     sqstd_register_iolib(vm);
+    sqstd_register_stringlib(vm);
     // add local modules to squirrel
     // bindModules(vm);
     binding::bindAudio(vm);
@@ -169,6 +139,7 @@ int ScriptHost::run() {
     binding::bindIO(vm);
     binding::bindOsc(vm);
     binding::bindTime(vm);
+    binding::bindTransport(vm);
     binding::bindMath(vm);
     binding::bindSystem(vm);
     // pop root table
@@ -192,43 +163,6 @@ int ScriptHost::run() {
         // pop fresh run table
         sq_pop(vm, 1);
 
-        // now do the async methods
-        asyncFunctions.sort();
-        for(std::list<AsyncFunction>::iterator it = asyncFunctions.begin(); it != asyncFunctions.end(); ++it) {
-            // push function pointer as closure
-            sq_pushobject(vm, it->getFunction());
-            // how many params does this function expect?
-            uint32_t nparams = it->getNumargs();
-            // push fresh run table as "this" pointer
-            sq_pushobject(vm, freshRunTable);
-            // push remaining arguments
-            if(nparams > 1) {
-                sq_pushinteger(vm, it->getBar());
-            }
-            if(nparams > 2) {
-                sq_pushinteger(vm, it->getPosition());
-            }
-            if(nparams > 3) {
-                sq_pushinteger(vm, it->getDivision());
-            }
-            // now sleep until time
-            if(!waitUntil(*it)) {
-                break; // TODO cleanup
-            }
-            // attempt to call function
-            if(SQ_FAILED(sq_call(vm, nparams, SQFalse, SQTrue))) {
-                // release and pop closure
-                sq_release(vm, &it->getFunction());
-                sq_pop(vm, 1);
-                // break loop
-                return 1; // TODO: still need to release the remaining closures?
-            }
-            // release and pop closure
-            sq_release(vm, &it->getFunction());
-            sq_pop(vm, 1);
-        }
-        // clear list
-        asyncFunctions.clear();
         // wait for restart
         rerun = waitForRestart(freshRunTable);
     }

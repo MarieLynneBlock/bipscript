@@ -14,23 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with Bipscript.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef BINDINGS_H
-#define BINDINGS_H
+#include "transport.h"
+#include <iostream>
 
-#include "squirrel.h"
-
-namespace binding
+void Transport::schedule(ScriptFunction &function, unsigned int bar, unsigned int position, unsigned int division)
 {
-    // package binding methods
-    void bindAudio(HSQUIRRELVM vm);
-    void bindIO(HSQUIRRELVM vm);
-    void bindLv2(HSQUIRRELVM vm);
-    void bindMath(HSQUIRRELVM vm);
-    void bindMidi(HSQUIRRELVM vm);
-    void bindOsc(HSQUIRRELVM vm);
-    void bindSystem(HSQUIRRELVM vm);
-    void bindTime(HSQUIRRELVM vm);
-    void bindTransport(HSQUIRRELVM vm);
+    eventBuffer.addEvent(new AsyncClosure(function, bar, position, division));
 }
 
-#endif // BINDINGS_H
+void Transport::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
+{
+    AsyncClosure *closure = static_cast<AsyncClosure*>(eventBuffer.getNextEvent(rolling, pos, nframes));
+    while(closure) {
+        closure->dispatch();
+        closure = static_cast<AsyncClosure*>(eventBuffer.getNextEvent(rolling, pos, nframes));
+    }
+}

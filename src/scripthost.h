@@ -25,21 +25,11 @@
 #include "position.h"
 #include "objectcache.h"
 
-class AsyncFunction : public Position, public ScriptFunction {
-public:
-    AsyncFunction(ScriptFunction &function, unsigned int bar,
-                  unsigned int position, unsigned int division) :
-        Position(bar, position, division), ScriptFunction(function) {}
-};
-
 class ScriptHost
 {
     HSQUIRRELVM vm;
     std::string folder;
     const char *filename;
-
-    // async methods
-    std::list<AsyncFunction> asyncFunctions;
 
     // object caches
     uint16_t objectCacheCount;
@@ -79,7 +69,6 @@ public:
 private:
     void objectReposition(bool final);
     void bindModules(HSQUIRRELVM vm);
-    bool waitUntil(Position &pos);
     bool waitForRestart(HSQOBJECT &context);
 };
 

@@ -98,6 +98,7 @@ public:
     void dispatch() {
         MethodQueue::instance().dispatch(this);
     }
+    virtual ~ScriptFunctionClosure() {}
 protected:
     void addInteger(int i) {
         sq_pushinteger(vm, i);

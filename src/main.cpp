@@ -36,6 +36,7 @@
 #include "onsetdetector.h"
 #include "oscoutput.h"
 #include "extension.h"
+#include "transport.h"
 
 namespace fs = boost::filesystem;
 
@@ -85,9 +86,10 @@ int main(int argc, char **argv)
                             &BeatTrackerCache::instance(),
                             &MidiBeatTrackerCache::instance(),
                             &OscOutputFactory::instance(),
-                            &OnsetDetectorCache::instance()
+                            &OnsetDetectorCache::instance(),
+                            &Transport::instance()
                             };
-    host.setObjectCaches(10, caches);
+    host.setObjectCaches(11, caches);
 
     // create and  start audioengine
     AudioEngine &audioEngine = AudioEngine::instance();

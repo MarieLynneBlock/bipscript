@@ -41,8 +41,13 @@ void OnsetDetector::onOnset(ScriptFunction &handler)
 }
 
 void OnsetDetector::reset(const char *type)
-{
-    // TODO: implement
+{    
+    // TODO: implement type change?
+    if(onOnsetHandler) {
+        onOnsetHandler.load()->release();
+        delete onOnsetHandler;
+        onOnsetHandler = 0;
+    }
 }
 
 void OnsetDetector::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
@@ -67,6 +72,7 @@ void OnsetDetector::process(bool rolling, jack_position_t &pos, jack_nframes_t n
                 // TODO: compute position from smpl_t onset value
                 ScriptFunction *handler = onOnsetHandler.load();
                 if(handler) {
+                    // TODO: no allocation in process thread
                     (new OnOnsetClosure(*handler, 0))->dispatch();
                 }
             }
