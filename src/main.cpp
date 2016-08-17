@@ -34,6 +34,7 @@
 #include "audioport.h"
 #include "beattracker.h"
 #include "onsetdetector.h"
+#include "oscinput.h"
 #include "oscoutput.h"
 #include "extension.h"
 #include "transport.h"
@@ -85,11 +86,12 @@ int main(int argc, char **argv)
                             &TransportMasterCache::instance(),
                             &BeatTrackerCache::instance(),
                             &MidiBeatTrackerCache::instance(),
+                            &OscInputFactory::instance(),
                             &OscOutputFactory::instance(),
                             &OnsetDetectorCache::instance(),
                             &Transport::instance()
                             };
-    host.setObjectCaches(11, caches);
+    host.setObjectCaches(12, caches);
 
     // create and  start audioengine
     AudioEngine &audioEngine = AudioEngine::instance();

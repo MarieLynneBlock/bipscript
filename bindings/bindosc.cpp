@@ -19,14 +19,136 @@
 #include "bindtypes.h"
 #include "bindings.h"
 
+#include "oscinput.h"
 #include "oscmessage.h"
 #include "oscoutput.h"
 
 namespace binding {
 
 // object references to types in this package
+HSQOBJECT OscInputObject;
 HSQOBJECT OscMessageObject;
 HSQOBJECT OscOutputObject;
+
+//
+// Osc.Input class
+//
+SQInteger OscInputCtor(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get parameter 1 "port" as integer
+    SQInteger port;
+    if (SQ_FAILED(sq_getinteger(vm, 2, &port))){
+        return sq_throwerror(vm, "argument 1 is not of type integer");
+    }
+
+    OscInput *obj;
+    // 2 parameters passed in
+    if(numargs == 3) {
+
+        // get parameter 2 "protocol" as string
+        const SQChar* protocol;
+        if (SQ_FAILED(sq_getstring(vm, 3, &protocol))){
+            return sq_throwerror(vm, "argument 2 is not of type string");
+        }
+
+        // call the implementation
+        try {
+            obj = OscInputFactory::instance().getOscInput(port, protocol);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
+    }
+
+    else {
+        // call the implementation
+        try {
+            obj = OscInputFactory::instance().getOscInput(port);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
+    }
+
+    // return pointer to new object
+    sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
+    //sq_setreleasehook(vm, 1, release_hook);
+    return 1;
+}
+
+//
+// Osc.Input onReceive
+//
+SQInteger OscInputonReceive(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "onReceive method needs an instance of Input");
+    }
+    OscInput *obj = static_cast<OscInput*>(userPtr);
+
+    // get parameter 1 "handler" as function
+    HSQOBJECT handlerObj;
+    if (SQ_FAILED(sq_getstackobj(vm, 2, &handlerObj))) {
+        return sq_throwerror(vm, "argument 1 is not of type function");
+    }
+    if (sq_gettype(vm, 2) != OT_CLOSURE) {
+        return sq_throwerror(vm, "argument 1 is not of type function");
+    }
+    SQUnsignedInteger nparams, nfreevars;
+    sq_getclosureinfo(vm, 2, &nparams, &nfreevars);
+    sq_addref(vm, &handlerObj);
+    ScriptFunction handler(vm, handlerObj, nparams);
+
+    // call the implementation
+    try {
+        obj->onReceive(handler);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // void method, returns no value
+    return 0;
+}
+
+//
+// Osc.Input url
+//
+SQInteger OscInputurl(HSQUIRRELVM vm)
+{
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "url method needs an instance of Input");
+    }
+    OscInput *obj = static_cast<OscInput*>(userPtr);
+
+    // return value
+    const SQChar* ret;
+    // call the implementation
+    try {
+        ret = obj->getUrl();
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushstring(vm, ret, strlen(ret));
+    return 1;
+}
 
 //
 // Osc.Message class
@@ -329,6 +451,29 @@ void bindOsc(HSQUIRRELVM vm)
     // create package table
     sq_pushstring(vm, "Osc", -1);
     sq_newtable(vm);
+
+    // create class Osc.Input
+    sq_pushstring(vm, "Input", -1);
+    sq_newclass(vm, false);
+    sq_getstackobj(vm, -1, &OscInputObject);
+    sq_settypetag(vm, -1, &OscInputObject);
+
+    // ctor for class Input
+    sq_pushstring(vm, _SC("constructor"), -1);
+    sq_newclosure(vm, &OscInputCtor, 0);
+    sq_newslot(vm, -3, false);
+
+    // methods for class Input
+    sq_pushstring(vm, _SC("onReceive"), -1);
+    sq_newclosure(vm, &OscInputonReceive, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("url"), -1);
+    sq_newclosure(vm, &OscInputurl, 0);
+    sq_newslot(vm, -3, false);
+
+    // push Input to Osc package table
+    sq_newslot(vm, -3, false);
 
     // create class Osc.Message
     sq_pushstring(vm, "Message", -1);

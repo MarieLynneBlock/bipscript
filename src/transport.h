@@ -62,7 +62,7 @@ public:
     }
     void schedule(ScriptFunction &function, unsigned int bar, unsigned int position, unsigned int division);
     void process(bool, jack_position_t&, jack_nframes_t, jack_nframes_t);
-    bool scriptComplete() {}
+    bool scriptComplete() { return false; }
     void reposition() { eventBuffer.recycleRemaining(); }
     bool repositionComplete() { return true; }
 };

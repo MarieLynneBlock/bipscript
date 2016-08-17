@@ -103,6 +103,9 @@ protected:
     void addInteger(int i) {
         sq_pushinteger(vm, i);
     }
+    void addString(const char *s, int size) {
+        sq_pushstring(vm, s, size);
+    }
     virtual bool addParameters() = 0;
 };
 

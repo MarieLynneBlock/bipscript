@@ -18,6 +18,22 @@
 name : Osc
 
 classes:
+    - name: Input
+      cppname: OscInput
+      include: oscinput
+      ctor:
+        parameters:
+        - { name: port, type: integer }
+        - { name: protocol, type: string, optional: true }
+        expression: OscInputFactory::instance().getOscInput
+      methods:
+        - name: onReceive
+          parameters:
+            - { name: handler, type: function }
+        - name: url
+          cppname: getUrl
+          returns: string
+
     - name: Message
       cppname: OscMessage
       include: oscmessage

@@ -22,6 +22,7 @@
 namespace binding
 {
 // object references to types in this package
+extern HSQOBJECT OscInputObject;
 extern HSQOBJECT OscMessageObject;
 extern HSQOBJECT OscOutputObject;
 }
