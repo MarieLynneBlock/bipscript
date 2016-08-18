@@ -1250,38 +1250,51 @@ SQInteger MidiOutputCtor(HSQUIRRELVM vm)
 }
 
 //
-// Midi.Output setDefaultChannel
+// Midi.Output midiChannel
 //
-SQInteger MidiOutputsetDefaultChannel(HSQUIRRELVM vm)
+SQInteger MidiOutputmidiChannel(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
-    // check parameter count
-    if(numargs < 2) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
-    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "setDefaultChannel method needs an instance of Output");
+        return sq_throwerror(vm, "midiChannel method needs an instance of Output");
     }
     MidiOutputPort *obj = static_cast<MidiOutputPort*>(userPtr);
 
-    // get parameter 1 "channel" as integer
-    SQInteger channel;
-    if (SQ_FAILED(sq_getinteger(vm, 2, &channel))){
-        return sq_throwerror(vm, "argument 1 is not of type integer");
+    // return value
+    SQInteger ret;
+    // 1 parameters passed in
+    if(numargs == 2) {
+
+        // get parameter 1 "channel" as integer
+        SQInteger channel;
+        if (SQ_FAILED(sq_getinteger(vm, 2, &channel))){
+            return sq_throwerror(vm, "argument 1 is not of type integer");
+        }
+
+        // call the implementation
+        try {
+            ret = obj->midiChannel(channel);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
     }
 
-    // call the implementation
-    try {
-        obj->setDefaultChannel(channel);
-    }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
+    else {
+        // call the implementation
+        try {
+            ret = obj->midiChannel();
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
     }
 
-    // void method, returns no value
-    return 0;
+    // push return value
+    sq_pushinteger(vm, ret);
+    return 1;
 }
 
 //
@@ -2055,8 +2068,8 @@ void bindMidi(HSQUIRRELVM vm)
     sq_newslot(vm, -3, false);
 
     // methods for class Output
-    sq_pushstring(vm, _SC("setDefaultChannel"), -1);
-    sq_newclosure(vm, &MidiOutputsetDefaultChannel, 0);
+    sq_pushstring(vm, _SC("midiChannel"), -1);
+    sq_newclosure(vm, &MidiOutputmidiChannel, 0);
     sq_newslot(vm, -3, false);
 
     sq_pushstring(vm, _SC("schedule"), -1);

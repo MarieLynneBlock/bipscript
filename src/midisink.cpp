@@ -17,9 +17,8 @@
 
 #include "midisink.h"
 
-void MidiSink::schedule(Control &cc, int bar, int  position, int  division)
+void MidiSink::schedule(Control &cc, int bar, int  position, int  division, unsigned char channel)
 {
-    int channel = 0;
     //std::cout << "schedule cc: " << cc.controller << " @ " << bar << ":" << position << "/" << division << std::endl;
     //if(bar >= AudioEngine::instance()->getCurrentBar()) { // move this check lower, into port?s
     Position start(bar, position, division);

@@ -44,10 +44,10 @@ classes :
           parameters:
             - {name: source, type: EventSource}
 
-        - name: setMidiChannel
-          cppname: setDefaultChannel
+        - name: midiChannel
           parameters:
-            - {name: channel, type: integer }
+            - {name: channel, type: integer, optional: true }
+          returns: integer
 
         - name: setControl
           cppname: setControlValue

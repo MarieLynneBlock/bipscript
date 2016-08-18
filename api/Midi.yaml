@@ -162,8 +162,9 @@ classes :
           - { name: connection, type: string, optional: true }
         expression: MidiOutputPortCache::instance().getMidiOutputPort
       methods:
-      - name: setDefaultChannel
-        parameters: {name: channel, type: integer}
+      - name: midiChannel
+        parameters: {name: channel, type: integer, optional: true }
+        returns: integer
       - name: schedule
         parameters:
           - {name: note, type: Midi.Note}

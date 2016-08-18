@@ -25,10 +25,16 @@ class MidiSink {
     unsigned char defaultChannel;
 public:
     MidiSink() : defaultChannel(1) {}
-    void setDefaultChannel(unsigned char channel) {
-        this->defaultChannel = channel;
+    unsigned char midiChannel() {
+        return this->defaultChannel;
     }
-    void schedule(Control &cc, int bar, int position, int division);
+    unsigned char midiChannel(unsigned char channel) {
+        return this->defaultChannel = channel;
+    }
+    void schedule(Control &cc, int bar, int position, int division, unsigned char channel);
+    void schedule(Control &cc, int bar, int position, int division) {
+        schedule(cc, bar, position, division, defaultChannel);
+    }
     void schedule(Note &note, unsigned int bar, unsigned int position, unsigned int division, unsigned char channel) {
         Position pos(bar, position, division);
         schedule(note, pos, channel);
