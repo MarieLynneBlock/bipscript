@@ -45,13 +45,15 @@ void Extension::shutdown()
 ExtensionManager::ExtensionManager()
 {
     fs::path libPath("/usr/local/lib/bipscript/ext");
-    fs::directory_iterator end_itr;
-    for (fs::directory_iterator itr(libPath); itr != end_itr; ++itr )
-    {
-        if (!fs::is_directory(itr->status()) )
+    if(fs::exists(libPath)) {
+        fs::directory_iterator end_itr;
+        for (fs::directory_iterator itr(libPath); itr != end_itr; ++itr )
         {
-            Extension *ext = new Extension(itr->path().string());
-            extensions.push_back(ext);
+            if (!fs::is_directory(itr->status()) )
+            {
+                Extension *ext = new Extension(itr->path().string());
+                extensions.push_back(ext);
+            }
         }
     }
 }
