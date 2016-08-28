@@ -22,6 +22,8 @@
 namespace binding
 {
 // object references to types in this package
+extern HSQOBJECT TransportMasterObject;
+extern HSQOBJECT TransportTimeSignatureObject;
 }
 
 #endif // BINDTRANSPORT_H

@@ -138,7 +138,6 @@ int ScriptHost::run() {
     binding::bindLv2(vm);    
     binding::bindIO(vm);
     binding::bindOsc(vm);
-    binding::bindTime(vm);
     binding::bindTransport(vm);
     binding::bindMath(vm);
     binding::bindSystem(vm);

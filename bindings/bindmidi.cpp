@@ -18,7 +18,7 @@
 #include "bindmidi.h"
 #include "bindtypes.h"
 #include "bindings.h"
-#include "bindtime.h"
+#include "bindtransport.h"
 
 #include "abcreader.h"
 #include "chordreader.h"
@@ -1092,7 +1092,7 @@ SQInteger MidiTunegetTimeSignature(HSQUIRRELVM vm)
     }
 
     // push return value
-    sq_pushobject(vm, TimeSignatureObject);
+    sq_pushobject(vm, TransportTimeSignatureObject);
     sq_createinstance(vm, -1);
     sq_remove(vm, -2);
     sq_setinstanceup(vm, -1, ret);

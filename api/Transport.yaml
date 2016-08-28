@@ -18,6 +18,7 @@
 name : Transport
 
 methods:
+
     - name: schedule
       include: transport
       parameters:
@@ -33,3 +34,33 @@ methods:
 
     - name: stop
       expression: AudioEngine::instance().transportStop
+
+classes:
+
+    - name: Master
+      cppname: TransportMaster
+      include: transportmaster
+      ctor:
+        parameters:
+          - { name: bpm, type: float }
+          - { name: numerator, type: integer, optional: true }
+          - { name: denominator, type: integer, optional: true }
+        expression: TransportMasterCache::instance().getTransportMaster
+      methods:
+        - name: setTimeSignature
+          parameters:
+            - {name: signature, type: Transport.TimeSignature }
+        - name: setTimeSignature
+          parameters:
+            - {name: numerator, type: integer }
+            - {name: denominator, type: integer }
+
+    - name: TimeSignature
+      include: timesignature
+      methods:
+        - name: numerator
+          cppname: getNumerator
+          returns: integer
+        - name: denominator
+          cppname: getDenominator
+          returns: integer

@@ -144,7 +144,7 @@ classes :
       include: miditune
       methods:
         - name: getTimeSignature
-          returns: Time.Signature
+          returns: Transport.TimeSignature
         - name: getTitle
           returns: string
         - name: getTrackCount

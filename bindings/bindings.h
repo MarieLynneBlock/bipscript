@@ -29,7 +29,6 @@ namespace binding
     void bindMidi(HSQUIRRELVM vm);
     void bindOsc(HSQUIRRELVM vm);
     void bindSystem(HSQUIRRELVM vm);
-    void bindTime(HSQUIRRELVM vm);
     void bindTransport(HSQUIRRELVM vm);
 }
 
