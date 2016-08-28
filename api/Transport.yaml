@@ -47,10 +47,12 @@ classes:
           - { name: denominator, type: integer, optional: true }
         expression: TransportMasterCache::instance().getTransportMaster
       methods:
-        - name: setTimeSignature
+        - name: timeSignature
+          cppname: setTimeSignature
           parameters:
             - {name: signature, type: Transport.TimeSignature }
-        - name: setTimeSignature
+        - name: timeSignature
+          cppname: setTimeSignature
           parameters:
             - {name: numerator, type: integer }
             - {name: denominator, type: integer }

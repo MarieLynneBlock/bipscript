@@ -487,9 +487,9 @@ SQInteger AudioOnsetDetectorconnect(HSQUIRRELVM vm)
 }
 
 //
-// Audio.OnsetDetector setThreshold
+// Audio.OnsetDetector threshold
 //
-SQInteger AudioOnsetDetectorsetThreshold(HSQUIRRELVM vm)
+SQInteger AudioOnsetDetectorthreshold(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
@@ -499,7 +499,7 @@ SQInteger AudioOnsetDetectorsetThreshold(HSQUIRRELVM vm)
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "setThreshold method needs an instance of OnsetDetector");
+        return sq_throwerror(vm, "threshold method needs an instance of OnsetDetector");
     }
     OnsetDetector *obj = static_cast<OnsetDetector*>(userPtr);
 
@@ -522,9 +522,9 @@ SQInteger AudioOnsetDetectorsetThreshold(HSQUIRRELVM vm)
 }
 
 //
-// Audio.OnsetDetector setSilence
+// Audio.OnsetDetector silence
 //
-SQInteger AudioOnsetDetectorsetSilence(HSQUIRRELVM vm)
+SQInteger AudioOnsetDetectorsilence(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
@@ -534,7 +534,7 @@ SQInteger AudioOnsetDetectorsetSilence(HSQUIRRELVM vm)
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "setSilence method needs an instance of OnsetDetector");
+        return sq_throwerror(vm, "silence method needs an instance of OnsetDetector");
     }
     OnsetDetector *obj = static_cast<OnsetDetector*>(userPtr);
 
@@ -949,12 +949,12 @@ void bindAudio(HSQUIRRELVM vm)
     sq_newclosure(vm, &AudioOnsetDetectorconnect, 0);
     sq_newslot(vm, -3, false);
 
-    sq_pushstring(vm, _SC("setThreshold"), -1);
-    sq_newclosure(vm, &AudioOnsetDetectorsetThreshold, 0);
+    sq_pushstring(vm, _SC("threshold"), -1);
+    sq_newclosure(vm, &AudioOnsetDetectorthreshold, 0);
     sq_newslot(vm, -3, false);
 
-    sq_pushstring(vm, _SC("setSilence"), -1);
-    sq_newclosure(vm, &AudioOnsetDetectorsetSilence, 0);
+    sq_pushstring(vm, _SC("silence"), -1);
+    sq_newclosure(vm, &AudioOnsetDetectorsilence, 0);
     sq_newslot(vm, -3, false);
 
     // push OnsetDetector to Audio package table

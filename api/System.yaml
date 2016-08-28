@@ -18,7 +18,8 @@
 name : System
 
 methods:
-    - name: getArgument
+    - name: argument
+      cppname: getArgument
       include: systempackage
       parameters:
         - {name: index, type: integer}

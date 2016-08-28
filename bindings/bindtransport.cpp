@@ -222,9 +222,9 @@ SQInteger TransportMasterCtor(HSQUIRRELVM vm)
 }
 
 //
-// Transport.Master setTimeSignature
+// Transport.Master timeSignature
 //
-SQInteger TransportMastersetTimeSignature(HSQUIRRELVM vm)
+SQInteger TransportMastertimeSignature(HSQUIRRELVM vm)
 {
     SQObjectType overrideType = sq_gettype(vm, 2);
     SQUserPointer overrideTypeTag;
@@ -241,7 +241,7 @@ SQInteger TransportMastersetTimeSignature(HSQUIRRELVM vm)
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "setTimeSignature method needs an instance of Master");
+        return sq_throwerror(vm, "timeSignature method needs an instance of Master");
     }
     TransportMaster *obj = static_cast<TransportMaster*>(userPtr);
 
@@ -272,7 +272,7 @@ SQInteger TransportMastersetTimeSignature(HSQUIRRELVM vm)
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "setTimeSignature method needs an instance of Master");
+        return sq_throwerror(vm, "timeSignature method needs an instance of Master");
     }
     TransportMaster *obj = static_cast<TransportMaster*>(userPtr);
 
@@ -396,8 +396,8 @@ void bindTransport(HSQUIRRELVM vm)
     sq_newslot(vm, -3, false);
 
     // methods for class Master
-    sq_pushstring(vm, _SC("setTimeSignature"), -1);
-    sq_newclosure(vm, &TransportMastersetTimeSignature, 0);
+    sq_pushstring(vm, _SC("timeSignature"), -1);
+    sq_newclosure(vm, &TransportMastertimeSignature, 0);
     sq_newslot(vm, -3, false);
 
     // push Master to Transport package table

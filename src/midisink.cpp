@@ -31,10 +31,10 @@ void MidiSink::schedule(const Note &note, Position &position, unsigned char chan
     if(channel < 1 || channel > 16) {
         throw std::logic_error("MIDI channel must be between 1 and 16");
     }
-    MidiEvent* evt = new MidiEvent(position, note.pitch, note.velocity(), 0x90, channel - 1);
+    MidiEvent* evt = new MidiEvent(position, note.pitch(), note.velocity(), 0x90, channel - 1);
     addMidiEvent(evt);
     Position endPosition = position + note.duration;
-    MidiEvent* offevt = new MidiEvent(endPosition, note.pitch, 0, 0x80, channel - 1);
+    MidiEvent* offevt = new MidiEvent(endPosition, note.pitch(), 0, 0x80, channel - 1);
     addMidiEvent(offevt);
 }
 

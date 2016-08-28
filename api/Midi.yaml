@@ -54,7 +54,8 @@ classes :
       - name: read
         returns: Midi.Pattern
         parameters: {name: tab, type: string}
-      - name: setVelocity
+      - name: velocity
+        cppname: setVelocity
         parameters:
           - {name: pitch, type: integer}
           - {name: code, type: string}
@@ -83,9 +84,10 @@ classes :
           parameters:
             - {name: amount, type: integer}
         - name: velocity
+          returns: integer
           parameters:
             - {name: value, type: integer, optional: true}
-        - name: getPitch
+        - name: pitch
           returns: integer
 
     - name: Control
@@ -143,13 +145,15 @@ classes :
       cppname: MidiTune
       include: miditune
       methods:
-        - name: getTimeSignature
+        - name: timeSignature
+          cppname: getTimeSignature
           returns: Transport.TimeSignature
-        - name: getTitle
+        - name: title
+          cppname: getTitle
           returns: string
-        - name: getTrackCount
+        - name: trackCount
           returns: integer
-        - name: getTrack
+        - name: track
           returns: Midi.Pattern
           parameters:
             - {name: number, type: integer}
@@ -217,7 +221,8 @@ classes :
         - name: onCount
           parameters:
             - { name: handler, type: function }
-        - name: setNoteWeight
+        - name: noteWeight
+          cppname: setNoteWeight
           parameters:
             - { name: note, type: integer }
             - { name: weight, type: float }

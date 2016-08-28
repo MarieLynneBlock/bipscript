@@ -24,28 +24,28 @@
 class Note
 {
     uint8_t vel;
+    int value;
 public:
-    int pitch;
     Duration duration;
     int channel;
     Note(int pitch, uint8_t velocity, int duration, int division)  :
-        pitch(pitch), vel(velocity), duration(0, duration, division), channel(0) {}
+        value(pitch), vel(velocity), duration(0, duration, division), channel(0) {}
     Note(int pitch, uint8_t velocity, Duration duration)  :
-        pitch(pitch), vel(velocity), duration(duration), channel(0) {}
+        value(pitch), vel(velocity), duration(duration), channel(0) {}
     Note(int pitch, uint8_t velocity, int channel) :
-        pitch(pitch), vel(velocity), duration(0, 0, 1), channel(channel) {}
-    unsigned int getPitch() {
-        return pitch;
+        value(pitch), vel(velocity), duration(0, 0, 1), channel(channel) {}
+    unsigned int pitch() const {
+        return value;
     }
     void transpose(int amount) {
-        int value = amount + pitch;
-        if(value < 0) {
+        int newval = value + amount;
+        if(newval < 0) {
             throw std::logic_error("Cannot transpose this note that low");
         }
-        else if(value > 127) {
+        else if(newval > 127) {
             throw std::logic_error("Cannot transpose this note that high");
         }
-        pitch = value;
+        value = newval;
     }
     uint8_t velocity() const {
         return vel;

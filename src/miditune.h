@@ -21,10 +21,10 @@ public:
     void addMidiNote(uint32_t tracknum, Note &note, Position &position) {
         tracks[tracknum].addNote(note, position);
     }
-    uint32_t getTrackCount() {
+    uint32_t trackCount() {
         return numTracks;
     }
-    Pattern *getTrack(uint32_t number);
+    Pattern *track(uint32_t number);
     void setTimeSignature(float num, float denom) {
         timeSignature = TimeSignature(true, num, denom);
     }

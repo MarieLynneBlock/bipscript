@@ -25,9 +25,9 @@ namespace binding {
 
 // object references to types in this package
 //
-// System getArgument
+// System argument
 //
-SQInteger SystemgetArgument(HSQUIRRELVM vm)
+SQInteger Systemargument(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
@@ -66,9 +66,9 @@ void bindSystem(HSQUIRRELVM vm)
     sq_pushstring(vm, "System", -1);
     sq_newtable(vm);
 
-    // static method getArgument
-    sq_pushstring(vm, _SC("getArgument"), -1);
-    sq_newclosure(vm, &SystemgetArgument, 0);
+    // static method argument
+    sq_pushstring(vm, _SC("argument"), -1);
+    sq_newclosure(vm, &Systemargument, 0);
     sq_newslot(vm, -3, false);
 
     // push package "System" to root table

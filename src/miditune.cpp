@@ -1,7 +1,7 @@
 #include "miditune.h"
 
 
-Pattern *MidiTune::getTrack(uint32_t tracknum)
+Pattern *MidiTune::track(uint32_t tracknum)
 {
     if(!tracknum) {
         throw std::logic_error("there is no track zero");

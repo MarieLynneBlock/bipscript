@@ -124,11 +124,11 @@ Pattern *ABCReader::read(const char *abc, const char *key, const char *noteLengt
     tunes.pop_back();
     // determine track index
     uint32_t trackIndex = 1;
-    if(tune->getTrackCount() > 1) {
+    if(tune->trackCount() > 1) {
         trackIndex = 2;
     }
     // clone pattern from tune
-    Pattern *ret = new Pattern(*tune->getTrack(trackIndex));
+    Pattern *ret = new Pattern(*tune->track(trackIndex));
     delete tune;
     return ret;
 }

@@ -67,10 +67,12 @@ classes :
       - name: connect
         parameters:
         - { name: source, type: AudioSource }
-      - name: setThreshold
+      - name: threshold
+        cppname: setThreshold
         parameters:
         - { name: threshold, type: float }
-      - name: setSilence
+      - name: silence
+        cppname: setSilence
         parameters:
         - { name: threshold, type: float }
 

@@ -403,9 +403,9 @@ SQInteger MidiDrumTabReaderread(HSQUIRRELVM vm)
 }
 
 //
-// Midi.DrumTabReader setVelocity
+// Midi.DrumTabReader velocity
 //
-SQInteger MidiDrumTabReadersetVelocity(HSQUIRRELVM vm)
+SQInteger MidiDrumTabReadervelocity(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
@@ -415,7 +415,7 @@ SQInteger MidiDrumTabReadersetVelocity(HSQUIRRELVM vm)
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "setVelocity method needs an instance of DrumTabReader");
+        return sq_throwerror(vm, "velocity method needs an instance of DrumTabReader");
     }
     DrumTabReader *obj = static_cast<DrumTabReader*>(userPtr);
 
@@ -597,6 +597,8 @@ SQInteger MidiNotevelocity(HSQUIRRELVM vm)
     }
     Note *obj = static_cast<Note*>(userPtr);
 
+    // return value
+    SQInteger ret;
     // 1 parameters passed in
     if(numargs == 2) {
 
@@ -608,7 +610,7 @@ SQInteger MidiNotevelocity(HSQUIRRELVM vm)
 
         // call the implementation
         try {
-            obj->velocity(value);
+            ret = obj->velocity(value);
         }
         catch(std::exception const& e) {
             return sq_throwerror(vm, e.what());
@@ -618,26 +620,27 @@ SQInteger MidiNotevelocity(HSQUIRRELVM vm)
     else {
         // call the implementation
         try {
-            obj->velocity();
+            ret = obj->velocity();
         }
         catch(std::exception const& e) {
             return sq_throwerror(vm, e.what());
         }
     }
 
-    // void method, returns no value
-    return 0;
+    // push return value
+    sq_pushinteger(vm, ret);
+    return 1;
 }
 
 //
-// Midi.Note getPitch
+// Midi.Note pitch
 //
-SQInteger MidiNotegetPitch(HSQUIRRELVM vm)
+SQInteger MidiNotepitch(HSQUIRRELVM vm)
 {
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "getPitch method needs an instance of Note");
+        return sq_throwerror(vm, "pitch method needs an instance of Note");
     }
     Note *obj = static_cast<Note*>(userPtr);
 
@@ -645,7 +648,7 @@ SQInteger MidiNotegetPitch(HSQUIRRELVM vm)
     SQInteger ret;
     // call the implementation
     try {
-        ret = obj->getPitch();
+        ret = obj->pitch();
     }
     catch(std::exception const& e) {
         return sq_throwerror(vm, e.what());
@@ -1070,14 +1073,14 @@ SQInteger MidiPatterntranspose(HSQUIRRELVM vm)
 //
 
 //
-// Midi.Tune getTimeSignature
+// Midi.Tune timeSignature
 //
-SQInteger MidiTunegetTimeSignature(HSQUIRRELVM vm)
+SQInteger MidiTunetimeSignature(HSQUIRRELVM vm)
 {
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "getTimeSignature method needs an instance of Tune");
+        return sq_throwerror(vm, "timeSignature method needs an instance of Tune");
     }
     MidiTune *obj = static_cast<MidiTune*>(userPtr);
 
@@ -1102,14 +1105,14 @@ SQInteger MidiTunegetTimeSignature(HSQUIRRELVM vm)
 }
 
 //
-// Midi.Tune getTitle
+// Midi.Tune title
 //
-SQInteger MidiTunegetTitle(HSQUIRRELVM vm)
+SQInteger MidiTunetitle(HSQUIRRELVM vm)
 {
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "getTitle method needs an instance of Tune");
+        return sq_throwerror(vm, "title method needs an instance of Tune");
     }
     MidiTune *obj = static_cast<MidiTune*>(userPtr);
 
@@ -1129,14 +1132,14 @@ SQInteger MidiTunegetTitle(HSQUIRRELVM vm)
 }
 
 //
-// Midi.Tune getTrackCount
+// Midi.Tune trackCount
 //
-SQInteger MidiTunegetTrackCount(HSQUIRRELVM vm)
+SQInteger MidiTunetrackCount(HSQUIRRELVM vm)
 {
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "getTrackCount method needs an instance of Tune");
+        return sq_throwerror(vm, "trackCount method needs an instance of Tune");
     }
     MidiTune *obj = static_cast<MidiTune*>(userPtr);
 
@@ -1144,7 +1147,7 @@ SQInteger MidiTunegetTrackCount(HSQUIRRELVM vm)
     SQInteger ret;
     // call the implementation
     try {
-        ret = obj->getTrackCount();
+        ret = obj->trackCount();
     }
     catch(std::exception const& e) {
         return sq_throwerror(vm, e.what());
@@ -1156,9 +1159,9 @@ SQInteger MidiTunegetTrackCount(HSQUIRRELVM vm)
 }
 
 //
-// Midi.Tune getTrack
+// Midi.Tune track
 //
-SQInteger MidiTunegetTrack(HSQUIRRELVM vm)
+SQInteger MidiTunetrack(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
@@ -1168,7 +1171,7 @@ SQInteger MidiTunegetTrack(HSQUIRRELVM vm)
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "getTrack method needs an instance of Tune");
+        return sq_throwerror(vm, "track method needs an instance of Tune");
     }
     MidiTune *obj = static_cast<MidiTune*>(userPtr);
 
@@ -1182,7 +1185,7 @@ SQInteger MidiTunegetTrack(HSQUIRRELVM vm)
     Pattern* ret;
     // call the implementation
     try {
-        ret = obj->getTrack(number);
+        ret = obj->track(number);
     }
     catch(std::exception const& e) {
         return sq_throwerror(vm, e.what());
@@ -1752,9 +1755,9 @@ SQInteger MidiBeatTrackeronCount(HSQUIRRELVM vm)
 }
 
 //
-// Midi.BeatTracker setNoteWeight
+// Midi.BeatTracker noteWeight
 //
-SQInteger MidiBeatTrackersetNoteWeight(HSQUIRRELVM vm)
+SQInteger MidiBeatTrackernoteWeight(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
@@ -1764,7 +1767,7 @@ SQInteger MidiBeatTrackersetNoteWeight(HSQUIRRELVM vm)
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "setNoteWeight method needs an instance of BeatTracker");
+        return sq_throwerror(vm, "noteWeight method needs an instance of BeatTracker");
     }
     MidiBeatTracker *obj = static_cast<MidiBeatTracker*>(userPtr);
 
@@ -1892,8 +1895,8 @@ void bindMidi(HSQUIRRELVM vm)
     sq_newclosure(vm, &MidiDrumTabReaderread, 0);
     sq_newslot(vm, -3, false);
 
-    sq_pushstring(vm, _SC("setVelocity"), -1);
-    sq_newclosure(vm, &MidiDrumTabReadersetVelocity, 0);
+    sq_pushstring(vm, _SC("velocity"), -1);
+    sq_newclosure(vm, &MidiDrumTabReadervelocity, 0);
     sq_newslot(vm, -3, false);
 
     // push DrumTabReader to Midi package table
@@ -1934,8 +1937,8 @@ void bindMidi(HSQUIRRELVM vm)
     sq_newclosure(vm, &MidiNotevelocity, 0);
     sq_newslot(vm, -3, false);
 
-    sq_pushstring(vm, _SC("getPitch"), -1);
-    sq_newclosure(vm, &MidiNotegetPitch, 0);
+    sq_pushstring(vm, _SC("pitch"), -1);
+    sq_newclosure(vm, &MidiNotepitch, 0);
     sq_newslot(vm, -3, false);
 
     // push Note to Midi package table
@@ -2037,20 +2040,20 @@ void bindMidi(HSQUIRRELVM vm)
 
 
     // methods for class Tune
-    sq_pushstring(vm, _SC("getTimeSignature"), -1);
-    sq_newclosure(vm, &MidiTunegetTimeSignature, 0);
+    sq_pushstring(vm, _SC("timeSignature"), -1);
+    sq_newclosure(vm, &MidiTunetimeSignature, 0);
     sq_newslot(vm, -3, false);
 
-    sq_pushstring(vm, _SC("getTitle"), -1);
-    sq_newclosure(vm, &MidiTunegetTitle, 0);
+    sq_pushstring(vm, _SC("title"), -1);
+    sq_newclosure(vm, &MidiTunetitle, 0);
     sq_newslot(vm, -3, false);
 
-    sq_pushstring(vm, _SC("getTrackCount"), -1);
-    sq_newclosure(vm, &MidiTunegetTrackCount, 0);
+    sq_pushstring(vm, _SC("trackCount"), -1);
+    sq_newclosure(vm, &MidiTunetrackCount, 0);
     sq_newslot(vm, -3, false);
 
-    sq_pushstring(vm, _SC("getTrack"), -1);
-    sq_newclosure(vm, &MidiTunegetTrack, 0);
+    sq_pushstring(vm, _SC("track"), -1);
+    sq_newclosure(vm, &MidiTunetrack, 0);
     sq_newslot(vm, -3, false);
 
     // push Tune to Midi package table
@@ -2133,8 +2136,8 @@ void bindMidi(HSQUIRRELVM vm)
     sq_newclosure(vm, &MidiBeatTrackeronCount, 0);
     sq_newslot(vm, -3, false);
 
-    sq_pushstring(vm, _SC("setNoteWeight"), -1);
-    sq_newclosure(vm, &MidiBeatTrackersetNoteWeight, 0);
+    sq_pushstring(vm, _SC("noteWeight"), -1);
+    sq_newclosure(vm, &MidiBeatTrackernoteWeight, 0);
     sq_newslot(vm, -3, false);
 
     sq_pushstring(vm, _SC("stopOnSilence"), -1);
