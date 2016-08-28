@@ -26,3 +26,10 @@ methods:
         - {name: position, type: integer, optional: true }
         - {name: division, type: integer, optional: true }
       expression: Transport::instance().schedule
+
+    - name: start
+      include: audioengine
+      expression: AudioEngine::instance().transportStart
+
+    - name: stop
+      expression: AudioEngine::instance().transportStop

@@ -17,17 +17,6 @@
 
 name : Time
 
-methods:
-    - name: start
-      include: audioengine
-      expression: AudioEngine::instance().transportStart
-
-    - name: stop
-      expression: AudioEngine::instance().transportStop
-
-    # name: now
-    #  returns: Position
-
 classes :
 
     - name: Position

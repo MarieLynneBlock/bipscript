@@ -19,7 +19,6 @@
 #include "bindtypes.h"
 #include "bindings.h"
 
-#include "audioengine.h"
 #include "timesignature.h"
 #include "transportmaster.h"
 
@@ -29,38 +28,6 @@ namespace binding {
 HSQOBJECT TimePositionObject;
 HSQOBJECT TimeSignatureObject;
 HSQOBJECT TimeTransportMasterObject;
-//
-// Time start
-//
-SQInteger Timestart(HSQUIRRELVM vm)
-{
-    // call the implementation
-    try {
-        AudioEngine::instance().transportStart();
-    }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
-    }
-
-    // void method, returns no value
-    return 0;
-}
-//
-// Time stop
-//
-SQInteger Timestop(HSQUIRRELVM vm)
-{
-    // call the implementation
-    try {
-        AudioEngine::instance().transportStop();
-    }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
-    }
-
-    // void method, returns no value
-    return 0;
-}
 
 //
 // Time.Position class
@@ -288,16 +255,6 @@ void bindTime(HSQUIRRELVM vm)
     // create package table
     sq_pushstring(vm, "Time", -1);
     sq_newtable(vm);
-
-    // static method start
-    sq_pushstring(vm, _SC("start"), -1);
-    sq_newclosure(vm, &Timestart, 0);
-    sq_newslot(vm, -3, false);
-
-    // static method stop
-    sq_pushstring(vm, _SC("stop"), -1);
-    sq_newclosure(vm, &Timestop, 0);
-    sq_newslot(vm, -3, false);
 
     // create class Time.Position
     sq_pushstring(vm, "Position", -1);

@@ -20,6 +20,7 @@
 #include "bindings.h"
 
 #include "transport.h"
+#include "audioengine.h"
 
 namespace binding {
 
@@ -108,6 +109,38 @@ SQInteger Transportschedule(HSQUIRRELVM vm)
     // void method, returns no value
     return 0;
 }
+//
+// Transport start
+//
+SQInteger Transportstart(HSQUIRRELVM vm)
+{
+    // call the implementation
+    try {
+        AudioEngine::instance().transportStart();
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // void method, returns no value
+    return 0;
+}
+//
+// Transport stop
+//
+SQInteger Transportstop(HSQUIRRELVM vm)
+{
+    // call the implementation
+    try {
+        AudioEngine::instance().transportStop();
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // void method, returns no value
+    return 0;
+}
 
 
 void bindTransport(HSQUIRRELVM vm)
@@ -119,6 +152,16 @@ void bindTransport(HSQUIRRELVM vm)
     // static method schedule
     sq_pushstring(vm, _SC("schedule"), -1);
     sq_newclosure(vm, &Transportschedule, 0);
+    sq_newslot(vm, -3, false);
+
+    // static method start
+    sq_pushstring(vm, _SC("start"), -1);
+    sq_newclosure(vm, &Transportstart, 0);
+    sq_newslot(vm, -3, false);
+
+    // static method stop
+    sq_pushstring(vm, _SC("stop"), -1);
+    sq_newclosure(vm, &Transportstop, 0);
     sq_newslot(vm, -3, false);
 
     // push package "Transport" to root table
