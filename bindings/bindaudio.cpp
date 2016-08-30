@@ -137,7 +137,7 @@ SQInteger AudioMixeraddGainController(HSQUIRRELVM vm)
 SQInteger AudioMixerconnect(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
-    // optional overriden parameter not here
+    // optional overridden parameter not here
     if(numargs < 3) {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
@@ -234,7 +234,7 @@ SQInteger AudioMixerconnect(HSQUIRRELVM vm)
     // void method, returns no value
     return 0;
     }
-    if(overrideType == OT_ARRAY) {
+    else if(overrideType == OT_ARRAY) {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
     if(numargs < 2) {
@@ -294,7 +294,7 @@ SQInteger AudioMixerconnect(HSQUIRRELVM vm)
     return 0;
     }
     else {
-        return sq_throwerror(vm, "argument 2 is not an expected type");
+        return sq_throwerror(vm, "argument 2 is not of type {float, array}");
     }
 }
 

@@ -1360,7 +1360,7 @@ SQInteger MidiOutputschedule(HSQUIRRELVM vm)
     // void method, returns no value
     return 0;
     }
-    if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiPatternObject) {
+    else if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiPatternObject) {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
     if(numargs < 3) {
@@ -1397,7 +1397,7 @@ SQInteger MidiOutputschedule(HSQUIRRELVM vm)
     // void method, returns no value
     return 0;
     }
-    if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiControlObject) {
+    else if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiControlObject) {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
     if(numargs < 5) {
@@ -1446,7 +1446,7 @@ SQInteger MidiOutputschedule(HSQUIRRELVM vm)
     // void method, returns no value
     return 0;
     }
-    if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiProgramChangeObject) {
+    else if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiProgramChangeObject) {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
     if(numargs < 5) {
@@ -1496,7 +1496,7 @@ SQInteger MidiOutputschedule(HSQUIRRELVM vm)
     return 0;
     }
     else {
-        return sq_throwerror(vm, "argument 1 is not an expected type");
+        return sq_throwerror(vm, "argument 1 is not of type {Midi.Note, Midi.Pattern, Midi.Control, Midi.ProgramChange}");
     }
 }
 

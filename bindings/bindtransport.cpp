@@ -263,7 +263,7 @@ SQInteger TransportMastertimeSignature(HSQUIRRELVM vm)
     // void method, returns no value
     return 0;
     }
-    if(overrideType == OT_INTEGER) {
+    else if(overrideType == OT_INTEGER) {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
     if(numargs < 3) {
@@ -300,7 +300,7 @@ SQInteger TransportMastertimeSignature(HSQUIRRELVM vm)
     return 0;
     }
     else {
-        return sq_throwerror(vm, "argument 1 is not an expected type");
+        return sq_throwerror(vm, "argument 1 is not of type {Transport.TimeSignature, integer}");
     }
 }
 

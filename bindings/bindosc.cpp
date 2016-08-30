@@ -222,7 +222,7 @@ SQInteger OscMessageadd(HSQUIRRELVM vm)
     // void method, returns no value
     return 0;
     }
-    if(overrideType == OT_FLOAT) {
+    else if(overrideType == OT_FLOAT) {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
     if(numargs < 2) {
@@ -252,7 +252,7 @@ SQInteger OscMessageadd(HSQUIRRELVM vm)
     // void method, returns no value
     return 0;
     }
-    if(overrideType == OT_STRING) {
+    else if(overrideType == OT_STRING) {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
     if(numargs < 2) {
@@ -282,7 +282,7 @@ SQInteger OscMessageadd(HSQUIRRELVM vm)
     // void method, returns no value
     return 0;
     }
-    if(overrideType == OT_BOOL) {
+    else if(overrideType == OT_BOOL) {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
     if(numargs < 2) {
@@ -313,7 +313,7 @@ SQInteger OscMessageadd(HSQUIRRELVM vm)
     return 0;
     }
     else {
-        return sq_throwerror(vm, "argument 1 is not an expected type");
+        return sq_throwerror(vm, "argument 1 is not of type {integer, float, string, bool}");
     }
 }
 

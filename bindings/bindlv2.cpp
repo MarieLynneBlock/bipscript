@@ -34,7 +34,7 @@ HSQOBJECT Lv2StateObject;
 SQInteger Lv2PluginCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
-    // optional overriden parameter not here
+    // optional overridden parameter not here
     if(numargs < 3) {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
@@ -113,7 +113,7 @@ SQInteger Lv2PluginCtor(HSQUIRRELVM vm)
     //sq_setreleasehook(vm, 1, release_hook);
     return 1;
     }
-    if(overrideType == OT_INSTANCE && overrideTypeTag == &Lv2StateObject) {
+    else if(overrideType == OT_INSTANCE && overrideTypeTag == &Lv2StateObject) {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
     if(numargs < 2) {
@@ -166,7 +166,7 @@ SQInteger Lv2PluginCtor(HSQUIRRELVM vm)
     return 1;
     }
     else {
-        return sq_throwerror(vm, "argument 2 is not an expected type");
+        return sq_throwerror(vm, "argument 2 is not of type {string, Lv2.State}");
     }
 }
 
@@ -520,7 +520,7 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
     // void method, returns no value
     return 0;
     }
-    if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiPatternObject) {
+    else if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiPatternObject) {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
     if(numargs < 3) {
@@ -631,7 +631,7 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
     // void method, returns no value
     return 0;
     }
-    if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiPitchBendObject) {
+    else if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiPitchBendObject) {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
     if(numargs < 5) {
@@ -680,7 +680,7 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
     // void method, returns no value
     return 0;
     }
-    if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiProgramChangeObject) {
+    else if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiProgramChangeObject) {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
     if(numargs < 5) {
@@ -730,7 +730,7 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
     return 0;
     }
     else {
-        return sq_throwerror(vm, "argument 1 is not an expected type");
+        return sq_throwerror(vm, "argument 1 is not of type {Midi.Note, Midi.Pattern, Midi.PitchBend, Midi.ProgramChange}");
     }
 }
 
@@ -871,7 +871,7 @@ SQInteger Lv2StateCtor(HSQUIRRELVM vm)
     //sq_setreleasehook(vm, 1, release_hook);
     return 1;
     }
-    if(overrideType == OT_STRING) {
+    else if(overrideType == OT_STRING) {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
     if(numargs < 2) {
@@ -898,7 +898,7 @@ SQInteger Lv2StateCtor(HSQUIRRELVM vm)
     return 1;
     }
     else {
-        return sq_throwerror(vm, "argument 1 is not an expected type");
+        return sq_throwerror(vm, "argument 1 is not of type {table, string}");
     }
 }
 
