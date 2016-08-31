@@ -132,15 +132,7 @@ int ScriptHost::run() {
     sqstd_register_iolib(vm);
     sqstd_register_stringlib(vm);
     // add local modules to squirrel
-    // bindModules(vm);
-    binding::bindAudio(vm);
-    binding::bindMidi(vm);
-    binding::bindLv2(vm);    
-    binding::bindIO(vm);
-    binding::bindOsc(vm);
-    binding::bindTransport(vm);
-    binding::bindMath(vm);
-    binding::bindSystem(vm);
+    binding::bindAll(vm);
     // pop root table
     sq_pop(vm, 1);
 

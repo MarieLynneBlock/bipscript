@@ -21,8 +21,10 @@
 
 namespace binding
 {
-// object references to types in this package
-extern HSQOBJECT MathRandomObject;
+    // object references to types in this package
+    extern HSQOBJECT MathRandomObject;
+    // method to bind this package
+    void bindMath(HSQUIRRELVM vm);
 }
 
 #endif // BINDMATH_H

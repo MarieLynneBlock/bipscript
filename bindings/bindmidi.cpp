@@ -17,7 +17,6 @@
 
 #include "bindmidi.h"
 #include "bindtypes.h"
-#include "bindings.h"
 #include "bindtransport.h"
 
 #include "abcreader.h"

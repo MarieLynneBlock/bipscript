@@ -17,19 +17,28 @@
 #ifndef BINDINGS_H
 #define BINDINGS_H
 
-#include "squirrel.h"
+#include "bindaudio.h"
+#include "bindio.h"
+#include "bindlv2.h"
+#include "bindmath.h"
+#include "bindmidi.h"
+#include "bindosc.h"
+#include "bindsystem.h"
+#include "bindtransport.h"
 
 namespace binding
 {
-    // package binding methods
-    void bindAudio(HSQUIRRELVM vm);
-    void bindIO(HSQUIRRELVM vm);
-    void bindLv2(HSQUIRRELVM vm);
-    void bindMath(HSQUIRRELVM vm);
-    void bindMidi(HSQUIRRELVM vm);
-    void bindOsc(HSQUIRRELVM vm);
-    void bindSystem(HSQUIRRELVM vm);
-    void bindTransport(HSQUIRRELVM vm);
+    void bindAll(HSQUIRRELVM vm)
+    {
+        bindAudio(vm);
+        bindIO(vm);
+        bindLv2(vm);
+        bindMath(vm);
+        bindMidi(vm);
+        bindOsc(vm);
+        bindSystem(vm);
+        bindTransport(vm);
+    }
 }
 
 #endif // BINDINGS_H

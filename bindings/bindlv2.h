@@ -21,9 +21,11 @@
 
 namespace binding
 {
-// object references to types in this package
-extern HSQOBJECT Lv2PluginObject;
-extern HSQOBJECT Lv2StateObject;
+    // object references to types in this package
+    extern HSQOBJECT Lv2PluginObject;
+    extern HSQOBJECT Lv2StateObject;
+    // method to bind this package
+    void bindLv2(HSQUIRRELVM vm);
 }
 
 #endif // BINDLV2_H

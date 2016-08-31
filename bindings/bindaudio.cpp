@@ -17,7 +17,6 @@
 
 #include "bindaudio.h"
 #include "bindtypes.h"
-#include "bindings.h"
 
 #include "mixer.h"
 #include "onsetdetector.h"

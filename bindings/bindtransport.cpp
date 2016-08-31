@@ -17,7 +17,6 @@
 
 #include "bindtransport.h"
 #include "bindtypes.h"
-#include "bindings.h"
 
 #include "transport.h"
 #include "audioengine.h"

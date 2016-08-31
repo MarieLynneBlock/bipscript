@@ -17,7 +17,6 @@
 
 #include "bindosc.h"
 #include "bindtypes.h"
-#include "bindings.h"
 
 #include "oscinput.h"
 #include "oscmessage.h"

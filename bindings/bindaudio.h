@@ -21,14 +21,16 @@
 
 namespace binding
 {
-// object references to types in this package
-extern HSQOBJECT AudioMixerObject;
-extern HSQOBJECT AudioOnsetDetectorObject;
-extern HSQOBJECT AudioOutputObject;
-extern HSQOBJECT AudioInputObject;
-extern HSQOBJECT AudioStereoInputObject;
-extern HSQOBJECT AudioStereoOutputObject;
-extern HSQOBJECT AudioBeatTrackerObject;
+    // object references to types in this package
+    extern HSQOBJECT AudioMixerObject;
+    extern HSQOBJECT AudioOnsetDetectorObject;
+    extern HSQOBJECT AudioOutputObject;
+    extern HSQOBJECT AudioInputObject;
+    extern HSQOBJECT AudioStereoInputObject;
+    extern HSQOBJECT AudioStereoOutputObject;
+    extern HSQOBJECT AudioBeatTrackerObject;
+    // method to bind this package
+    void bindAudio(HSQUIRRELVM vm);
 }
 
 #endif // BINDAUDIO_H

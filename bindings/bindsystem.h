@@ -21,7 +21,9 @@
 
 namespace binding
 {
-// object references to types in this package
+    // object references to types in this package
+    // method to bind this package
+    void bindSystem(HSQUIRRELVM vm);
 }
 
 #endif // BINDSYSTEM_H

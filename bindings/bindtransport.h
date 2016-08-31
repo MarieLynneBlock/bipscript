@@ -21,9 +21,11 @@
 
 namespace binding
 {
-// object references to types in this package
-extern HSQOBJECT TransportMasterObject;
-extern HSQOBJECT TransportTimeSignatureObject;
+    // object references to types in this package
+    extern HSQOBJECT TransportMasterObject;
+    extern HSQOBJECT TransportTimeSignatureObject;
+    // method to bind this package
+    void bindTransport(HSQUIRRELVM vm);
 }
 
 #endif // BINDTRANSPORT_H

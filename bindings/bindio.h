@@ -21,8 +21,10 @@
 
 namespace binding
 {
-// object references to types in this package
-extern HSQOBJECT IOFileObject;
+    // object references to types in this package
+    extern HSQOBJECT IOFileObject;
+    // method to bind this package
+    void bindIO(HSQUIRRELVM vm);
 }
 
 #endif // BINDIO_H

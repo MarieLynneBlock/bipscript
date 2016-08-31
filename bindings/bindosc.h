@@ -21,10 +21,12 @@
 
 namespace binding
 {
-// object references to types in this package
-extern HSQOBJECT OscInputObject;
-extern HSQOBJECT OscMessageObject;
-extern HSQOBJECT OscOutputObject;
+    // object references to types in this package
+    extern HSQOBJECT OscInputObject;
+    extern HSQOBJECT OscMessageObject;
+    extern HSQOBJECT OscOutputObject;
+    // method to bind this package
+    void bindOsc(HSQUIRRELVM vm);
 }
 
 #endif // BINDOSC_H

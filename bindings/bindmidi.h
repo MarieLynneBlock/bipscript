@@ -21,21 +21,23 @@
 
 namespace binding
 {
-// object references to types in this package
-extern HSQOBJECT MidiABCReaderObject;
-extern HSQOBJECT MidiChordReaderObject;
-extern HSQOBJECT MidiDrumTabReaderObject;
-extern HSQOBJECT MidiInputObject;
-extern HSQOBJECT MidiNoteObject;
-extern HSQOBJECT MidiControlObject;
-extern HSQOBJECT MidiInputBufferObject;
-extern HSQOBJECT MidiMMLReaderObject;
-extern HSQOBJECT MidiPatternObject;
-extern HSQOBJECT MidiTuneObject;
-extern HSQOBJECT MidiOutputObject;
-extern HSQOBJECT MidiPitchBendObject;
-extern HSQOBJECT MidiProgramChangeObject;
-extern HSQOBJECT MidiBeatTrackerObject;
+    // object references to types in this package
+    extern HSQOBJECT MidiABCReaderObject;
+    extern HSQOBJECT MidiChordReaderObject;
+    extern HSQOBJECT MidiDrumTabReaderObject;
+    extern HSQOBJECT MidiInputObject;
+    extern HSQOBJECT MidiNoteObject;
+    extern HSQOBJECT MidiControlObject;
+    extern HSQOBJECT MidiInputBufferObject;
+    extern HSQOBJECT MidiMMLReaderObject;
+    extern HSQOBJECT MidiPatternObject;
+    extern HSQOBJECT MidiTuneObject;
+    extern HSQOBJECT MidiOutputObject;
+    extern HSQOBJECT MidiPitchBendObject;
+    extern HSQOBJECT MidiProgramChangeObject;
+    extern HSQOBJECT MidiBeatTrackerObject;
+    // method to bind this package
+    void bindMidi(HSQUIRRELVM vm);
 }
 
 #endif // BINDMIDI_H
