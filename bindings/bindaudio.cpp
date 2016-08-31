@@ -90,15 +90,15 @@ SQInteger AudioMixeraddGainController(HSQUIRRELVM vm)
     }
     Mixer *obj = static_cast<Mixer*>(userPtr);
 
-    // get parameter 1 "source" as EventSource
+    // get parameter 1 "source" as Midi.Source
     SQUserPointer sourceTypeTag, sourcePtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, 0))) {
-        return sq_throwerror(vm, "argument 1 is not an object of type EventSource");
+        return sq_throwerror(vm, "argument 1 is not an object of type Midi.Source");
     }
     sq_gettypetag(vm, 2, &sourceTypeTag);
     EventSource *source = getEventSource(sourcePtr, sourceTypeTag);
     if(source == 0) {
-        return sq_throwerror(vm, "argument 1 is not of type EventSource");
+        return sq_throwerror(vm, "argument 1 is not of type Midi.Source");
     }
 
     // get parameter 2 "control" as integer
@@ -151,15 +151,15 @@ SQInteger AudioMixerconnect(HSQUIRRELVM vm)
     }
     Mixer *obj = static_cast<Mixer*>(userPtr);
 
-    // get parameter 1 "source" as AudioSource
+    // get parameter 1 "source" as Audio.Source
     SQUserPointer sourceTypeTag, sourcePtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, 0))) {
-        return sq_throwerror(vm, "argument 1 is not an object of type AudioSource");
+        return sq_throwerror(vm, "argument 1 is not an object of type Audio.Source");
     }
     sq_gettypetag(vm, 2, &sourceTypeTag);
     AudioSource *source = getAudioSource(sourcePtr, sourceTypeTag);
     if(source == 0) {
-        return sq_throwerror(vm, "argument 1 is not of type AudioSource");
+        return sq_throwerror(vm, "argument 1 is not of type Audio.Source");
     }
 
     // call the implementation
@@ -192,15 +192,15 @@ SQInteger AudioMixerconnect(HSQUIRRELVM vm)
     }
     Mixer *obj = static_cast<Mixer*>(userPtr);
 
-    // get parameter 1 "source" as AudioSource
+    // get parameter 1 "source" as Audio.Source
     SQUserPointer sourceTypeTag, sourcePtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, 0))) {
-        return sq_throwerror(vm, "argument 1 is not an object of type AudioSource");
+        return sq_throwerror(vm, "argument 1 is not an object of type Audio.Source");
     }
     sq_gettypetag(vm, 2, &sourceTypeTag);
     AudioSource *source = getAudioSource(sourcePtr, sourceTypeTag);
     if(source == 0) {
-        return sq_throwerror(vm, "argument 1 is not of type AudioSource");
+        return sq_throwerror(vm, "argument 1 is not of type Audio.Source");
     }
 
     // 2 parameters passed in
@@ -247,15 +247,15 @@ SQInteger AudioMixerconnect(HSQUIRRELVM vm)
     }
     Mixer *obj = static_cast<Mixer*>(userPtr);
 
-    // get parameter 1 "source" as AudioSource
+    // get parameter 1 "source" as Audio.Source
     SQUserPointer sourceTypeTag, sourcePtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, 0))) {
-        return sq_throwerror(vm, "argument 1 is not an object of type AudioSource");
+        return sq_throwerror(vm, "argument 1 is not an object of type Audio.Source");
     }
     sq_gettypetag(vm, 2, &sourceTypeTag);
     AudioSource *source = getAudioSource(sourcePtr, sourceTypeTag);
     if(source == 0) {
-        return sq_throwerror(vm, "argument 1 is not of type AudioSource");
+        return sq_throwerror(vm, "argument 1 is not of type Audio.Source");
     }
 
     // 2 parameters passed in
@@ -463,15 +463,15 @@ SQInteger AudioOnsetDetectorconnect(HSQUIRRELVM vm)
     }
     OnsetDetector *obj = static_cast<OnsetDetector*>(userPtr);
 
-    // get parameter 1 "source" as AudioSource
+    // get parameter 1 "source" as Audio.Source
     SQUserPointer sourceTypeTag, sourcePtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, 0))) {
-        return sq_throwerror(vm, "argument 1 is not an object of type AudioSource");
+        return sq_throwerror(vm, "argument 1 is not an object of type Audio.Source");
     }
     sq_gettypetag(vm, 2, &sourceTypeTag);
     AudioSource *source = getAudioSource(sourcePtr, sourceTypeTag);
     if(source == 0) {
-        return sq_throwerror(vm, "argument 1 is not of type AudioSource");
+        return sq_throwerror(vm, "argument 1 is not of type Audio.Source");
     }
 
     // call the implementation
@@ -624,15 +624,15 @@ SQInteger AudioOutputconnect(HSQUIRRELVM vm)
     }
     AudioOutputPort *obj = static_cast<AudioOutputPort*>(userPtr);
 
-    // get parameter 1 "source" as AudioSource
+    // get parameter 1 "source" as Audio.Source
     SQUserPointer sourceTypeTag, sourcePtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, 0))) {
-        return sq_throwerror(vm, "argument 1 is not an object of type AudioSource");
+        return sq_throwerror(vm, "argument 1 is not an object of type Audio.Source");
     }
     sq_gettypetag(vm, 2, &sourceTypeTag);
     AudioSource *source = getAudioSource(sourcePtr, sourceTypeTag);
     if(source == 0) {
-        return sq_throwerror(vm, "argument 1 is not of type AudioSource");
+        return sq_throwerror(vm, "argument 1 is not of type Audio.Source");
     }
 
     // call the implementation
@@ -801,15 +801,15 @@ SQInteger AudioStereoOutputconnect(HSQUIRRELVM vm)
     }
     AudioStereoOutput *obj = static_cast<AudioStereoOutput*>(userPtr);
 
-    // get parameter 1 "source" as AudioSource
+    // get parameter 1 "source" as Audio.Source
     SQUserPointer sourceTypeTag, sourcePtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, 0))) {
-        return sq_throwerror(vm, "argument 1 is not an object of type AudioSource");
+        return sq_throwerror(vm, "argument 1 is not an object of type Audio.Source");
     }
     sq_gettypetag(vm, 2, &sourceTypeTag);
     AudioSource *source = getAudioSource(sourcePtr, sourceTypeTag);
     if(source == 0) {
-        return sq_throwerror(vm, "argument 1 is not of type AudioSource");
+        return sq_throwerror(vm, "argument 1 is not of type Audio.Source");
     }
 
     // call the implementation
@@ -872,15 +872,15 @@ SQInteger AudioBeatTrackerconnect(HSQUIRRELVM vm)
     }
     BeatTracker *obj = static_cast<BeatTracker*>(userPtr);
 
-    // get parameter 1 "source" as AudioSource
+    // get parameter 1 "source" as Audio.Source
     SQUserPointer sourceTypeTag, sourcePtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, 0))) {
-        return sq_throwerror(vm, "argument 1 is not an object of type AudioSource");
+        return sq_throwerror(vm, "argument 1 is not an object of type Audio.Source");
     }
     sq_gettypetag(vm, 2, &sourceTypeTag);
     AudioSource *source = getAudioSource(sourcePtr, sourceTypeTag);
     if(source == 0) {
-        return sq_throwerror(vm, "argument 1 is not of type AudioSource");
+        return sq_throwerror(vm, "argument 1 is not of type Audio.Source");
     }
 
     // call the implementation

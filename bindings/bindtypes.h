@@ -19,10 +19,8 @@
 
 #include "squirrel.h"
 
-#include "mixer.h"
-#include "audioport.h"
-#include "lv2plugin.h"
-#include "midiport.h"
+#include "audioconnection.h"
+#include "eventconnection.h"
 
 namespace binding
 {

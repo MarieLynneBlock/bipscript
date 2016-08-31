@@ -17,6 +17,12 @@
 
 name : Midi
 
+interfaces:
+
+    - name: Source
+      cppname: EventSource
+      include: eventconnection
+
 classes :
 
     - name: ABCReader
@@ -63,7 +69,7 @@ classes :
 
     - name: Input
       cppname: MidiInputPort
-      super: EventSource
+      interface: Midi.Source
       include: midiport
       ctor:
         parameters:
@@ -100,7 +106,7 @@ classes :
       cppname: MidiInputBuffer
       include: midiinputbuffer
       ctor:
-        parameters: {name: source, type: EventSource}
+        parameters: {name: source, type: Midi.Source}
         expression: MidiInputBufferCache::instance().getMidiInputBuffer
 
       methods:
@@ -214,7 +220,7 @@ classes :
       methods:
         - name: connectMidi
           parameters:
-            - { name: source, type: EventSource }
+            - { name: source, type: Midi.Source }
         - name: countIn
           parameters:
             - { name: note, type: integer }

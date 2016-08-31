@@ -20,9 +20,10 @@ name : Lv2
 classes :
 
     - name: Plugin
-      super:
-        - AudioSource
-        - EventSource
+      interface:
+        - Audio.Source
+        - Midi.Source
+        #- Midi.Sink
       cppname: Lv2Plugin
       include: lv2plugin
       ctor:
@@ -38,11 +39,11 @@ classes :
       methods:
         - name: connect
           parameters:
-            - {name: source, type: AudioSource}
+            - {name: source, type: Audio.Source}
 
         - name: connectMidi
           parameters:
-            - {name: source, type: EventSource}
+            - {name: source, type: Midi.Source}
 
         - name: midiChannel
           parameters:
@@ -95,7 +96,7 @@ classes :
 
         - name: addController
           parameters:
-            - {name: source, type: EventSource}
+            - {name: source, type: Midi.Source}
             - {name: cc, type: integer}
             - {name: symbol, type: string}
             - {name: mininum, type: integer, optional: true}

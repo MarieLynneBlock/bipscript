@@ -17,11 +17,18 @@
 
 name : Audio
 
+interfaces:
+
+    - name: Source
+      cppname: AudioSource
+      include: audioconnection
+
 classes :
 
     - name: Mixer
-      super:
-        - AudioSource
+      interface:
+        - Audio.Source
+        #- Midi.Sink
       include: mixer
       ctor:
         parameters:
@@ -31,19 +38,19 @@ classes :
       methods:
         - name: addGainController
           parameters:
-            - { name: source, type: EventSource }
+            - { name: source, type: Midi.Source }
             - { name: control, type: integer }
             - { name: input, type: integer }
             - { name: output, type: integer }
 
         - name: connect
           parameters:
-            - {name: source, type: AudioSource}
+            - {name: source, type: Audio.Source}
             - {name: gain, type: float, optional: true}
 
         - name: connect
           parameters:
-            - {name: source, type: AudioSource}
+            - {name: source, type: Audio.Source}
             - {name: gains, type: array, optional: true}
 
         - name: scheduleGain
@@ -66,7 +73,7 @@ classes :
           - { name: handler, type: function }
       - name: connect
         parameters:
-        - { name: source, type: AudioSource }
+        - { name: source, type: Audio.Source }
       - name: threshold
         cppname: setThreshold
         parameters:
@@ -89,11 +96,11 @@ classes :
       methods:
         - name: connect
           parameters:
-            - { name: source, type: AudioSource }
+            - { name: source, type: Audio.Source }
 
     - name: Input
-      super:
-        - AudioSource
+      interface:
+        - Audio.Source
       cppname: AudioInputPort
       include:
         - audioport
@@ -104,8 +111,8 @@ classes :
         expression: AudioInputPortCache::instance().getAudioInputPort
 
     - name: StereoInput
-      super:
-        - AudioSource
+      interface:
+        - Audio.Source
       cppname: AudioStereoInput
       include: audioport
       ctor:
@@ -125,7 +132,7 @@ classes :
       methods:
         - name: connect
           parameters:
-            - { name: source, type: AudioSource }
+            - { name: source, type: Audio.Source }
 
     - name: BeatTracker
       include: beattracker
@@ -135,5 +142,5 @@ classes :
       methods:
         - name: connect
           parameters:
-            - { name: source, type: AudioSource }
+            - { name: source, type: Audio.Source }
 

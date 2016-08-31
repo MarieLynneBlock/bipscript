@@ -17,9 +17,13 @@
 
 #include "bindtypes.h"
 
+#include "audioport.h"
 #include "bindaudio.h"
 #include "bindlv2.h"
 #include "bindmidi.h"
+#include "lv2plugin.h"
+#include "midiport.h"
+#include "mixer.h"
 
 namespace binding
 {
