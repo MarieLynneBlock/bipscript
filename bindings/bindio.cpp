@@ -57,60 +57,6 @@ SQInteger IOFileCtor(HSQUIRRELVM vm)
 }
 
 //
-// IO.File readAll
-//
-SQInteger IOFilereadAll(HSQUIRRELVM vm)
-{
-    // get "this" pointer
-    SQUserPointer userPtr = 0;
-    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "readAll method needs an instance of File");
-    }
-    File *obj = static_cast<File*>(userPtr);
-
-    // return value
-    const SQChar* ret;
-    // call the implementation
-    try {
-        ret = obj->readAll();
-    }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
-    }
-
-    // push return value
-    sq_pushstring(vm, ret, strlen(ret));
-    return 1;
-}
-
-//
-// IO.File size
-//
-SQInteger IOFilesize(HSQUIRRELVM vm)
-{
-    // get "this" pointer
-    SQUserPointer userPtr = 0;
-    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "size method needs an instance of File");
-    }
-    File *obj = static_cast<File*>(userPtr);
-
-    // return value
-    SQInteger ret;
-    // call the implementation
-    try {
-        ret = obj->size();
-    }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
-    }
-
-    // push return value
-    sq_pushinteger(vm, ret);
-    return 1;
-}
-
-//
 // IO.File exists
 //
 SQInteger IOFileexists(HSQUIRRELVM vm)
@@ -164,6 +110,60 @@ SQInteger IOFileisFolder(HSQUIRRELVM vm)
     return 1;
 }
 
+//
+// IO.File readAll
+//
+SQInteger IOFilereadAll(HSQUIRRELVM vm)
+{
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "readAll method needs an instance of File");
+    }
+    File *obj = static_cast<File*>(userPtr);
+
+    // return value
+    const SQChar* ret;
+    // call the implementation
+    try {
+        ret = obj->readAll();
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushstring(vm, ret, strlen(ret));
+    return 1;
+}
+
+//
+// IO.File size
+//
+SQInteger IOFilesize(HSQUIRRELVM vm)
+{
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "size method needs an instance of File");
+    }
+    File *obj = static_cast<File*>(userPtr);
+
+    // return value
+    SQInteger ret;
+    // call the implementation
+    try {
+        ret = obj->size();
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushinteger(vm, ret);
+    return 1;
+}
+
 
 void bindIO(HSQUIRRELVM vm)
 {
@@ -183,20 +183,20 @@ void bindIO(HSQUIRRELVM vm)
     sq_newslot(vm, -3, false);
 
     // methods for class File
-    sq_pushstring(vm, _SC("readAll"), -1);
-    sq_newclosure(vm, &IOFilereadAll, 0);
-    sq_newslot(vm, -3, false);
-
-    sq_pushstring(vm, _SC("size"), -1);
-    sq_newclosure(vm, &IOFilesize, 0);
-    sq_newslot(vm, -3, false);
-
     sq_pushstring(vm, _SC("exists"), -1);
     sq_newclosure(vm, &IOFileexists, 0);
     sq_newslot(vm, -3, false);
 
     sq_pushstring(vm, _SC("isFolder"), -1);
     sq_newclosure(vm, &IOFileisFolder, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("readAll"), -1);
+    sq_newclosure(vm, &IOFilereadAll, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("size"), -1);
+    sq_newclosure(vm, &IOFilesize, 0);
     sq_newslot(vm, -3, false);
 
     // push File to IO package table

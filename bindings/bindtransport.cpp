@@ -28,6 +28,7 @@ namespace binding {
 // object references to types in this package
 HSQOBJECT TransportMasterObject;
 HSQOBJECT TransportTimeSignatureObject;
+
 //
 // Transport schedule
 //
@@ -112,6 +113,7 @@ SQInteger Transportschedule(HSQUIRRELVM vm)
     // void method, returns no value
     return 0;
 }
+
 //
 // Transport start
 //
@@ -128,6 +130,7 @@ SQInteger Transportstart(HSQUIRRELVM vm)
     // void method, returns no value
     return 0;
 }
+
 //
 // Transport stop
 //
@@ -306,6 +309,32 @@ SQInteger TransportMastertimeSignature(HSQUIRRELVM vm)
 //
 // Transport.TimeSignature class
 //
+//
+// Transport.TimeSignature denominator
+//
+SQInteger TransportTimeSignaturedenominator(HSQUIRRELVM vm)
+{
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "denominator method needs an instance of TimeSignature");
+    }
+    TimeSignature *obj = static_cast<TimeSignature*>(userPtr);
+
+    // return value
+    SQInteger ret;
+    // call the implementation
+    try {
+        ret = obj->getDenominator();
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushinteger(vm, ret);
+    return 1;
+}
 
 //
 // Transport.TimeSignature numerator
@@ -324,33 +353,6 @@ SQInteger TransportTimeSignaturenumerator(HSQUIRRELVM vm)
     // call the implementation
     try {
         ret = obj->getNumerator();
-    }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
-    }
-
-    // push return value
-    sq_pushinteger(vm, ret);
-    return 1;
-}
-
-//
-// Transport.TimeSignature denominator
-//
-SQInteger TransportTimeSignaturedenominator(HSQUIRRELVM vm)
-{
-    // get "this" pointer
-    SQUserPointer userPtr = 0;
-    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "denominator method needs an instance of TimeSignature");
-    }
-    TimeSignature *obj = static_cast<TimeSignature*>(userPtr);
-
-    // return value
-    SQInteger ret;
-    // call the implementation
-    try {
-        ret = obj->getDenominator();
     }
     catch(std::exception const& e) {
         return sq_throwerror(vm, e.what());
@@ -408,14 +410,13 @@ void bindTransport(HSQUIRRELVM vm)
     sq_getstackobj(vm, -1, &TransportTimeSignatureObject);
     sq_settypetag(vm, -1, &TransportTimeSignatureObject);
 
-
     // methods for class TimeSignature
-    sq_pushstring(vm, _SC("numerator"), -1);
-    sq_newclosure(vm, &TransportTimeSignaturenumerator, 0);
-    sq_newslot(vm, -3, false);
-
     sq_pushstring(vm, _SC("denominator"), -1);
     sq_newclosure(vm, &TransportTimeSignaturedenominator, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("numerator"), -1);
+    sq_newclosure(vm, &TransportTimeSignaturenumerator, 0);
     sq_newslot(vm, -3, false);
 
     // push TimeSignature to Transport package table
