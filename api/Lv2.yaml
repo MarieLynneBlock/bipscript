@@ -23,7 +23,7 @@ classes :
       interface:
         - Audio.Source
         - Midi.Source
-        #- Midi.Sink
+        - Midi.Sink
       cppname: Lv2Plugin
       include: lv2plugin
       ctor:
@@ -45,11 +45,6 @@ classes :
           parameters:
             - {name: source, type: Midi.Source}
 
-        - name: midiChannel
-          parameters:
-            - {name: channel, type: integer, optional: true }
-          returns: integer
-
         - name: setControl
           cppname: setControlValue
           parameters:
@@ -63,36 +58,6 @@ classes :
             - {name: bar, type: integer}
             - {name: position, type: integer}
             - {name: division, type: integer}
-
-        - name: schedule
-          parameters:
-            - {name: note, type: Midi.Note}
-            - {name: bar, type: integer}
-            - {name: position, type: integer, optional: true }
-            - {name: division, type: integer, optional: true }
-            - {name: channel, type: integer, optional: true }
-
-        - name: schedule
-          parameters:
-            - {name: pattern, type: Midi.Pattern}
-            - {name: bar, type: integer}
-            - {name: position, type: integer, optional: true }
-            - {name: division, type: integer, optional: true }
-            - {name: channel, type: integer, optional: true }
-
-        - name: schedule
-          parameters:
-          - {name: control, type: Midi.PitchBend}
-          - {name: bar, type: integer}
-          - {name: position, type: integer}
-          - {name: division, type: integer}
-
-        - name: schedule
-          parameters:
-          - {name: control, type: Midi.ProgramChange}
-          - {name: bar, type: integer}
-          - {name: position, type: integer}
-          - {name: division, type: integer}
 
         - name: addController
           parameters:

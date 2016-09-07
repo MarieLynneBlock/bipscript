@@ -29,7 +29,7 @@ namespace binding
 {
 
     AudioSource *getAudioSource(HSQUIRRELVM &vm) {
-        SQUserPointer sourcePtr = 0;
+        SQUserPointer sourcePtr;
         if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &AudioMixerObject))) {
             return static_cast<Mixer*>(sourcePtr);
         }
@@ -46,12 +46,23 @@ namespace binding
     }
     
     EventSource *getEventSource(HSQUIRRELVM &vm) {
-        SQUserPointer sourcePtr = 0;
+        SQUserPointer sourcePtr;
         if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &Lv2PluginObject))) {
             return static_cast<Lv2Plugin*>(sourcePtr);
         }
         if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &MidiInputObject))) {
             return static_cast<MidiInputPort*>(sourcePtr);
+        }
+        return 0;
+    }
+    
+    MidiSink *getMidiSink(HSQUIRRELVM &vm) {
+        SQUserPointer sourcePtr;
+        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &Lv2PluginObject))) {
+            return static_cast<Lv2Plugin*>(sourcePtr);
+        }
+        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &MidiOutputObject))) {
+            return static_cast<MidiOutputPort*>(sourcePtr);
         }
         return 0;
     }

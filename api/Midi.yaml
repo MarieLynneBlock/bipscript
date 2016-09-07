@@ -23,6 +23,46 @@ interfaces:
       cppname: EventSource
       include: eventconnection
 
+    - name: Sink
+      cppname: MidiSink
+      include: midisink
+      methods:
+        - name: midiChannel
+          parameters: {name: channel, type: integer, optional: true }
+          returns: integer
+        - name: schedule
+          parameters:
+            - {name: note, type: Midi.Note}
+            - {name: bar, type: integer}
+            - {name: position, type: integer, optional: true }
+            - {name: division, type: integer, optional: true }
+            - {name: channel, type: integer, optional: true }
+        - name: schedule
+          parameters:
+            - {name: pattern, type: Midi.Pattern}
+            - {name: bar, type: integer}
+            - {name: position, type: integer, optional: true }
+            - {name: division, type: integer, optional: true }
+            - {name: channel, type: integer, optional: true }
+        - name: schedule
+          parameters:
+            - {name: pitchbend, type: Midi.PitchBend}
+            - {name: bar, type: integer}
+            - {name: position, type: integer}
+            - {name: division, type: integer}
+        - name: schedule
+          parameters:
+            - {name: control, type: Midi.Control}
+            - {name: bar, type: integer}
+            - {name: position, type: integer}
+            - {name: division, type: integer}
+        - name: schedule
+          parameters:
+            - {name: programchange, type: Midi.ProgramChange}
+            - {name: bar, type: integer}
+            - {name: position, type: integer}
+            - {name: division, type: integer}
+
 classes :
 
     - name: ABCReader
@@ -166,37 +206,12 @@ classes :
 
     - name: Output
       cppname: MidiOutputPort
+      interface: Midi.Sink
       ctor:
         parameters:
           - { name: name, type: string }
           - { name: connection, type: string, optional: true }
         expression: MidiOutputPortCache::instance().getMidiOutputPort
-      methods:
-      - name: midiChannel
-        parameters: {name: channel, type: integer, optional: true }
-        returns: integer
-      - name: schedule
-        parameters:
-          - {name: note, type: Midi.Note}
-          - {name: bar, type: integer}
-          - {name: position, type: integer}
-          - {name: division, type: integer}
-      - name: schedule
-        parameters:
-          - {name: pattern, type: Midi.Pattern}
-          - {name: bar, type: integer}
-      - name: schedule
-        parameters:
-          - {name: control, type: Midi.Control}
-          - {name: bar, type: integer}
-          - {name: position, type: integer}
-          - {name: division, type: integer}
-      - name: schedule
-        parameters:
-          - {name: control, type: Midi.ProgramChange}
-          - {name: bar, type: integer}
-          - {name: position, type: integer}
-          - {name: division, type: integer}
 
     - name: PitchBend
       ctor:

@@ -21,12 +21,14 @@
 
 #include "audioconnection.h"
 #include "eventconnection.h"
+#include "midisink.h"
 
 namespace binding
 {
     // type conversion methods
     AudioSource *getAudioSource(HSQUIRRELVM &vm);
     EventSource *getEventSource(HSQUIRRELVM &vm);
+    MidiSink *getMidiSink(HSQUIRRELVM &vm);
 }
 
 #endif // BINDTYPES_H

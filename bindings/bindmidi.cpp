@@ -1307,8 +1307,8 @@ SQInteger MidiOutputschedule(HSQUIRRELVM vm)
     if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiNoteObject) {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
-    if(numargs < 5) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 4");
+    if(numargs < 3) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 2");
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
@@ -1330,24 +1330,86 @@ SQInteger MidiOutputschedule(HSQUIRRELVM vm)
         return sq_throwerror(vm, "argument 2 is not of type integer");
     }
 
-    // get parameter 3 "position" as integer
-    SQInteger position;
-    if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
-        return sq_throwerror(vm, "argument 3 is not of type integer");
+    // 3 parameters passed in
+    if(numargs == 4) {
+
+        // get parameter 3 "position" as integer
+        SQInteger position;
+        if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
+            return sq_throwerror(vm, "argument 3 is not of type integer");
+        }
+
+        // call the implementation
+        try {
+            obj->schedule(*note, bar, position);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
     }
 
-    // get parameter 4 "division" as integer
-    SQInteger division;
-    if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
-        return sq_throwerror(vm, "argument 4 is not of type integer");
+    // 4 parameters passed in
+    else if(numargs == 5) {
+
+        // get parameter 3 "position" as integer
+        SQInteger position;
+        if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
+            return sq_throwerror(vm, "argument 3 is not of type integer");
+        }
+
+        // get parameter 4 "division" as integer
+        SQInteger division;
+        if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
+            return sq_throwerror(vm, "argument 4 is not of type integer");
+        }
+
+        // call the implementation
+        try {
+            obj->schedule(*note, bar, position, division);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
     }
 
-    // call the implementation
-    try {
-        obj->schedule(*note, bar, position, division);
+    // 5 parameters passed in
+    else if(numargs == 6) {
+
+        // get parameter 3 "position" as integer
+        SQInteger position;
+        if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
+            return sq_throwerror(vm, "argument 3 is not of type integer");
+        }
+
+        // get parameter 4 "division" as integer
+        SQInteger division;
+        if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
+            return sq_throwerror(vm, "argument 4 is not of type integer");
+        }
+
+        // get parameter 5 "channel" as integer
+        SQInteger channel;
+        if (SQ_FAILED(sq_getinteger(vm, 6, &channel))){
+            return sq_throwerror(vm, "argument 5 is not of type integer");
+        }
+
+        // call the implementation
+        try {
+            obj->schedule(*note, bar, position, division, channel);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
     }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
+
+    else {
+        // call the implementation
+        try {
+            obj->schedule(*note, bar);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
     }
 
     // void method, returns no value
@@ -1379,9 +1441,132 @@ SQInteger MidiOutputschedule(HSQUIRRELVM vm)
         return sq_throwerror(vm, "argument 2 is not of type integer");
     }
 
+    // 3 parameters passed in
+    if(numargs == 4) {
+
+        // get parameter 3 "position" as integer
+        SQInteger position;
+        if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
+            return sq_throwerror(vm, "argument 3 is not of type integer");
+        }
+
+        // call the implementation
+        try {
+            obj->schedule(*pattern, bar, position);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
+    }
+
+    // 4 parameters passed in
+    else if(numargs == 5) {
+
+        // get parameter 3 "position" as integer
+        SQInteger position;
+        if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
+            return sq_throwerror(vm, "argument 3 is not of type integer");
+        }
+
+        // get parameter 4 "division" as integer
+        SQInteger division;
+        if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
+            return sq_throwerror(vm, "argument 4 is not of type integer");
+        }
+
+        // call the implementation
+        try {
+            obj->schedule(*pattern, bar, position, division);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
+    }
+
+    // 5 parameters passed in
+    else if(numargs == 6) {
+
+        // get parameter 3 "position" as integer
+        SQInteger position;
+        if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
+            return sq_throwerror(vm, "argument 3 is not of type integer");
+        }
+
+        // get parameter 4 "division" as integer
+        SQInteger division;
+        if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
+            return sq_throwerror(vm, "argument 4 is not of type integer");
+        }
+
+        // get parameter 5 "channel" as integer
+        SQInteger channel;
+        if (SQ_FAILED(sq_getinteger(vm, 6, &channel))){
+            return sq_throwerror(vm, "argument 5 is not of type integer");
+        }
+
+        // call the implementation
+        try {
+            obj->schedule(*pattern, bar, position, division, channel);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
+    }
+
+    else {
+        // call the implementation
+        try {
+            obj->schedule(*pattern, bar);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
+    }
+
+    // void method, returns no value
+    return 0;
+    }
+    else if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiPitchBendObject) {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 5) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 4");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "schedule method needs an instance of Output");
+    }
+    MidiOutputPort *obj = static_cast<MidiOutputPort*>(userPtr);
+
+    // get parameter 1 "pitchbend" as Midi.PitchBend
+    PitchBend *pitchbend = 0;
+    sq_getinstanceup(vm, 2, (SQUserPointer*)&pitchbend, 0);
+    if(pitchbend == 0) {
+        return sq_throwerror(vm, "argument 1 is not of type Midi.PitchBend");
+    }
+
+    // get parameter 2 "bar" as integer
+    SQInteger bar;
+    if (SQ_FAILED(sq_getinteger(vm, 3, &bar))){
+        return sq_throwerror(vm, "argument 2 is not of type integer");
+    }
+
+    // get parameter 3 "position" as integer
+    SQInteger position;
+    if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
+        return sq_throwerror(vm, "argument 3 is not of type integer");
+    }
+
+    // get parameter 4 "division" as integer
+    SQInteger division;
+    if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
+        return sq_throwerror(vm, "argument 4 is not of type integer");
+    }
+
     // call the implementation
     try {
-        obj->schedule(*pattern, bar);
+        obj->schedule(*pitchbend, bar, position, division);
     }
     catch(std::exception const& e) {
         return sq_throwerror(vm, e.what());
@@ -1452,10 +1637,10 @@ SQInteger MidiOutputschedule(HSQUIRRELVM vm)
     }
     MidiOutputPort *obj = static_cast<MidiOutputPort*>(userPtr);
 
-    // get parameter 1 "control" as Midi.ProgramChange
-    ProgramChange *control = 0;
-    sq_getinstanceup(vm, 2, (SQUserPointer*)&control, 0);
-    if(control == 0) {
+    // get parameter 1 "programchange" as Midi.ProgramChange
+    ProgramChange *programchange = 0;
+    sq_getinstanceup(vm, 2, (SQUserPointer*)&programchange, 0);
+    if(programchange == 0) {
         return sq_throwerror(vm, "argument 1 is not of type Midi.ProgramChange");
     }
 
@@ -1479,7 +1664,7 @@ SQInteger MidiOutputschedule(HSQUIRRELVM vm)
 
     // call the implementation
     try {
-        obj->schedule(*control, bar, position, division);
+        obj->schedule(*programchange, bar, position, division);
     }
     catch(std::exception const& e) {
         return sq_throwerror(vm, e.what());
@@ -1489,7 +1674,7 @@ SQInteger MidiOutputschedule(HSQUIRRELVM vm)
     return 0;
     }
     else {
-        return sq_throwerror(vm, "argument 1 is not of type {Midi.Note, Midi.Pattern, Midi.Control, Midi.ProgramChange}");
+        return sq_throwerror(vm, "argument 1 is not of type {Midi.Note, Midi.Pattern, Midi.PitchBend, Midi.Control, Midi.ProgramChange}");
     }
 }
 
