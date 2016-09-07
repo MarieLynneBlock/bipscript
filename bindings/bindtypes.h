@@ -25,8 +25,8 @@
 namespace binding
 {
     // type conversion methods
-    AudioSource *getAudioSource(SQUserPointer ptr, SQUserPointer typeTag);
-    EventSource *getEventSource(SQUserPointer ptr, SQUserPointer typeTag);
+    AudioSource *getAudioSource(HSQUIRRELVM &vm);
+    EventSource *getEventSource(HSQUIRRELVM &vm);
 }
 
 #endif // BINDTYPES_H

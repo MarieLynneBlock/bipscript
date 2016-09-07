@@ -706,12 +706,7 @@ SQInteger MidiInputBufferCtor(HSQUIRRELVM vm)
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
     // get parameter 1 "source" as Midi.Source
-    SQUserPointer sourceTypeTag, sourcePtr = 0;
-    if (SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, 0))) {
-        return sq_throwerror(vm, "argument 1 is not an object of type Midi.Source");
-    }
-    sq_gettypetag(vm, 2, &sourceTypeTag);
-    EventSource *source = getEventSource(sourcePtr, sourceTypeTag);
+    EventSource *source = getEventSource(vm);
     if(source == 0) {
         return sq_throwerror(vm, "argument 1 is not of type Midi.Source");
     }
@@ -1653,12 +1648,7 @@ SQInteger MidiBeatTrackerconnectMidi(HSQUIRRELVM vm)
     MidiBeatTracker *obj = static_cast<MidiBeatTracker*>(userPtr);
 
     // get parameter 1 "source" as Midi.Source
-    SQUserPointer sourceTypeTag, sourcePtr = 0;
-    if (SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, 0))) {
-        return sq_throwerror(vm, "argument 1 is not an object of type Midi.Source");
-    }
-    sq_gettypetag(vm, 2, &sourceTypeTag);
-    EventSource *source = getEventSource(sourcePtr, sourceTypeTag);
+    EventSource *source = getEventSource(vm);
     if(source == 0) {
         return sq_throwerror(vm, "argument 1 is not of type Midi.Source");
     }

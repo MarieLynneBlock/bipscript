@@ -28,29 +28,31 @@
 namespace binding
 {
 
-    AudioSource *getAudioSource(SQUserPointer ptr, SQUserPointer typeTag) {
-        if(typeTag ==  &AudioMixerObject) {
-            return static_cast<Mixer*>(ptr);
+    AudioSource *getAudioSource(HSQUIRRELVM &vm) {
+        SQUserPointer sourcePtr = 0;
+        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &AudioMixerObject))) {
+            return static_cast<Mixer*>(sourcePtr);
         }
-        if(typeTag ==  &AudioInputObject) {
-            return static_cast<AudioInputPort*>(ptr);
+        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &AudioInputObject))) {
+            return static_cast<AudioInputPort*>(sourcePtr);
         }
-        if(typeTag ==  &AudioStereoInputObject) {
-            return static_cast<AudioStereoInput*>(ptr);
+        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &AudioStereoInputObject))) {
+            return static_cast<AudioStereoInput*>(sourcePtr);
         }
-        if(typeTag ==  &Lv2PluginObject) {
-            return static_cast<Lv2Plugin*>(ptr);
-        }        
+        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &Lv2PluginObject))) {
+            return static_cast<Lv2Plugin*>(sourcePtr);
+        }
         return 0;
     }
     
-    EventSource *getEventSource(SQUserPointer ptr, SQUserPointer typeTag) {
-        if(typeTag ==  &Lv2PluginObject) {
-            return static_cast<Lv2Plugin*>(ptr);
+    EventSource *getEventSource(HSQUIRRELVM &vm) {
+        SQUserPointer sourcePtr = 0;
+        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &Lv2PluginObject))) {
+            return static_cast<Lv2Plugin*>(sourcePtr);
         }
-        if(typeTag ==  &MidiInputObject) {
-            return static_cast<MidiInputPort*>(ptr);
-        }        
+        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &MidiInputObject))) {
+            return static_cast<MidiInputPort*>(sourcePtr);
+        }
         return 0;
     }
     

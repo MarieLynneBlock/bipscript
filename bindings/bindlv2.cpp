@@ -187,12 +187,7 @@ SQInteger Lv2PluginaddController(HSQUIRRELVM vm)
     Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
 
     // get parameter 1 "source" as Midi.Source
-    SQUserPointer sourceTypeTag, sourcePtr = 0;
-    if (SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, 0))) {
-        return sq_throwerror(vm, "argument 1 is not an object of type Midi.Source");
-    }
-    sq_gettypetag(vm, 2, &sourceTypeTag);
-    EventSource *source = getEventSource(sourcePtr, sourceTypeTag);
+    EventSource *source = getEventSource(vm);
     if(source == 0) {
         return sq_throwerror(vm, "argument 1 is not of type Midi.Source");
     }
@@ -283,12 +278,7 @@ SQInteger Lv2Pluginconnect(HSQUIRRELVM vm)
     Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
 
     // get parameter 1 "source" as Audio.Source
-    SQUserPointer sourceTypeTag, sourcePtr = 0;
-    if (SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, 0))) {
-        return sq_throwerror(vm, "argument 1 is not an object of type Audio.Source");
-    }
-    sq_gettypetag(vm, 2, &sourceTypeTag);
-    AudioSource *source = getAudioSource(sourcePtr, sourceTypeTag);
+    AudioSource *source = getAudioSource(vm);
     if(source == 0) {
         return sq_throwerror(vm, "argument 1 is not of type Audio.Source");
     }
@@ -323,12 +313,7 @@ SQInteger Lv2PluginconnectMidi(HSQUIRRELVM vm)
     Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
 
     // get parameter 1 "source" as Midi.Source
-    SQUserPointer sourceTypeTag, sourcePtr = 0;
-    if (SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, 0))) {
-        return sq_throwerror(vm, "argument 1 is not an object of type Midi.Source");
-    }
-    sq_gettypetag(vm, 2, &sourceTypeTag);
-    EventSource *source = getEventSource(sourcePtr, sourceTypeTag);
+    EventSource *source = getEventSource(vm);
     if(source == 0) {
         return sq_throwerror(vm, "argument 1 is not of type Midi.Source");
     }
