@@ -23,6 +23,12 @@ interfaces:
       cppname: AudioSource
       include: audioconnection
 
+    - name: Sink
+      methods:
+        - name: connect
+          parameters:
+            - { name: source, type: Audio.Source }
+
 classes :
 
     - name: Mixer
@@ -63,6 +69,8 @@ classes :
             - { name: division, type: integer}
 
     - name: OnsetDetector
+      interface:
+        - Audio.Sink
       include: onsetdetector
       ctor:
         parameters: { name: type, type: string, optional: true }
@@ -71,9 +79,6 @@ classes :
       - name: onOnset
         parameters:
           - { name: handler, type: function }
-      - name: connect
-        parameters:
-        - { name: source, type: Audio.Source }
       - name: threshold
         cppname: setThreshold
         parameters:
@@ -84,6 +89,8 @@ classes :
         - { name: threshold, type: float }
 
     - name: Output
+      interface:
+        - Audio.Sink
       cppname: AudioOutputPort
       include:
         - audioport
@@ -93,10 +100,6 @@ classes :
         - { name: name, type: string }
         - { name: connection, type: string, optional: true }
         expression: AudioOutputPortCache::instance().getAudioOutputPort
-      methods:
-        - name: connect
-          parameters:
-            - { name: source, type: Audio.Source }
 
     - name: Input
       interface:
@@ -122,6 +125,8 @@ classes :
           - { name: connectRight, type: string }
 
     - name: StereoOutput
+      interface:
+        - Audio.Sink
       cppname: AudioStereoOutput
       include: audioport
       ctor:
@@ -129,18 +134,14 @@ classes :
           - { name: name, type: string }
           - { name: connectLeft, type: string }
           - { name: connectRight, type: string }
-      methods:
-        - name: connect
-          parameters:
-            - { name: source, type: Audio.Source }
+
 
     - name: BeatTracker
+      interface:
+        - Audio.Sink
       include: beattracker
       ctor:
         parameters: { name: bpm, type: float }
         expression: BeatTrackerCache::instance().getBeatTracker
-      methods:
-        - name: connect
-          parameters:
-            - { name: source, type: Audio.Source }
+
 
