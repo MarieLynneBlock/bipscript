@@ -35,14 +35,14 @@ namespace binding {
 HSQOBJECT MidiABCReaderObject;
 HSQOBJECT MidiChordReaderObject;
 HSQOBJECT MidiDrumTabReaderObject;
-HSQOBJECT MidiInputObject;
+HSQOBJECT MidiSystemInObject;
 HSQOBJECT MidiNoteObject;
 HSQOBJECT MidiControlObject;
 HSQOBJECT MidiInputBufferObject;
 HSQOBJECT MidiMMLReaderObject;
 HSQOBJECT MidiPatternObject;
 HSQOBJECT MidiTuneObject;
-HSQOBJECT MidiOutputObject;
+HSQOBJECT MidiSystemOutObject;
 HSQOBJECT MidiPitchBendObject;
 HSQOBJECT MidiProgramChangeObject;
 HSQOBJECT MidiBeatTrackerObject;
@@ -449,9 +449,9 @@ SQInteger MidiDrumTabReadervelocity(HSQUIRRELVM vm)
 }
 
 //
-// Midi.Input class
+// Midi.SystemIn class
 //
-SQInteger MidiInputCtor(HSQUIRRELVM vm)
+SQInteger MidiSystemInCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
@@ -1195,9 +1195,9 @@ SQInteger MidiTunetrackCount(HSQUIRRELVM vm)
 }
 
 //
-// Midi.Output class
+// Midi.SystemOut class
 //
-SQInteger MidiOutputCtor(HSQUIRRELVM vm)
+SQInteger MidiSystemOutCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
@@ -1246,15 +1246,15 @@ SQInteger MidiOutputCtor(HSQUIRRELVM vm)
 }
 
 //
-// Midi.Output midiChannel
+// Midi.SystemOut midiChannel
 //
-SQInteger MidiOutputmidiChannel(HSQUIRRELVM vm)
+SQInteger MidiSystemOutmidiChannel(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "midiChannel method needs an instance of Output");
+        return sq_throwerror(vm, "midiChannel method needs an instance of SystemOut");
     }
     MidiOutputPort *obj = static_cast<MidiOutputPort*>(userPtr);
 
@@ -1294,9 +1294,9 @@ SQInteger MidiOutputmidiChannel(HSQUIRRELVM vm)
 }
 
 //
-// Midi.Output schedule
+// Midi.SystemOut schedule
 //
-SQInteger MidiOutputschedule(HSQUIRRELVM vm)
+SQInteger MidiSystemOutschedule(HSQUIRRELVM vm)
 {
     SQObjectType overrideType = sq_gettype(vm, 2);
     SQUserPointer overrideTypeTag;
@@ -1313,7 +1313,7 @@ SQInteger MidiOutputschedule(HSQUIRRELVM vm)
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "schedule method needs an instance of Output");
+        return sq_throwerror(vm, "schedule method needs an instance of SystemOut");
     }
     MidiOutputPort *obj = static_cast<MidiOutputPort*>(userPtr);
 
@@ -1424,7 +1424,7 @@ SQInteger MidiOutputschedule(HSQUIRRELVM vm)
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "schedule method needs an instance of Output");
+        return sq_throwerror(vm, "schedule method needs an instance of SystemOut");
     }
     MidiOutputPort *obj = static_cast<MidiOutputPort*>(userPtr);
 
@@ -1535,7 +1535,7 @@ SQInteger MidiOutputschedule(HSQUIRRELVM vm)
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "schedule method needs an instance of Output");
+        return sq_throwerror(vm, "schedule method needs an instance of SystemOut");
     }
     MidiOutputPort *obj = static_cast<MidiOutputPort*>(userPtr);
 
@@ -1584,7 +1584,7 @@ SQInteger MidiOutputschedule(HSQUIRRELVM vm)
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "schedule method needs an instance of Output");
+        return sq_throwerror(vm, "schedule method needs an instance of SystemOut");
     }
     MidiOutputPort *obj = static_cast<MidiOutputPort*>(userPtr);
 
@@ -1633,7 +1633,7 @@ SQInteger MidiOutputschedule(HSQUIRRELVM vm)
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "schedule method needs an instance of Output");
+        return sq_throwerror(vm, "schedule method needs an instance of SystemOut");
     }
     MidiOutputPort *obj = static_cast<MidiOutputPort*>(userPtr);
 
@@ -2075,19 +2075,19 @@ void bindMidi(HSQUIRRELVM vm)
     // push DrumTabReader to Midi package table
     sq_newslot(vm, -3, false);
 
-    // create class Midi.Input
-    sq_pushstring(vm, "Input", -1);
+    // create class Midi.SystemIn
+    sq_pushstring(vm, "SystemIn", -1);
     sq_newclass(vm, false);
-    sq_getstackobj(vm, -1, &MidiInputObject);
-    sq_settypetag(vm, -1, &MidiInputObject);
+    sq_getstackobj(vm, -1, &MidiSystemInObject);
+    sq_settypetag(vm, -1, &MidiSystemInObject);
 
-    // ctor for class Input
+    // ctor for class SystemIn
     sq_pushstring(vm, _SC("constructor"), -1);
-    sq_newclosure(vm, &MidiInputCtor, 0);
+    sq_newclosure(vm, &MidiSystemInCtor, 0);
     sq_newslot(vm, -3, false);
 
-    // methods for class Input
-    // push Input to Midi package table
+    // methods for class SystemIn
+    // push SystemIn to Midi package table
     sq_newslot(vm, -3, false);
 
     // create class Midi.Note
@@ -2231,27 +2231,27 @@ void bindMidi(HSQUIRRELVM vm)
     // push Tune to Midi package table
     sq_newslot(vm, -3, false);
 
-    // create class Midi.Output
-    sq_pushstring(vm, "Output", -1);
+    // create class Midi.SystemOut
+    sq_pushstring(vm, "SystemOut", -1);
     sq_newclass(vm, false);
-    sq_getstackobj(vm, -1, &MidiOutputObject);
-    sq_settypetag(vm, -1, &MidiOutputObject);
+    sq_getstackobj(vm, -1, &MidiSystemOutObject);
+    sq_settypetag(vm, -1, &MidiSystemOutObject);
 
-    // ctor for class Output
+    // ctor for class SystemOut
     sq_pushstring(vm, _SC("constructor"), -1);
-    sq_newclosure(vm, &MidiOutputCtor, 0);
+    sq_newclosure(vm, &MidiSystemOutCtor, 0);
     sq_newslot(vm, -3, false);
 
-    // methods for class Output
+    // methods for class SystemOut
     sq_pushstring(vm, _SC("midiChannel"), -1);
-    sq_newclosure(vm, &MidiOutputmidiChannel, 0);
+    sq_newclosure(vm, &MidiSystemOutmidiChannel, 0);
     sq_newslot(vm, -3, false);
 
     sq_pushstring(vm, _SC("schedule"), -1);
-    sq_newclosure(vm, &MidiOutputschedule, 0);
+    sq_newclosure(vm, &MidiSystemOutschedule, 0);
     sq_newslot(vm, -3, false);
 
-    // push Output to Midi package table
+    // push SystemOut to Midi package table
     sq_newslot(vm, -3, false);
 
     // create class Midi.PitchBend

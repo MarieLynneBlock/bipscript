@@ -33,10 +33,10 @@ namespace binding
         if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &AudioMixerObject))) {
             return static_cast<Mixer*>(sourcePtr);
         }
-        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &AudioInputObject))) {
+        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &AudioSystemInObject))) {
             return static_cast<AudioInputPort*>(sourcePtr);
         }
-        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &AudioStereoInputObject))) {
+        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &AudioStereoInObject))) {
             return static_cast<AudioStereoInput*>(sourcePtr);
         }
         if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &Lv2PluginObject))) {
@@ -50,7 +50,7 @@ namespace binding
         if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &Lv2PluginObject))) {
             return static_cast<Lv2Plugin*>(sourcePtr);
         }
-        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &MidiInputObject))) {
+        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &MidiSystemInObject))) {
             return static_cast<MidiInputPort*>(sourcePtr);
         }
         return 0;
@@ -61,7 +61,7 @@ namespace binding
         if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &Lv2PluginObject))) {
             return static_cast<Lv2Plugin*>(sourcePtr);
         }
-        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &MidiOutputObject))) {
+        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &MidiSystemOutObject))) {
             return static_cast<MidiOutputPort*>(sourcePtr);
         }
         return 0;

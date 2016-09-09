@@ -88,7 +88,7 @@ classes :
         parameters:
         - { name: threshold, type: float }
 
-    - name: Output
+    - name: SystemOut
       interface:
         - Audio.Sink
       cppname: AudioOutputPort
@@ -101,7 +101,7 @@ classes :
         - { name: connection, type: string, optional: true }
         expression: AudioOutputPortCache::instance().getAudioOutputPort
 
-    - name: Input
+    - name: SystemIn
       interface:
         - Audio.Source
       cppname: AudioInputPort
@@ -113,7 +113,7 @@ classes :
         - { name: connection, type: string, optional: true }
         expression: AudioInputPortCache::instance().getAudioInputPort
 
-    - name: StereoInput
+    - name: StereoIn
       interface:
         - Audio.Source
       cppname: AudioStereoInput
@@ -124,7 +124,7 @@ classes :
           - { name: connectLeft, type: string }
           - { name: connectRight, type: string }
 
-    - name: StereoOutput
+    - name: StereoOut
       interface:
         - Audio.Sink
       cppname: AudioStereoOutput

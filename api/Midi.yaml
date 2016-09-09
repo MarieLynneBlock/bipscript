@@ -107,7 +107,7 @@ classes :
           - {name: code, type: string}
           - {name: velocity, type: integer}
 
-    - name: Input
+    - name: SystemIn
       cppname: MidiInputPort
       interface: Midi.Source
       include: midiport
@@ -204,7 +204,7 @@ classes :
           parameters:
             - {name: number, type: integer}
 
-    - name: Output
+    - name: SystemOut
       cppname: MidiOutputPort
       interface: Midi.Sink
       ctor:

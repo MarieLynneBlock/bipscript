@@ -29,10 +29,10 @@ namespace binding {
 // object references to types in this package
 HSQOBJECT AudioMixerObject;
 HSQOBJECT AudioOnsetDetectorObject;
-HSQOBJECT AudioOutputObject;
-HSQOBJECT AudioInputObject;
-HSQOBJECT AudioStereoInputObject;
-HSQOBJECT AudioStereoOutputObject;
+HSQOBJECT AudioSystemOutObject;
+HSQOBJECT AudioSystemInObject;
+HSQOBJECT AudioStereoInObject;
+HSQOBJECT AudioStereoOutObject;
 HSQOBJECT AudioBeatTrackerObject;
 
 //
@@ -531,9 +531,9 @@ SQInteger AudioOnsetDetectorthreshold(HSQUIRRELVM vm)
 }
 
 //
-// Audio.Output class
+// Audio.SystemOut class
 //
-SQInteger AudioOutputCtor(HSQUIRRELVM vm)
+SQInteger AudioSystemOutCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
@@ -582,9 +582,9 @@ SQInteger AudioOutputCtor(HSQUIRRELVM vm)
 }
 
 //
-// Audio.Output connect
+// Audio.SystemOut connect
 //
-SQInteger AudioOutputconnect(HSQUIRRELVM vm)
+SQInteger AudioSystemOutconnect(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
@@ -594,7 +594,7 @@ SQInteger AudioOutputconnect(HSQUIRRELVM vm)
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "connect method needs an instance of Output");
+        return sq_throwerror(vm, "connect method needs an instance of SystemOut");
     }
     AudioOutputPort *obj = static_cast<AudioOutputPort*>(userPtr);
 
@@ -617,9 +617,9 @@ SQInteger AudioOutputconnect(HSQUIRRELVM vm)
 }
 
 //
-// Audio.Input class
+// Audio.SystemIn class
 //
-SQInteger AudioInputCtor(HSQUIRRELVM vm)
+SQInteger AudioSystemInCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
@@ -668,9 +668,9 @@ SQInteger AudioInputCtor(HSQUIRRELVM vm)
 }
 
 //
-// Audio.StereoInput class
+// Audio.StereoIn class
 //
-SQInteger AudioStereoInputCtor(HSQUIRRELVM vm)
+SQInteger AudioStereoInCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
@@ -711,9 +711,9 @@ SQInteger AudioStereoInputCtor(HSQUIRRELVM vm)
 }
 
 //
-// Audio.StereoOutput class
+// Audio.StereoOut class
 //
-SQInteger AudioStereoOutputCtor(HSQUIRRELVM vm)
+SQInteger AudioStereoOutCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
@@ -754,9 +754,9 @@ SQInteger AudioStereoOutputCtor(HSQUIRRELVM vm)
 }
 
 //
-// Audio.StereoOutput connect
+// Audio.StereoOut connect
 //
-SQInteger AudioStereoOutputconnect(HSQUIRRELVM vm)
+SQInteger AudioStereoOutconnect(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
@@ -766,7 +766,7 @@ SQInteger AudioStereoOutputconnect(HSQUIRRELVM vm)
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "connect method needs an instance of StereoOutput");
+        return sq_throwerror(vm, "connect method needs an instance of StereoOut");
     }
     AudioStereoOutput *obj = static_cast<AudioStereoOutput*>(userPtr);
 
@@ -919,72 +919,72 @@ void bindAudio(HSQUIRRELVM vm)
     // push OnsetDetector to Audio package table
     sq_newslot(vm, -3, false);
 
-    // create class Audio.Output
-    sq_pushstring(vm, "Output", -1);
+    // create class Audio.SystemOut
+    sq_pushstring(vm, "SystemOut", -1);
     sq_newclass(vm, false);
-    sq_getstackobj(vm, -1, &AudioOutputObject);
-    sq_settypetag(vm, -1, &AudioOutputObject);
+    sq_getstackobj(vm, -1, &AudioSystemOutObject);
+    sq_settypetag(vm, -1, &AudioSystemOutObject);
 
-    // ctor for class Output
+    // ctor for class SystemOut
     sq_pushstring(vm, _SC("constructor"), -1);
-    sq_newclosure(vm, &AudioOutputCtor, 0);
+    sq_newclosure(vm, &AudioSystemOutCtor, 0);
     sq_newslot(vm, -3, false);
 
-    // methods for class Output
+    // methods for class SystemOut
     sq_pushstring(vm, _SC("connect"), -1);
-    sq_newclosure(vm, &AudioOutputconnect, 0);
+    sq_newclosure(vm, &AudioSystemOutconnect, 0);
     sq_newslot(vm, -3, false);
 
-    // push Output to Audio package table
+    // push SystemOut to Audio package table
     sq_newslot(vm, -3, false);
 
-    // create class Audio.Input
-    sq_pushstring(vm, "Input", -1);
+    // create class Audio.SystemIn
+    sq_pushstring(vm, "SystemIn", -1);
     sq_newclass(vm, false);
-    sq_getstackobj(vm, -1, &AudioInputObject);
-    sq_settypetag(vm, -1, &AudioInputObject);
+    sq_getstackobj(vm, -1, &AudioSystemInObject);
+    sq_settypetag(vm, -1, &AudioSystemInObject);
 
-    // ctor for class Input
+    // ctor for class SystemIn
     sq_pushstring(vm, _SC("constructor"), -1);
-    sq_newclosure(vm, &AudioInputCtor, 0);
+    sq_newclosure(vm, &AudioSystemInCtor, 0);
     sq_newslot(vm, -3, false);
 
-    // methods for class Input
-    // push Input to Audio package table
+    // methods for class SystemIn
+    // push SystemIn to Audio package table
     sq_newslot(vm, -3, false);
 
-    // create class Audio.StereoInput
-    sq_pushstring(vm, "StereoInput", -1);
+    // create class Audio.StereoIn
+    sq_pushstring(vm, "StereoIn", -1);
     sq_newclass(vm, false);
-    sq_getstackobj(vm, -1, &AudioStereoInputObject);
-    sq_settypetag(vm, -1, &AudioStereoInputObject);
+    sq_getstackobj(vm, -1, &AudioStereoInObject);
+    sq_settypetag(vm, -1, &AudioStereoInObject);
 
-    // ctor for class StereoInput
+    // ctor for class StereoIn
     sq_pushstring(vm, _SC("constructor"), -1);
-    sq_newclosure(vm, &AudioStereoInputCtor, 0);
+    sq_newclosure(vm, &AudioStereoInCtor, 0);
     sq_newslot(vm, -3, false);
 
-    // methods for class StereoInput
-    // push StereoInput to Audio package table
+    // methods for class StereoIn
+    // push StereoIn to Audio package table
     sq_newslot(vm, -3, false);
 
-    // create class Audio.StereoOutput
-    sq_pushstring(vm, "StereoOutput", -1);
+    // create class Audio.StereoOut
+    sq_pushstring(vm, "StereoOut", -1);
     sq_newclass(vm, false);
-    sq_getstackobj(vm, -1, &AudioStereoOutputObject);
-    sq_settypetag(vm, -1, &AudioStereoOutputObject);
+    sq_getstackobj(vm, -1, &AudioStereoOutObject);
+    sq_settypetag(vm, -1, &AudioStereoOutObject);
 
-    // ctor for class StereoOutput
+    // ctor for class StereoOut
     sq_pushstring(vm, _SC("constructor"), -1);
-    sq_newclosure(vm, &AudioStereoOutputCtor, 0);
+    sq_newclosure(vm, &AudioStereoOutCtor, 0);
     sq_newslot(vm, -3, false);
 
-    // methods for class StereoOutput
+    // methods for class StereoOut
     sq_pushstring(vm, _SC("connect"), -1);
-    sq_newclosure(vm, &AudioStereoOutputconnect, 0);
+    sq_newclosure(vm, &AudioStereoOutconnect, 0);
     sq_newslot(vm, -3, false);
 
-    // push StereoOutput to Audio package table
+    // push StereoOut to Audio package table
     sq_newslot(vm, -3, false);
 
     // create class Audio.BeatTracker
