@@ -235,71 +235,71 @@ SQInteger TransportMastertimeSignature(HSQUIRRELVM vm)
     }
 
     if(overrideType == OT_INSTANCE && overrideTypeTag == &TransportTimeSignatureObject) {
-    SQInteger numargs = sq_gettop(vm);
-    // check parameter count
-    if(numargs < 2) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
-    }
-    // get "this" pointer
-    SQUserPointer userPtr = 0;
-    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "timeSignature method needs an instance of Master");
-    }
-    TransportMaster *obj = static_cast<TransportMaster*>(userPtr);
+        SQInteger numargs = sq_gettop(vm);
+        // check parameter count
+        if(numargs < 2) {
+            return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+        }
+        // get "this" pointer
+        SQUserPointer userPtr = 0;
+        if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+            return sq_throwerror(vm, "timeSignature method needs an instance of Master");
+        }
+        TransportMaster *obj = static_cast<TransportMaster*>(userPtr);
 
-    // get parameter 1 "signature" as Transport.TimeSignature
-    TimeSignature *signature = 0;
-    sq_getinstanceup(vm, 2, (SQUserPointer*)&signature, 0);
-    if(signature == 0) {
-        return sq_throwerror(vm, "argument 1 is not of type Transport.TimeSignature");
-    }
+        // get parameter 1 "signature" as Transport.TimeSignature
+        TimeSignature *signature = 0;
+        sq_getinstanceup(vm, 2, (SQUserPointer*)&signature, 0);
+        if(signature == 0) {
+            return sq_throwerror(vm, "argument 1 is not of type Transport.TimeSignature");
+        }
 
-    // call the implementation
-    try {
-        obj->setTimeSignature(*signature);
-    }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
-    }
+        // call the implementation
+        try {
+            obj->setTimeSignature(*signature);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
 
-    // void method, returns no value
-    return 0;
+        // void method, returns no value
+        return 0;
     }
     else if(overrideType == OT_INTEGER) {
-    SQInteger numargs = sq_gettop(vm);
-    // check parameter count
-    if(numargs < 3) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 2");
-    }
-    // get "this" pointer
-    SQUserPointer userPtr = 0;
-    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "timeSignature method needs an instance of Master");
-    }
-    TransportMaster *obj = static_cast<TransportMaster*>(userPtr);
+        SQInteger numargs = sq_gettop(vm);
+        // check parameter count
+        if(numargs < 3) {
+            return sq_throwerror(vm, "insufficient parameters, expected at least 2");
+        }
+        // get "this" pointer
+        SQUserPointer userPtr = 0;
+        if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+            return sq_throwerror(vm, "timeSignature method needs an instance of Master");
+        }
+        TransportMaster *obj = static_cast<TransportMaster*>(userPtr);
 
-    // get parameter 1 "numerator" as integer
-    SQInteger numerator;
-    if (SQ_FAILED(sq_getinteger(vm, 2, &numerator))){
-        return sq_throwerror(vm, "argument 1 is not of type integer");
-    }
+        // get parameter 1 "numerator" as integer
+        SQInteger numerator;
+        if (SQ_FAILED(sq_getinteger(vm, 2, &numerator))){
+            return sq_throwerror(vm, "argument 1 is not of type integer");
+        }
 
-    // get parameter 2 "denominator" as integer
-    SQInteger denominator;
-    if (SQ_FAILED(sq_getinteger(vm, 3, &denominator))){
-        return sq_throwerror(vm, "argument 2 is not of type integer");
-    }
+        // get parameter 2 "denominator" as integer
+        SQInteger denominator;
+        if (SQ_FAILED(sq_getinteger(vm, 3, &denominator))){
+            return sq_throwerror(vm, "argument 2 is not of type integer");
+        }
 
-    // call the implementation
-    try {
-        obj->setTimeSignature(numerator, denominator);
-    }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
-    }
+        // call the implementation
+        try {
+            obj->setTimeSignature(numerator, denominator);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
 
-    // void method, returns no value
-    return 0;
+        // void method, returns no value
+        return 0;
     }
     else {
         return sq_throwerror(vm, "argument 1 is not of type {Transport.TimeSignature, integer}");

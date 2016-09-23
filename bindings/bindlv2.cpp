@@ -35,30 +35,30 @@ SQInteger Lv2PluginCtor(HSQUIRRELVM vm)
     SQInteger numargs = sq_gettop(vm);
     // optional overridden parameter not here
     if(numargs < 3) {
-    SQInteger numargs = sq_gettop(vm);
-    // check parameter count
-    if(numargs < 2) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
-    }
-    // get parameter 1 "uri" as string
-    const SQChar* uri;
-    if (SQ_FAILED(sq_getstring(vm, 2, &uri))){
-        return sq_throwerror(vm, "argument 1 is not of type string");
-    }
+        SQInteger numargs = sq_gettop(vm);
+        // check parameter count
+        if(numargs < 2) {
+            return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+        }
+        // get parameter 1 "uri" as string
+        const SQChar* uri;
+        if (SQ_FAILED(sq_getstring(vm, 2, &uri))){
+            return sq_throwerror(vm, "argument 1 is not of type string");
+        }
 
-    Lv2Plugin *obj;
-    // call the implementation
-    try {
-        obj = Lv2PluginCache::instance().getPlugin(uri);
-    }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
-    }
+        Lv2Plugin *obj;
+        // call the implementation
+        try {
+            obj = Lv2PluginCache::instance().getPlugin(uri);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
 
-    // return pointer to new object
-    sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-    //sq_setreleasehook(vm, 1, release_hook);
-    return 1;
+        // return pointer to new object
+        sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
+        //sq_setreleasehook(vm, 1, release_hook);
+        return 1;
     }
     SQObjectType overrideType = sq_gettype(vm, 3);
     SQUserPointer overrideTypeTag;
@@ -67,102 +67,102 @@ SQInteger Lv2PluginCtor(HSQUIRRELVM vm)
     }
 
     if(overrideType == OT_STRING) {
-    SQInteger numargs = sq_gettop(vm);
-    // check parameter count
-    if(numargs < 2) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
-    }
-    // get parameter 1 "uri" as string
-    const SQChar* uri;
-    if (SQ_FAILED(sq_getstring(vm, 2, &uri))){
-        return sq_throwerror(vm, "argument 1 is not of type string");
-    }
-
-    Lv2Plugin *obj;
-    // 2 parameters passed in
-    if(numargs == 3) {
-
-        // get parameter 2 "preset" as string
-        const SQChar* preset;
-        if (SQ_FAILED(sq_getstring(vm, 3, &preset))){
-            return sq_throwerror(vm, "argument 2 is not of type string");
+        SQInteger numargs = sq_gettop(vm);
+        // check parameter count
+        if(numargs < 2) {
+            return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+        }
+        // get parameter 1 "uri" as string
+        const SQChar* uri;
+        if (SQ_FAILED(sq_getstring(vm, 2, &uri))){
+            return sq_throwerror(vm, "argument 1 is not of type string");
         }
 
-        // call the implementation
-        try {
-            obj = Lv2PluginCache::instance().getPlugin(uri, preset);
-        }
-        catch(std::exception const& e) {
-            return sq_throwerror(vm, e.what());
-        }
-    }
+        Lv2Plugin *obj;
+        // 2 parameters passed in
+        if(numargs == 3) {
 
-    else {
-        // call the implementation
-        try {
-            obj = Lv2PluginCache::instance().getPlugin(uri);
-        }
-        catch(std::exception const& e) {
-            return sq_throwerror(vm, e.what());
-        }
-    }
+            // get parameter 2 "preset" as string
+            const SQChar* preset;
+            if (SQ_FAILED(sq_getstring(vm, 3, &preset))){
+                return sq_throwerror(vm, "argument 2 is not of type string");
+            }
 
-    // return pointer to new object
-    sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-    //sq_setreleasehook(vm, 1, release_hook);
-    return 1;
+            // call the implementation
+            try {
+                obj = Lv2PluginCache::instance().getPlugin(uri, preset);
+            }
+            catch(std::exception const& e) {
+                return sq_throwerror(vm, e.what());
+            }
+        }
+
+        else {
+            // call the implementation
+            try {
+                obj = Lv2PluginCache::instance().getPlugin(uri);
+            }
+            catch(std::exception const& e) {
+                return sq_throwerror(vm, e.what());
+            }
+        }
+
+        // return pointer to new object
+        sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
+        //sq_setreleasehook(vm, 1, release_hook);
+        return 1;
     }
     else if(overrideType == OT_INSTANCE && overrideTypeTag == &Lv2StateObject) {
-    SQInteger numargs = sq_gettop(vm);
-    // check parameter count
-    if(numargs < 2) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
-    }
-    // get parameter 1 "uri" as string
-    const SQChar* uri;
-    if (SQ_FAILED(sq_getstring(vm, 2, &uri))){
-        return sq_throwerror(vm, "argument 1 is not of type string");
-    }
-
-    Lv2Plugin *obj;
-    // 2 parameters passed in
-    if(numargs == 3) {
-
-        // get parameter 2 "state" as Lv2.State
-        Lv2State *state = 0;
-        sq_getinstanceup(vm, 3, (SQUserPointer*)&state, 0);
-        if(state == 0) {
-            return sq_throwerror(vm, "argument 2 is not of type Lv2.State");
+        SQInteger numargs = sq_gettop(vm);
+        // check parameter count
+        if(numargs < 2) {
+            return sq_throwerror(vm, "insufficient parameters, expected at least 1");
         }
-        SQUserPointer stateTypeTag;
-        sq_gettypetag(vm, 3, &stateTypeTag);
-        if(stateTypeTag != &Lv2StateObject) {
-            return sq_throwerror(vm, "argument 2 is not of type Lv2.State");
+        // get parameter 1 "uri" as string
+        const SQChar* uri;
+        if (SQ_FAILED(sq_getstring(vm, 2, &uri))){
+            return sq_throwerror(vm, "argument 1 is not of type string");
         }
 
-        // call the implementation
-        try {
-            obj = Lv2PluginCache::instance().getPlugin(uri, *state);
-        }
-        catch(std::exception const& e) {
-            return sq_throwerror(vm, e.what());
-        }
-    }
+        Lv2Plugin *obj;
+        // 2 parameters passed in
+        if(numargs == 3) {
 
-    else {
-        // call the implementation
-        try {
-            obj = Lv2PluginCache::instance().getPlugin(uri);
-        }
-        catch(std::exception const& e) {
-            return sq_throwerror(vm, e.what());
-        }
-    }
+            // get parameter 2 "state" as Lv2.State
+            Lv2State *state = 0;
+            sq_getinstanceup(vm, 3, (SQUserPointer*)&state, 0);
+            if(state == 0) {
+                return sq_throwerror(vm, "argument 2 is not of type Lv2.State");
+            }
+            SQUserPointer stateTypeTag;
+            sq_gettypetag(vm, 3, &stateTypeTag);
+            if(stateTypeTag != &Lv2StateObject) {
+                return sq_throwerror(vm, "argument 2 is not of type Lv2.State");
+            }
 
-    // return pointer to new object
-    sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-    //sq_setreleasehook(vm, 1, release_hook);
-    return 1;
+            // call the implementation
+            try {
+                obj = Lv2PluginCache::instance().getPlugin(uri, *state);
+            }
+            catch(std::exception const& e) {
+                return sq_throwerror(vm, e.what());
+            }
+        }
+
+        else {
+            // call the implementation
+            try {
+                obj = Lv2PluginCache::instance().getPlugin(uri);
+            }
+            catch(std::exception const& e) {
+                return sq_throwerror(vm, e.what());
+            }
+        }
+
+        // return pointer to new object
+        sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
+        //sq_setreleasehook(vm, 1, release_hook);
+        return 1;
     }
     else {
         return sq_throwerror(vm, "argument 2 is not of type {string, Lv2.State}");
@@ -390,373 +390,373 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
     }
 
     if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiNoteObject) {
-    SQInteger numargs = sq_gettop(vm);
-    // check parameter count
-    if(numargs < 3) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 2");
-    }
-    // get "this" pointer
-    SQUserPointer userPtr = 0;
-    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "schedule method needs an instance of Plugin");
-    }
-    Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
+        SQInteger numargs = sq_gettop(vm);
+        // check parameter count
+        if(numargs < 3) {
+            return sq_throwerror(vm, "insufficient parameters, expected at least 2");
+        }
+        // get "this" pointer
+        SQUserPointer userPtr = 0;
+        if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+            return sq_throwerror(vm, "schedule method needs an instance of Plugin");
+        }
+        Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
 
-    // get parameter 1 "note" as Midi.Note
-    Note *note = 0;
-    sq_getinstanceup(vm, 2, (SQUserPointer*)&note, 0);
-    if(note == 0) {
-        return sq_throwerror(vm, "argument 1 is not of type Midi.Note");
-    }
-
-    // get parameter 2 "bar" as integer
-    SQInteger bar;
-    if (SQ_FAILED(sq_getinteger(vm, 3, &bar))){
-        return sq_throwerror(vm, "argument 2 is not of type integer");
-    }
-
-    // 3 parameters passed in
-    if(numargs == 4) {
-
-        // get parameter 3 "position" as integer
-        SQInteger position;
-        if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
-            return sq_throwerror(vm, "argument 3 is not of type integer");
+        // get parameter 1 "note" as Midi.Note
+        Note *note = 0;
+        sq_getinstanceup(vm, 2, (SQUserPointer*)&note, 0);
+        if(note == 0) {
+            return sq_throwerror(vm, "argument 1 is not of type Midi.Note");
         }
 
-        // call the implementation
-        try {
-            obj->schedule(*note, bar, position);
-        }
-        catch(std::exception const& e) {
-            return sq_throwerror(vm, e.what());
-        }
-    }
-
-    // 4 parameters passed in
-    else if(numargs == 5) {
-
-        // get parameter 3 "position" as integer
-        SQInteger position;
-        if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
-            return sq_throwerror(vm, "argument 3 is not of type integer");
+        // get parameter 2 "bar" as integer
+        SQInteger bar;
+        if (SQ_FAILED(sq_getinteger(vm, 3, &bar))){
+            return sq_throwerror(vm, "argument 2 is not of type integer");
         }
 
-        // get parameter 4 "division" as integer
-        SQInteger division;
-        if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
-            return sq_throwerror(vm, "argument 4 is not of type integer");
+        // 3 parameters passed in
+        if(numargs == 4) {
+
+            // get parameter 3 "position" as integer
+            SQInteger position;
+            if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
+                return sq_throwerror(vm, "argument 3 is not of type integer");
+            }
+
+            // call the implementation
+            try {
+                obj->schedule(*note, bar, position);
+            }
+            catch(std::exception const& e) {
+                return sq_throwerror(vm, e.what());
+            }
         }
 
-        // call the implementation
-        try {
-            obj->schedule(*note, bar, position, division);
-        }
-        catch(std::exception const& e) {
-            return sq_throwerror(vm, e.what());
-        }
-    }
+        // 4 parameters passed in
+        else if(numargs == 5) {
 
-    // 5 parameters passed in
-    else if(numargs == 6) {
+            // get parameter 3 "position" as integer
+            SQInteger position;
+            if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
+                return sq_throwerror(vm, "argument 3 is not of type integer");
+            }
 
-        // get parameter 3 "position" as integer
-        SQInteger position;
-        if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
-            return sq_throwerror(vm, "argument 3 is not of type integer");
-        }
+            // get parameter 4 "division" as integer
+            SQInteger division;
+            if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
+                return sq_throwerror(vm, "argument 4 is not of type integer");
+            }
 
-        // get parameter 4 "division" as integer
-        SQInteger division;
-        if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
-            return sq_throwerror(vm, "argument 4 is not of type integer");
-        }
-
-        // get parameter 5 "channel" as integer
-        SQInteger channel;
-        if (SQ_FAILED(sq_getinteger(vm, 6, &channel))){
-            return sq_throwerror(vm, "argument 5 is not of type integer");
+            // call the implementation
+            try {
+                obj->schedule(*note, bar, position, division);
+            }
+            catch(std::exception const& e) {
+                return sq_throwerror(vm, e.what());
+            }
         }
 
-        // call the implementation
-        try {
-            obj->schedule(*note, bar, position, division, channel);
-        }
-        catch(std::exception const& e) {
-            return sq_throwerror(vm, e.what());
-        }
-    }
+        // 5 parameters passed in
+        else if(numargs == 6) {
 
-    else {
-        // call the implementation
-        try {
-            obj->schedule(*note, bar);
-        }
-        catch(std::exception const& e) {
-            return sq_throwerror(vm, e.what());
-        }
-    }
+            // get parameter 3 "position" as integer
+            SQInteger position;
+            if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
+                return sq_throwerror(vm, "argument 3 is not of type integer");
+            }
 
-    // void method, returns no value
-    return 0;
+            // get parameter 4 "division" as integer
+            SQInteger division;
+            if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
+                return sq_throwerror(vm, "argument 4 is not of type integer");
+            }
+
+            // get parameter 5 "channel" as integer
+            SQInteger channel;
+            if (SQ_FAILED(sq_getinteger(vm, 6, &channel))){
+                return sq_throwerror(vm, "argument 5 is not of type integer");
+            }
+
+            // call the implementation
+            try {
+                obj->schedule(*note, bar, position, division, channel);
+            }
+            catch(std::exception const& e) {
+                return sq_throwerror(vm, e.what());
+            }
+        }
+
+        else {
+            // call the implementation
+            try {
+                obj->schedule(*note, bar);
+            }
+            catch(std::exception const& e) {
+                return sq_throwerror(vm, e.what());
+            }
+        }
+
+        // void method, returns no value
+        return 0;
     }
     else if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiPatternObject) {
-    SQInteger numargs = sq_gettop(vm);
-    // check parameter count
-    if(numargs < 3) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 2");
-    }
-    // get "this" pointer
-    SQUserPointer userPtr = 0;
-    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "schedule method needs an instance of Plugin");
-    }
-    Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
+        SQInteger numargs = sq_gettop(vm);
+        // check parameter count
+        if(numargs < 3) {
+            return sq_throwerror(vm, "insufficient parameters, expected at least 2");
+        }
+        // get "this" pointer
+        SQUserPointer userPtr = 0;
+        if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+            return sq_throwerror(vm, "schedule method needs an instance of Plugin");
+        }
+        Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
 
-    // get parameter 1 "pattern" as Midi.Pattern
-    Pattern *pattern = 0;
-    sq_getinstanceup(vm, 2, (SQUserPointer*)&pattern, 0);
-    if(pattern == 0) {
-        return sq_throwerror(vm, "argument 1 is not of type Midi.Pattern");
-    }
-
-    // get parameter 2 "bar" as integer
-    SQInteger bar;
-    if (SQ_FAILED(sq_getinteger(vm, 3, &bar))){
-        return sq_throwerror(vm, "argument 2 is not of type integer");
-    }
-
-    // 3 parameters passed in
-    if(numargs == 4) {
-
-        // get parameter 3 "position" as integer
-        SQInteger position;
-        if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
-            return sq_throwerror(vm, "argument 3 is not of type integer");
+        // get parameter 1 "pattern" as Midi.Pattern
+        Pattern *pattern = 0;
+        sq_getinstanceup(vm, 2, (SQUserPointer*)&pattern, 0);
+        if(pattern == 0) {
+            return sq_throwerror(vm, "argument 1 is not of type Midi.Pattern");
         }
 
-        // call the implementation
-        try {
-            obj->schedule(*pattern, bar, position);
-        }
-        catch(std::exception const& e) {
-            return sq_throwerror(vm, e.what());
-        }
-    }
-
-    // 4 parameters passed in
-    else if(numargs == 5) {
-
-        // get parameter 3 "position" as integer
-        SQInteger position;
-        if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
-            return sq_throwerror(vm, "argument 3 is not of type integer");
+        // get parameter 2 "bar" as integer
+        SQInteger bar;
+        if (SQ_FAILED(sq_getinteger(vm, 3, &bar))){
+            return sq_throwerror(vm, "argument 2 is not of type integer");
         }
 
-        // get parameter 4 "division" as integer
-        SQInteger division;
-        if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
-            return sq_throwerror(vm, "argument 4 is not of type integer");
+        // 3 parameters passed in
+        if(numargs == 4) {
+
+            // get parameter 3 "position" as integer
+            SQInteger position;
+            if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
+                return sq_throwerror(vm, "argument 3 is not of type integer");
+            }
+
+            // call the implementation
+            try {
+                obj->schedule(*pattern, bar, position);
+            }
+            catch(std::exception const& e) {
+                return sq_throwerror(vm, e.what());
+            }
         }
 
-        // call the implementation
-        try {
-            obj->schedule(*pattern, bar, position, division);
-        }
-        catch(std::exception const& e) {
-            return sq_throwerror(vm, e.what());
-        }
-    }
+        // 4 parameters passed in
+        else if(numargs == 5) {
 
-    // 5 parameters passed in
-    else if(numargs == 6) {
+            // get parameter 3 "position" as integer
+            SQInteger position;
+            if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
+                return sq_throwerror(vm, "argument 3 is not of type integer");
+            }
 
-        // get parameter 3 "position" as integer
-        SQInteger position;
-        if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
-            return sq_throwerror(vm, "argument 3 is not of type integer");
-        }
+            // get parameter 4 "division" as integer
+            SQInteger division;
+            if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
+                return sq_throwerror(vm, "argument 4 is not of type integer");
+            }
 
-        // get parameter 4 "division" as integer
-        SQInteger division;
-        if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
-            return sq_throwerror(vm, "argument 4 is not of type integer");
-        }
-
-        // get parameter 5 "channel" as integer
-        SQInteger channel;
-        if (SQ_FAILED(sq_getinteger(vm, 6, &channel))){
-            return sq_throwerror(vm, "argument 5 is not of type integer");
+            // call the implementation
+            try {
+                obj->schedule(*pattern, bar, position, division);
+            }
+            catch(std::exception const& e) {
+                return sq_throwerror(vm, e.what());
+            }
         }
 
-        // call the implementation
-        try {
-            obj->schedule(*pattern, bar, position, division, channel);
-        }
-        catch(std::exception const& e) {
-            return sq_throwerror(vm, e.what());
-        }
-    }
+        // 5 parameters passed in
+        else if(numargs == 6) {
 
-    else {
-        // call the implementation
-        try {
-            obj->schedule(*pattern, bar);
-        }
-        catch(std::exception const& e) {
-            return sq_throwerror(vm, e.what());
-        }
-    }
+            // get parameter 3 "position" as integer
+            SQInteger position;
+            if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
+                return sq_throwerror(vm, "argument 3 is not of type integer");
+            }
 
-    // void method, returns no value
-    return 0;
+            // get parameter 4 "division" as integer
+            SQInteger division;
+            if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
+                return sq_throwerror(vm, "argument 4 is not of type integer");
+            }
+
+            // get parameter 5 "channel" as integer
+            SQInteger channel;
+            if (SQ_FAILED(sq_getinteger(vm, 6, &channel))){
+                return sq_throwerror(vm, "argument 5 is not of type integer");
+            }
+
+            // call the implementation
+            try {
+                obj->schedule(*pattern, bar, position, division, channel);
+            }
+            catch(std::exception const& e) {
+                return sq_throwerror(vm, e.what());
+            }
+        }
+
+        else {
+            // call the implementation
+            try {
+                obj->schedule(*pattern, bar);
+            }
+            catch(std::exception const& e) {
+                return sq_throwerror(vm, e.what());
+            }
+        }
+
+        // void method, returns no value
+        return 0;
     }
     else if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiPitchBendObject) {
-    SQInteger numargs = sq_gettop(vm);
-    // check parameter count
-    if(numargs < 5) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 4");
-    }
-    // get "this" pointer
-    SQUserPointer userPtr = 0;
-    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "schedule method needs an instance of Plugin");
-    }
-    Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
+        SQInteger numargs = sq_gettop(vm);
+        // check parameter count
+        if(numargs < 5) {
+            return sq_throwerror(vm, "insufficient parameters, expected at least 4");
+        }
+        // get "this" pointer
+        SQUserPointer userPtr = 0;
+        if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+            return sq_throwerror(vm, "schedule method needs an instance of Plugin");
+        }
+        Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
 
-    // get parameter 1 "pitchbend" as Midi.PitchBend
-    PitchBend *pitchbend = 0;
-    sq_getinstanceup(vm, 2, (SQUserPointer*)&pitchbend, 0);
-    if(pitchbend == 0) {
-        return sq_throwerror(vm, "argument 1 is not of type Midi.PitchBend");
-    }
+        // get parameter 1 "pitchbend" as Midi.PitchBend
+        PitchBend *pitchbend = 0;
+        sq_getinstanceup(vm, 2, (SQUserPointer*)&pitchbend, 0);
+        if(pitchbend == 0) {
+            return sq_throwerror(vm, "argument 1 is not of type Midi.PitchBend");
+        }
 
-    // get parameter 2 "bar" as integer
-    SQInteger bar;
-    if (SQ_FAILED(sq_getinteger(vm, 3, &bar))){
-        return sq_throwerror(vm, "argument 2 is not of type integer");
-    }
+        // get parameter 2 "bar" as integer
+        SQInteger bar;
+        if (SQ_FAILED(sq_getinteger(vm, 3, &bar))){
+            return sq_throwerror(vm, "argument 2 is not of type integer");
+        }
 
-    // get parameter 3 "position" as integer
-    SQInteger position;
-    if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
-        return sq_throwerror(vm, "argument 3 is not of type integer");
-    }
+        // get parameter 3 "position" as integer
+        SQInteger position;
+        if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
+            return sq_throwerror(vm, "argument 3 is not of type integer");
+        }
 
-    // get parameter 4 "division" as integer
-    SQInteger division;
-    if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
-        return sq_throwerror(vm, "argument 4 is not of type integer");
-    }
+        // get parameter 4 "division" as integer
+        SQInteger division;
+        if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
+            return sq_throwerror(vm, "argument 4 is not of type integer");
+        }
 
-    // call the implementation
-    try {
-        obj->schedule(*pitchbend, bar, position, division);
-    }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
-    }
+        // call the implementation
+        try {
+            obj->schedule(*pitchbend, bar, position, division);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
 
-    // void method, returns no value
-    return 0;
+        // void method, returns no value
+        return 0;
     }
     else if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiControlObject) {
-    SQInteger numargs = sq_gettop(vm);
-    // check parameter count
-    if(numargs < 5) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 4");
-    }
-    // get "this" pointer
-    SQUserPointer userPtr = 0;
-    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "schedule method needs an instance of Plugin");
-    }
-    Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
+        SQInteger numargs = sq_gettop(vm);
+        // check parameter count
+        if(numargs < 5) {
+            return sq_throwerror(vm, "insufficient parameters, expected at least 4");
+        }
+        // get "this" pointer
+        SQUserPointer userPtr = 0;
+        if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+            return sq_throwerror(vm, "schedule method needs an instance of Plugin");
+        }
+        Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
 
-    // get parameter 1 "control" as Midi.Control
-    Control *control = 0;
-    sq_getinstanceup(vm, 2, (SQUserPointer*)&control, 0);
-    if(control == 0) {
-        return sq_throwerror(vm, "argument 1 is not of type Midi.Control");
-    }
+        // get parameter 1 "control" as Midi.Control
+        Control *control = 0;
+        sq_getinstanceup(vm, 2, (SQUserPointer*)&control, 0);
+        if(control == 0) {
+            return sq_throwerror(vm, "argument 1 is not of type Midi.Control");
+        }
 
-    // get parameter 2 "bar" as integer
-    SQInteger bar;
-    if (SQ_FAILED(sq_getinteger(vm, 3, &bar))){
-        return sq_throwerror(vm, "argument 2 is not of type integer");
-    }
+        // get parameter 2 "bar" as integer
+        SQInteger bar;
+        if (SQ_FAILED(sq_getinteger(vm, 3, &bar))){
+            return sq_throwerror(vm, "argument 2 is not of type integer");
+        }
 
-    // get parameter 3 "position" as integer
-    SQInteger position;
-    if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
-        return sq_throwerror(vm, "argument 3 is not of type integer");
-    }
+        // get parameter 3 "position" as integer
+        SQInteger position;
+        if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
+            return sq_throwerror(vm, "argument 3 is not of type integer");
+        }
 
-    // get parameter 4 "division" as integer
-    SQInteger division;
-    if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
-        return sq_throwerror(vm, "argument 4 is not of type integer");
-    }
+        // get parameter 4 "division" as integer
+        SQInteger division;
+        if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
+            return sq_throwerror(vm, "argument 4 is not of type integer");
+        }
 
-    // call the implementation
-    try {
-        obj->schedule(*control, bar, position, division);
-    }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
-    }
+        // call the implementation
+        try {
+            obj->schedule(*control, bar, position, division);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
 
-    // void method, returns no value
-    return 0;
+        // void method, returns no value
+        return 0;
     }
     else if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiProgramChangeObject) {
-    SQInteger numargs = sq_gettop(vm);
-    // check parameter count
-    if(numargs < 5) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 4");
-    }
-    // get "this" pointer
-    SQUserPointer userPtr = 0;
-    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "schedule method needs an instance of Plugin");
-    }
-    Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
+        SQInteger numargs = sq_gettop(vm);
+        // check parameter count
+        if(numargs < 5) {
+            return sq_throwerror(vm, "insufficient parameters, expected at least 4");
+        }
+        // get "this" pointer
+        SQUserPointer userPtr = 0;
+        if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+            return sq_throwerror(vm, "schedule method needs an instance of Plugin");
+        }
+        Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
 
-    // get parameter 1 "programchange" as Midi.ProgramChange
-    ProgramChange *programchange = 0;
-    sq_getinstanceup(vm, 2, (SQUserPointer*)&programchange, 0);
-    if(programchange == 0) {
-        return sq_throwerror(vm, "argument 1 is not of type Midi.ProgramChange");
-    }
+        // get parameter 1 "programchange" as Midi.ProgramChange
+        ProgramChange *programchange = 0;
+        sq_getinstanceup(vm, 2, (SQUserPointer*)&programchange, 0);
+        if(programchange == 0) {
+            return sq_throwerror(vm, "argument 1 is not of type Midi.ProgramChange");
+        }
 
-    // get parameter 2 "bar" as integer
-    SQInteger bar;
-    if (SQ_FAILED(sq_getinteger(vm, 3, &bar))){
-        return sq_throwerror(vm, "argument 2 is not of type integer");
-    }
+        // get parameter 2 "bar" as integer
+        SQInteger bar;
+        if (SQ_FAILED(sq_getinteger(vm, 3, &bar))){
+            return sq_throwerror(vm, "argument 2 is not of type integer");
+        }
 
-    // get parameter 3 "position" as integer
-    SQInteger position;
-    if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
-        return sq_throwerror(vm, "argument 3 is not of type integer");
-    }
+        // get parameter 3 "position" as integer
+        SQInteger position;
+        if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
+            return sq_throwerror(vm, "argument 3 is not of type integer");
+        }
 
-    // get parameter 4 "division" as integer
-    SQInteger division;
-    if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
-        return sq_throwerror(vm, "argument 4 is not of type integer");
-    }
+        // get parameter 4 "division" as integer
+        SQInteger division;
+        if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
+            return sq_throwerror(vm, "argument 4 is not of type integer");
+        }
 
-    // call the implementation
-    try {
-        obj->schedule(*programchange, bar, position, division);
-    }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
-    }
+        // call the implementation
+        try {
+            obj->schedule(*programchange, bar, position, division);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
 
-    // void method, returns no value
-    return 0;
+        // void method, returns no value
+        return 0;
     }
     else {
         return sq_throwerror(vm, "argument 1 is not of type {Midi.Note, Midi.Pattern, Midi.PitchBend, Midi.Control, Midi.ProgramChange}");
@@ -875,60 +875,60 @@ SQInteger Lv2StateCtor(HSQUIRRELVM vm)
     }
 
     if(overrideType == OT_TABLE) {
-    SQInteger numargs = sq_gettop(vm);
-    // check parameter count
-    if(numargs < 2) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
-    }
-    // get parameter 1 "state" as table
-    HSQOBJECT stateObj;
-    if (SQ_FAILED(sq_getstackobj(vm, 2, &stateObj))) {
-        return sq_throwerror(vm, "argument 1 is not of type table");
-    }
-    if (sq_gettype(vm, 2) != OT_TABLE) {
-        return sq_throwerror(vm, "argument 1 is not of type table");
-    }
-    ScriptHashIterator state(vm, stateObj);
+        SQInteger numargs = sq_gettop(vm);
+        // check parameter count
+        if(numargs < 2) {
+            return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+        }
+        // get parameter 1 "state" as table
+        HSQOBJECT stateObj;
+        if (SQ_FAILED(sq_getstackobj(vm, 2, &stateObj))) {
+            return sq_throwerror(vm, "argument 1 is not of type table");
+        }
+        if (sq_gettype(vm, 2) != OT_TABLE) {
+            return sq_throwerror(vm, "argument 1 is not of type table");
+        }
+        ScriptHashIterator state(vm, stateObj);
 
-    Lv2State *obj;
-    // call the implementation
-    try {
-        obj = new Lv2State(state);
-    }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
-    }
+        Lv2State *obj;
+        // call the implementation
+        try {
+            obj = new Lv2State(state);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
 
-    // return pointer to new object
-    sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-    //sq_setreleasehook(vm, 1, release_hook);
-    return 1;
+        // return pointer to new object
+        sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
+        //sq_setreleasehook(vm, 1, release_hook);
+        return 1;
     }
     else if(overrideType == OT_STRING) {
-    SQInteger numargs = sq_gettop(vm);
-    // check parameter count
-    if(numargs < 2) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
-    }
-    // get parameter 1 "file" as string
-    const SQChar* file;
-    if (SQ_FAILED(sq_getstring(vm, 2, &file))){
-        return sq_throwerror(vm, "argument 1 is not of type string");
-    }
+        SQInteger numargs = sq_gettop(vm);
+        // check parameter count
+        if(numargs < 2) {
+            return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+        }
+        // get parameter 1 "file" as string
+        const SQChar* file;
+        if (SQ_FAILED(sq_getstring(vm, 2, &file))){
+            return sq_throwerror(vm, "argument 1 is not of type string");
+        }
 
-    Lv2State *obj;
-    // call the implementation
-    try {
-        obj = new Lv2State(file);
-    }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
-    }
+        Lv2State *obj;
+        // call the implementation
+        try {
+            obj = new Lv2State(file);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
 
-    // return pointer to new object
-    sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-    //sq_setreleasehook(vm, 1, release_hook);
-    return 1;
+        // return pointer to new object
+        sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
+        //sq_setreleasehook(vm, 1, release_hook);
+        return 1;
     }
     else {
         return sq_throwerror(vm, "argument 1 is not of type {table, string}");

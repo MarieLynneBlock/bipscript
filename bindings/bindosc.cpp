@@ -192,124 +192,124 @@ SQInteger OscMessageadd(HSQUIRRELVM vm)
     }
 
     if(overrideType == OT_INTEGER) {
-    SQInteger numargs = sq_gettop(vm);
-    // check parameter count
-    if(numargs < 2) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
-    }
-    // get "this" pointer
-    SQUserPointer userPtr = 0;
-    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "add method needs an instance of Message");
-    }
-    OscMessage *obj = static_cast<OscMessage*>(userPtr);
+        SQInteger numargs = sq_gettop(vm);
+        // check parameter count
+        if(numargs < 2) {
+            return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+        }
+        // get "this" pointer
+        SQUserPointer userPtr = 0;
+        if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+            return sq_throwerror(vm, "add method needs an instance of Message");
+        }
+        OscMessage *obj = static_cast<OscMessage*>(userPtr);
 
-    // get parameter 1 "value" as integer
-    SQInteger value;
-    if (SQ_FAILED(sq_getinteger(vm, 2, &value))){
-        return sq_throwerror(vm, "argument 1 is not of type integer");
-    }
+        // get parameter 1 "value" as integer
+        SQInteger value;
+        if (SQ_FAILED(sq_getinteger(vm, 2, &value))){
+            return sq_throwerror(vm, "argument 1 is not of type integer");
+        }
 
-    // call the implementation
-    try {
-        obj->addInteger(value);
-    }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
-    }
+        // call the implementation
+        try {
+            obj->addInteger(value);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
 
-    // void method, returns no value
-    return 0;
+        // void method, returns no value
+        return 0;
     }
     else if(overrideType == OT_FLOAT) {
-    SQInteger numargs = sq_gettop(vm);
-    // check parameter count
-    if(numargs < 2) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
-    }
-    // get "this" pointer
-    SQUserPointer userPtr = 0;
-    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "add method needs an instance of Message");
-    }
-    OscMessage *obj = static_cast<OscMessage*>(userPtr);
+        SQInteger numargs = sq_gettop(vm);
+        // check parameter count
+        if(numargs < 2) {
+            return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+        }
+        // get "this" pointer
+        SQUserPointer userPtr = 0;
+        if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+            return sq_throwerror(vm, "add method needs an instance of Message");
+        }
+        OscMessage *obj = static_cast<OscMessage*>(userPtr);
 
-    // get parameter 1 "value" as float
-    SQFloat value;
-    if (SQ_FAILED(sq_getfloat(vm, 2, &value))){
-        return sq_throwerror(vm, "argument 1 is not of type float");
-    }
+        // get parameter 1 "value" as float
+        SQFloat value;
+        if (SQ_FAILED(sq_getfloat(vm, 2, &value))){
+            return sq_throwerror(vm, "argument 1 is not of type float");
+        }
 
-    // call the implementation
-    try {
-        obj->addFloat(value);
-    }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
-    }
+        // call the implementation
+        try {
+            obj->addFloat(value);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
 
-    // void method, returns no value
-    return 0;
+        // void method, returns no value
+        return 0;
     }
     else if(overrideType == OT_STRING) {
-    SQInteger numargs = sq_gettop(vm);
-    // check parameter count
-    if(numargs < 2) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
-    }
-    // get "this" pointer
-    SQUserPointer userPtr = 0;
-    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "add method needs an instance of Message");
-    }
-    OscMessage *obj = static_cast<OscMessage*>(userPtr);
+        SQInteger numargs = sq_gettop(vm);
+        // check parameter count
+        if(numargs < 2) {
+            return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+        }
+        // get "this" pointer
+        SQUserPointer userPtr = 0;
+        if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+            return sq_throwerror(vm, "add method needs an instance of Message");
+        }
+        OscMessage *obj = static_cast<OscMessage*>(userPtr);
 
-    // get parameter 1 "value" as string
-    const SQChar* value;
-    if (SQ_FAILED(sq_getstring(vm, 2, &value))){
-        return sq_throwerror(vm, "argument 1 is not of type string");
-    }
+        // get parameter 1 "value" as string
+        const SQChar* value;
+        if (SQ_FAILED(sq_getstring(vm, 2, &value))){
+            return sq_throwerror(vm, "argument 1 is not of type string");
+        }
 
-    // call the implementation
-    try {
-        obj->addString(value);
-    }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
-    }
+        // call the implementation
+        try {
+            obj->addString(value);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
 
-    // void method, returns no value
-    return 0;
+        // void method, returns no value
+        return 0;
     }
     else if(overrideType == OT_BOOL) {
-    SQInteger numargs = sq_gettop(vm);
-    // check parameter count
-    if(numargs < 2) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
-    }
-    // get "this" pointer
-    SQUserPointer userPtr = 0;
-    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "add method needs an instance of Message");
-    }
-    OscMessage *obj = static_cast<OscMessage*>(userPtr);
+        SQInteger numargs = sq_gettop(vm);
+        // check parameter count
+        if(numargs < 2) {
+            return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+        }
+        // get "this" pointer
+        SQUserPointer userPtr = 0;
+        if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+            return sq_throwerror(vm, "add method needs an instance of Message");
+        }
+        OscMessage *obj = static_cast<OscMessage*>(userPtr);
 
-    // get parameter 1 "value" as bool
-    SQBool value;
-    if (SQ_FAILED(sq_getbool(vm, 2, &value))){
-        return sq_throwerror(vm, "argument 1 is not of type bool");
-    }
+        // get parameter 1 "value" as bool
+        SQBool value;
+        if (SQ_FAILED(sq_getbool(vm, 2, &value))){
+            return sq_throwerror(vm, "argument 1 is not of type bool");
+        }
 
-    // call the implementation
-    try {
-        obj->addBoolean(value);
-    }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
-    }
+        // call the implementation
+        try {
+            obj->addBoolean(value);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
 
-    // void method, returns no value
-    return 0;
+        // void method, returns no value
+        return 0;
     }
     else {
         return sq_throwerror(vm, "argument 1 is not of type {integer, float, string, bool}");
