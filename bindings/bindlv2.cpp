@@ -17,6 +17,7 @@
 
 #include "bindlv2.h"
 #include "bindtypes.h"
+#include "bindaudio.h"
 #include "bindmidi.h"
 
 #include "lv2plugin.h"
@@ -375,6 +376,49 @@ SQInteger Lv2PluginmidiChannel(HSQUIRRELVM vm)
 
     // push return value
     sq_pushinteger(vm, ret);
+    return 1;
+}
+
+//
+// Lv2.Plugin output
+//
+SQInteger Lv2Pluginoutput(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "output method needs an instance of Plugin");
+    }
+    Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
+
+    // get parameter 1 "channel" as integer
+    SQInteger channel;
+    if (SQ_FAILED(sq_getinteger(vm, 2, &channel))){
+        return sq_throwerror(vm, "argument 1 is not of type integer");
+    }
+
+    // return value
+    AudioConnection* ret;
+    // call the implementation
+    try {
+        ret = obj->getAudioConnection(channel);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushobject(vm, AudioOutputObject);
+    sq_createinstance(vm, -1);
+    sq_remove(vm, -2);
+    sq_setinstanceup(vm, -1, ret);
+    //sq_setreleasehook(vm, -1, &?);
+
     return 1;
 }
 
@@ -973,6 +1017,10 @@ void bindLv2(HSQUIRRELVM vm)
 
     sq_pushstring(vm, _SC("midiChannel"), -1);
     sq_newclosure(vm, &Lv2PluginmidiChannel, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("output"), -1);
+    sq_newclosure(vm, &Lv2Pluginoutput, 0);
     sq_newslot(vm, -3, false);
 
     sq_pushstring(vm, _SC("schedule"), -1);

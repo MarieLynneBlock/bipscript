@@ -22,12 +22,20 @@ interfaces:
     - name: Source
       cppname: AudioSource
       include: audioconnection
+      methods:
+        - name: output
+          cppname: getAudioConnection
+          parameters: { name: channel, type: integer }
+          returns: Audio.Output
 
     - name: Sink
       methods:
         - name: connect
           parameters:
             - { name: source, type: Audio.Source }
+        - name: connect
+          parameters:
+            - { name: output, type: Audio.Output }
 
 classes :
 
@@ -87,6 +95,9 @@ classes :
         cppname: setSilence
         parameters:
         - { name: threshold, type: float }
+
+    - name: Output
+      cppname: AudioConnection
 
     - name: SystemOut
       interface:

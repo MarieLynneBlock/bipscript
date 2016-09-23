@@ -24,6 +24,7 @@ namespace binding
     // object references to types in this package
     extern HSQOBJECT AudioMixerObject;
     extern HSQOBJECT AudioOnsetDetectorObject;
+    extern HSQOBJECT AudioOutputObject;
     extern HSQOBJECT AudioSystemOutObject;
     extern HSQOBJECT AudioSystemInObject;
     extern HSQOBJECT AudioStereoInObject;

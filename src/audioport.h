@@ -74,6 +74,9 @@ public:
     void connect(AudioSource &source) {
         connect(source.getAudioConnection(0));
     }
+    void connect(AudioConnection &connection) {
+        this->audioInput.store(&connection);
+    }
     void connect(AudioConnection *connection) {
         this->audioInput.store(connection);
     }
@@ -100,6 +103,9 @@ class AudioStereoOutput
     AudioOutputPort *portRight;
 public:
     void connect(AudioSource &source);
+    void connect(AudioConnection &connection) {
+        portLeft->connect(&connection);
+    }
     AudioStereoOutput(std::string name, const char *connectLeft, const char *connectRight);
 };
 

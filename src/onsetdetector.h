@@ -39,6 +39,9 @@ public:
     void connect(AudioSource &source) {
         this->audioInput.store(source.getAudioConnection(0));
     }
+    void connect(AudioConnection &connection) {
+        this->audioInput.store(&connection);
+    }
     void setThreshold(smpl_t threshold) {
         aubio_onset_set_threshold(aubioOnset, threshold);
     }

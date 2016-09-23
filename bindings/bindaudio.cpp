@@ -29,6 +29,7 @@ namespace binding {
 // object references to types in this package
 HSQOBJECT AudioMixerObject;
 HSQOBJECT AudioOnsetDetectorObject;
+HSQOBJECT AudioOutputObject;
 HSQOBJECT AudioSystemOutObject;
 HSQOBJECT AudioSystemInObject;
 HSQOBJECT AudioStereoInObject;
@@ -278,6 +279,49 @@ SQInteger AudioMixerconnect(HSQUIRRELVM vm)
 }
 
 //
+// Audio.Mixer output
+//
+SQInteger AudioMixeroutput(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "output method needs an instance of Mixer");
+    }
+    Mixer *obj = static_cast<Mixer*>(userPtr);
+
+    // get parameter 1 "channel" as integer
+    SQInteger channel;
+    if (SQ_FAILED(sq_getinteger(vm, 2, &channel))){
+        return sq_throwerror(vm, "argument 1 is not of type integer");
+    }
+
+    // return value
+    AudioConnection* ret;
+    // call the implementation
+    try {
+        ret = obj->getAudioConnection(channel);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushobject(vm, AudioOutputObject);
+    sq_createinstance(vm, -1);
+    sq_remove(vm, -2);
+    sq_setinstanceup(vm, -1, ret);
+    //sq_setreleasehook(vm, -1, &?);
+
+    return 1;
+}
+
+//
 // Audio.Mixer scheduleGain
 //
 SQInteger AudioMixerscheduleGain(HSQUIRRELVM vm)
@@ -388,34 +432,70 @@ SQInteger AudioOnsetDetectorCtor(HSQUIRRELVM vm)
 //
 SQInteger AudioOnsetDetectorconnect(HSQUIRRELVM vm)
 {
-    SQInteger numargs = sq_gettop(vm);
-    // check parameter count
-    if(numargs < 2) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
-    }
-    // get "this" pointer
-    SQUserPointer userPtr = 0;
-    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "connect method needs an instance of OnsetDetector");
-    }
-    OnsetDetector *obj = static_cast<OnsetDetector*>(userPtr);
-
-    // get parameter 1 "source" as Audio.Source
-    AudioSource *source = getAudioSource(vm);
-    if(source == 0) {
-        return sq_throwerror(vm, "argument 1 is not of type Audio.Source");
+    SQObjectType overrideType = sq_gettype(vm, 2);
+    SQUserPointer overrideTypeTag;
+    if(overrideType == OT_INSTANCE) {
+        sq_gettypetag(vm, 2, &overrideTypeTag);
     }
 
-    // call the implementation
-    try {
-        obj->connect(*source);
-    }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
-    }
+    if(AudioSource *source = getAudioSource(vm)) {
+        SQInteger numargs = sq_gettop(vm);
+        // check parameter count
+        if(numargs < 2) {
+            return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+        }
+        // get "this" pointer
+        SQUserPointer userPtr = 0;
+        if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+            return sq_throwerror(vm, "connect method needs an instance of OnsetDetector");
+        }
+        OnsetDetector *obj = static_cast<OnsetDetector*>(userPtr);
 
-    // void method, returns no value
-    return 0;
+        // call the implementation
+        try {
+            obj->connect(*source);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
+
+        // void method, returns no value
+        return 0;
+    }
+    else if(overrideType == OT_INSTANCE && overrideTypeTag == &AudioOutputObject) {
+        SQInteger numargs = sq_gettop(vm);
+        // check parameter count
+        if(numargs < 2) {
+            return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+        }
+        // get "this" pointer
+        SQUserPointer userPtr = 0;
+        if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+            return sq_throwerror(vm, "connect method needs an instance of OnsetDetector");
+        }
+        OnsetDetector *obj = static_cast<OnsetDetector*>(userPtr);
+
+        // get parameter 1 "output" as Audio.Output
+        AudioConnection *output = 0;
+        sq_getinstanceup(vm, 2, (SQUserPointer*)&output, 0);
+        if(output == 0) {
+            return sq_throwerror(vm, "argument 1 is not of type Audio.Output");
+        }
+
+        // call the implementation
+        try {
+            obj->connect(*output);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
+
+        // void method, returns no value
+        return 0;
+    }
+    else {
+        return sq_throwerror(vm, "argument 1 is not of type {Audio.Source, Audio.Output}");
+    }
 }
 
 //
@@ -531,6 +611,9 @@ SQInteger AudioOnsetDetectorthreshold(HSQUIRRELVM vm)
 }
 
 //
+// Audio.Output class
+//
+//
 // Audio.SystemOut class
 //
 SQInteger AudioSystemOutCtor(HSQUIRRELVM vm)
@@ -586,34 +669,70 @@ SQInteger AudioSystemOutCtor(HSQUIRRELVM vm)
 //
 SQInteger AudioSystemOutconnect(HSQUIRRELVM vm)
 {
-    SQInteger numargs = sq_gettop(vm);
-    // check parameter count
-    if(numargs < 2) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
-    }
-    // get "this" pointer
-    SQUserPointer userPtr = 0;
-    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "connect method needs an instance of SystemOut");
-    }
-    AudioOutputPort *obj = static_cast<AudioOutputPort*>(userPtr);
-
-    // get parameter 1 "source" as Audio.Source
-    AudioSource *source = getAudioSource(vm);
-    if(source == 0) {
-        return sq_throwerror(vm, "argument 1 is not of type Audio.Source");
+    SQObjectType overrideType = sq_gettype(vm, 2);
+    SQUserPointer overrideTypeTag;
+    if(overrideType == OT_INSTANCE) {
+        sq_gettypetag(vm, 2, &overrideTypeTag);
     }
 
-    // call the implementation
-    try {
-        obj->connect(*source);
-    }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
-    }
+    if(AudioSource *source = getAudioSource(vm)) {
+        SQInteger numargs = sq_gettop(vm);
+        // check parameter count
+        if(numargs < 2) {
+            return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+        }
+        // get "this" pointer
+        SQUserPointer userPtr = 0;
+        if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+            return sq_throwerror(vm, "connect method needs an instance of SystemOut");
+        }
+        AudioOutputPort *obj = static_cast<AudioOutputPort*>(userPtr);
 
-    // void method, returns no value
-    return 0;
+        // call the implementation
+        try {
+            obj->connect(*source);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
+
+        // void method, returns no value
+        return 0;
+    }
+    else if(overrideType == OT_INSTANCE && overrideTypeTag == &AudioOutputObject) {
+        SQInteger numargs = sq_gettop(vm);
+        // check parameter count
+        if(numargs < 2) {
+            return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+        }
+        // get "this" pointer
+        SQUserPointer userPtr = 0;
+        if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+            return sq_throwerror(vm, "connect method needs an instance of SystemOut");
+        }
+        AudioOutputPort *obj = static_cast<AudioOutputPort*>(userPtr);
+
+        // get parameter 1 "output" as Audio.Output
+        AudioConnection *output = 0;
+        sq_getinstanceup(vm, 2, (SQUserPointer*)&output, 0);
+        if(output == 0) {
+            return sq_throwerror(vm, "argument 1 is not of type Audio.Output");
+        }
+
+        // call the implementation
+        try {
+            obj->connect(*output);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
+
+        // void method, returns no value
+        return 0;
+    }
+    else {
+        return sq_throwerror(vm, "argument 1 is not of type {Audio.Source, Audio.Output}");
+    }
 }
 
 //
@@ -668,6 +787,49 @@ SQInteger AudioSystemInCtor(HSQUIRRELVM vm)
 }
 
 //
+// Audio.SystemIn output
+//
+SQInteger AudioSystemInoutput(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "output method needs an instance of SystemIn");
+    }
+    AudioInputPort *obj = static_cast<AudioInputPort*>(userPtr);
+
+    // get parameter 1 "channel" as integer
+    SQInteger channel;
+    if (SQ_FAILED(sq_getinteger(vm, 2, &channel))){
+        return sq_throwerror(vm, "argument 1 is not of type integer");
+    }
+
+    // return value
+    AudioConnection* ret;
+    // call the implementation
+    try {
+        ret = obj->getAudioConnection(channel);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushobject(vm, AudioOutputObject);
+    sq_createinstance(vm, -1);
+    sq_remove(vm, -2);
+    sq_setinstanceup(vm, -1, ret);
+    //sq_setreleasehook(vm, -1, &?);
+
+    return 1;
+}
+
+//
 // Audio.StereoIn class
 //
 SQInteger AudioStereoInCtor(HSQUIRRELVM vm)
@@ -707,6 +869,49 @@ SQInteger AudioStereoInCtor(HSQUIRRELVM vm)
     // return pointer to new object
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
     //sq_setreleasehook(vm, 1, release_hook);
+    return 1;
+}
+
+//
+// Audio.StereoIn output
+//
+SQInteger AudioStereoInoutput(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "output method needs an instance of StereoIn");
+    }
+    AudioStereoInput *obj = static_cast<AudioStereoInput*>(userPtr);
+
+    // get parameter 1 "channel" as integer
+    SQInteger channel;
+    if (SQ_FAILED(sq_getinteger(vm, 2, &channel))){
+        return sq_throwerror(vm, "argument 1 is not of type integer");
+    }
+
+    // return value
+    AudioConnection* ret;
+    // call the implementation
+    try {
+        ret = obj->getAudioConnection(channel);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushobject(vm, AudioOutputObject);
+    sq_createinstance(vm, -1);
+    sq_remove(vm, -2);
+    sq_setinstanceup(vm, -1, ret);
+    //sq_setreleasehook(vm, -1, &?);
+
     return 1;
 }
 
@@ -758,34 +963,70 @@ SQInteger AudioStereoOutCtor(HSQUIRRELVM vm)
 //
 SQInteger AudioStereoOutconnect(HSQUIRRELVM vm)
 {
-    SQInteger numargs = sq_gettop(vm);
-    // check parameter count
-    if(numargs < 2) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
-    }
-    // get "this" pointer
-    SQUserPointer userPtr = 0;
-    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "connect method needs an instance of StereoOut");
-    }
-    AudioStereoOutput *obj = static_cast<AudioStereoOutput*>(userPtr);
-
-    // get parameter 1 "source" as Audio.Source
-    AudioSource *source = getAudioSource(vm);
-    if(source == 0) {
-        return sq_throwerror(vm, "argument 1 is not of type Audio.Source");
+    SQObjectType overrideType = sq_gettype(vm, 2);
+    SQUserPointer overrideTypeTag;
+    if(overrideType == OT_INSTANCE) {
+        sq_gettypetag(vm, 2, &overrideTypeTag);
     }
 
-    // call the implementation
-    try {
-        obj->connect(*source);
-    }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
-    }
+    if(AudioSource *source = getAudioSource(vm)) {
+        SQInteger numargs = sq_gettop(vm);
+        // check parameter count
+        if(numargs < 2) {
+            return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+        }
+        // get "this" pointer
+        SQUserPointer userPtr = 0;
+        if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+            return sq_throwerror(vm, "connect method needs an instance of StereoOut");
+        }
+        AudioStereoOutput *obj = static_cast<AudioStereoOutput*>(userPtr);
 
-    // void method, returns no value
-    return 0;
+        // call the implementation
+        try {
+            obj->connect(*source);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
+
+        // void method, returns no value
+        return 0;
+    }
+    else if(overrideType == OT_INSTANCE && overrideTypeTag == &AudioOutputObject) {
+        SQInteger numargs = sq_gettop(vm);
+        // check parameter count
+        if(numargs < 2) {
+            return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+        }
+        // get "this" pointer
+        SQUserPointer userPtr = 0;
+        if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+            return sq_throwerror(vm, "connect method needs an instance of StereoOut");
+        }
+        AudioStereoOutput *obj = static_cast<AudioStereoOutput*>(userPtr);
+
+        // get parameter 1 "output" as Audio.Output
+        AudioConnection *output = 0;
+        sq_getinstanceup(vm, 2, (SQUserPointer*)&output, 0);
+        if(output == 0) {
+            return sq_throwerror(vm, "argument 1 is not of type Audio.Output");
+        }
+
+        // call the implementation
+        try {
+            obj->connect(*output);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
+
+        // void method, returns no value
+        return 0;
+    }
+    else {
+        return sq_throwerror(vm, "argument 1 is not of type {Audio.Source, Audio.Output}");
+    }
 }
 
 //
@@ -824,34 +1065,70 @@ SQInteger AudioBeatTrackerCtor(HSQUIRRELVM vm)
 //
 SQInteger AudioBeatTrackerconnect(HSQUIRRELVM vm)
 {
-    SQInteger numargs = sq_gettop(vm);
-    // check parameter count
-    if(numargs < 2) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
-    }
-    // get "this" pointer
-    SQUserPointer userPtr = 0;
-    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "connect method needs an instance of BeatTracker");
-    }
-    BeatTracker *obj = static_cast<BeatTracker*>(userPtr);
-
-    // get parameter 1 "source" as Audio.Source
-    AudioSource *source = getAudioSource(vm);
-    if(source == 0) {
-        return sq_throwerror(vm, "argument 1 is not of type Audio.Source");
+    SQObjectType overrideType = sq_gettype(vm, 2);
+    SQUserPointer overrideTypeTag;
+    if(overrideType == OT_INSTANCE) {
+        sq_gettypetag(vm, 2, &overrideTypeTag);
     }
 
-    // call the implementation
-    try {
-        obj->connect(*source);
-    }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
-    }
+    if(AudioSource *source = getAudioSource(vm)) {
+        SQInteger numargs = sq_gettop(vm);
+        // check parameter count
+        if(numargs < 2) {
+            return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+        }
+        // get "this" pointer
+        SQUserPointer userPtr = 0;
+        if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+            return sq_throwerror(vm, "connect method needs an instance of BeatTracker");
+        }
+        BeatTracker *obj = static_cast<BeatTracker*>(userPtr);
 
-    // void method, returns no value
-    return 0;
+        // call the implementation
+        try {
+            obj->connect(*source);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
+
+        // void method, returns no value
+        return 0;
+    }
+    else if(overrideType == OT_INSTANCE && overrideTypeTag == &AudioOutputObject) {
+        SQInteger numargs = sq_gettop(vm);
+        // check parameter count
+        if(numargs < 2) {
+            return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+        }
+        // get "this" pointer
+        SQUserPointer userPtr = 0;
+        if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+            return sq_throwerror(vm, "connect method needs an instance of BeatTracker");
+        }
+        BeatTracker *obj = static_cast<BeatTracker*>(userPtr);
+
+        // get parameter 1 "output" as Audio.Output
+        AudioConnection *output = 0;
+        sq_getinstanceup(vm, 2, (SQUserPointer*)&output, 0);
+        if(output == 0) {
+            return sq_throwerror(vm, "argument 1 is not of type Audio.Output");
+        }
+
+        // call the implementation
+        try {
+            obj->connect(*output);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
+
+        // void method, returns no value
+        return 0;
+    }
+    else {
+        return sq_throwerror(vm, "argument 1 is not of type {Audio.Source, Audio.Output}");
+    }
 }
 
 
@@ -879,6 +1156,10 @@ void bindAudio(HSQUIRRELVM vm)
 
     sq_pushstring(vm, _SC("connect"), -1);
     sq_newclosure(vm, &AudioMixerconnect, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("output"), -1);
+    sq_newclosure(vm, &AudioMixeroutput, 0);
     sq_newslot(vm, -3, false);
 
     sq_pushstring(vm, _SC("scheduleGain"), -1);
@@ -919,6 +1200,16 @@ void bindAudio(HSQUIRRELVM vm)
     // push OnsetDetector to Audio package table
     sq_newslot(vm, -3, false);
 
+    // create class Audio.Output
+    sq_pushstring(vm, "Output", -1);
+    sq_newclass(vm, false);
+    sq_getstackobj(vm, -1, &AudioOutputObject);
+    sq_settypetag(vm, -1, &AudioOutputObject);
+
+    // methods for class Output
+    // push Output to Audio package table
+    sq_newslot(vm, -3, false);
+
     // create class Audio.SystemOut
     sq_pushstring(vm, "SystemOut", -1);
     sq_newclass(vm, false);
@@ -950,6 +1241,10 @@ void bindAudio(HSQUIRRELVM vm)
     sq_newslot(vm, -3, false);
 
     // methods for class SystemIn
+    sq_pushstring(vm, _SC("output"), -1);
+    sq_newclosure(vm, &AudioSystemInoutput, 0);
+    sq_newslot(vm, -3, false);
+
     // push SystemIn to Audio package table
     sq_newslot(vm, -3, false);
 
@@ -965,6 +1260,10 @@ void bindAudio(HSQUIRRELVM vm)
     sq_newslot(vm, -3, false);
 
     // methods for class StereoIn
+    sq_pushstring(vm, _SC("output"), -1);
+    sq_newclosure(vm, &AudioStereoInoutput, 0);
+    sq_newslot(vm, -3, false);
+
     // push StereoIn to Audio package table
     sq_newslot(vm, -3, false);
 

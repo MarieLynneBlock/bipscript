@@ -44,6 +44,9 @@ public:
     void connect(AudioSource &source) {
         this->audioInput.store(source.getAudioConnection(0));
     }
+    void connect(AudioConnection &connection) {
+        this->audioInput.store(&connection);
+    }
     void reset(double bpm, float beatsPerBar, float beatUnit);
     void reposition() {}
     void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
