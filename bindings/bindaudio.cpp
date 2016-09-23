@@ -43,6 +43,9 @@ SQInteger AudioMixerCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 3) {
+        return sq_throwerror(vm, "too many parameters, expected at most 2");
+    }
     if(numargs < 3) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 2");
     }
@@ -80,6 +83,9 @@ SQInteger AudioMixeraddGainController(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 5) {
+        return sq_throwerror(vm, "too many parameters, expected at most 4");
+    }
     if(numargs < 5) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 4");
     }
@@ -136,6 +142,9 @@ SQInteger AudioMixerconnect(HSQUIRRELVM vm)
     if(numargs < 3) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
+        if(numargs > 2) {
+            return sq_throwerror(vm, "too many parameters, expected at most 1");
+        }
         if(numargs < 2) {
             return sq_throwerror(vm, "insufficient parameters, expected at least 1");
         }
@@ -172,6 +181,9 @@ SQInteger AudioMixerconnect(HSQUIRRELVM vm)
     if(overrideType == OT_FLOAT) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
+        if(numargs > 3) {
+            return sq_throwerror(vm, "too many parameters, expected at most 2");
+        }
         if(numargs < 2) {
             return sq_throwerror(vm, "insufficient parameters, expected at least 1");
         }
@@ -222,6 +234,9 @@ SQInteger AudioMixerconnect(HSQUIRRELVM vm)
     else if(overrideType == OT_ARRAY) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
+        if(numargs > 3) {
+            return sq_throwerror(vm, "too many parameters, expected at most 2");
+        }
         if(numargs < 2) {
             return sq_throwerror(vm, "insufficient parameters, expected at least 1");
         }
@@ -285,6 +300,9 @@ SQInteger AudioMixeroutput(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
@@ -328,6 +346,9 @@ SQInteger AudioMixerscheduleGain(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 7) {
+        return sq_throwerror(vm, "too many parameters, expected at most 6");
+    }
     if(numargs < 7) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 6");
     }
@@ -392,6 +413,10 @@ SQInteger AudioMixerscheduleGain(HSQUIRRELVM vm)
 SQInteger AudioOnsetDetectorCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
     OnsetDetector *obj;
     // 1 parameters passed in
     if(numargs == 2) {
@@ -441,6 +466,9 @@ SQInteger AudioOnsetDetectorconnect(HSQUIRRELVM vm)
     if(AudioSource *source = getAudioSource(vm)) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
+        if(numargs > 2) {
+            return sq_throwerror(vm, "too many parameters, expected at most 1");
+        }
         if(numargs < 2) {
             return sq_throwerror(vm, "insufficient parameters, expected at least 1");
         }
@@ -465,6 +493,9 @@ SQInteger AudioOnsetDetectorconnect(HSQUIRRELVM vm)
     else if(overrideType == OT_INSTANCE && overrideTypeTag == &AudioOutputObject) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
+        if(numargs > 2) {
+            return sq_throwerror(vm, "too many parameters, expected at most 1");
+        }
         if(numargs < 2) {
             return sq_throwerror(vm, "insufficient parameters, expected at least 1");
         }
@@ -505,6 +536,9 @@ SQInteger AudioOnsetDetectoronOnset(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
@@ -547,6 +581,9 @@ SQInteger AudioOnsetDetectorsilence(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
@@ -582,6 +619,9 @@ SQInteger AudioOnsetDetectorthreshold(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
@@ -620,6 +660,9 @@ SQInteger AudioSystemOutCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 3) {
+        return sq_throwerror(vm, "too many parameters, expected at most 2");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
@@ -678,6 +721,9 @@ SQInteger AudioSystemOutconnect(HSQUIRRELVM vm)
     if(AudioSource *source = getAudioSource(vm)) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
+        if(numargs > 2) {
+            return sq_throwerror(vm, "too many parameters, expected at most 1");
+        }
         if(numargs < 2) {
             return sq_throwerror(vm, "insufficient parameters, expected at least 1");
         }
@@ -702,6 +748,9 @@ SQInteger AudioSystemOutconnect(HSQUIRRELVM vm)
     else if(overrideType == OT_INSTANCE && overrideTypeTag == &AudioOutputObject) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
+        if(numargs > 2) {
+            return sq_throwerror(vm, "too many parameters, expected at most 1");
+        }
         if(numargs < 2) {
             return sq_throwerror(vm, "insufficient parameters, expected at least 1");
         }
@@ -742,6 +791,9 @@ SQInteger AudioSystemInCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 3) {
+        return sq_throwerror(vm, "too many parameters, expected at most 2");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
@@ -793,6 +845,9 @@ SQInteger AudioSystemInoutput(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
@@ -836,6 +891,9 @@ SQInteger AudioStereoInCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 4) {
+        return sq_throwerror(vm, "too many parameters, expected at most 3");
+    }
     if(numargs < 4) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 3");
     }
@@ -879,6 +937,9 @@ SQInteger AudioStereoInoutput(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
@@ -922,6 +983,9 @@ SQInteger AudioStereoOutCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 4) {
+        return sq_throwerror(vm, "too many parameters, expected at most 3");
+    }
     if(numargs < 4) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 3");
     }
@@ -972,6 +1036,9 @@ SQInteger AudioStereoOutconnect(HSQUIRRELVM vm)
     if(AudioSource *source = getAudioSource(vm)) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
+        if(numargs > 2) {
+            return sq_throwerror(vm, "too many parameters, expected at most 1");
+        }
         if(numargs < 2) {
             return sq_throwerror(vm, "insufficient parameters, expected at least 1");
         }
@@ -996,6 +1063,9 @@ SQInteger AudioStereoOutconnect(HSQUIRRELVM vm)
     else if(overrideType == OT_INSTANCE && overrideTypeTag == &AudioOutputObject) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
+        if(numargs > 2) {
+            return sq_throwerror(vm, "too many parameters, expected at most 1");
+        }
         if(numargs < 2) {
             return sq_throwerror(vm, "insufficient parameters, expected at least 1");
         }
@@ -1036,6 +1106,9 @@ SQInteger AudioBeatTrackerCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
@@ -1074,6 +1147,9 @@ SQInteger AudioBeatTrackerconnect(HSQUIRRELVM vm)
     if(AudioSource *source = getAudioSource(vm)) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
+        if(numargs > 2) {
+            return sq_throwerror(vm, "too many parameters, expected at most 1");
+        }
         if(numargs < 2) {
             return sq_throwerror(vm, "insufficient parameters, expected at least 1");
         }
@@ -1098,6 +1174,9 @@ SQInteger AudioBeatTrackerconnect(HSQUIRRELVM vm)
     else if(overrideType == OT_INSTANCE && overrideTypeTag == &AudioOutputObject) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
+        if(numargs > 2) {
+            return sq_throwerror(vm, "too many parameters, expected at most 1");
+        }
         if(numargs < 2) {
             return sq_throwerror(vm, "insufficient parameters, expected at least 1");
         }

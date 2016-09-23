@@ -52,6 +52,11 @@ HSQOBJECT MidiBeatTrackerObject;
 //
 SQInteger MidiABCReaderCtor(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 1) {
+        return sq_throwerror(vm, "too many parameters, expected at most 0");
+    }
     ABCReader *obj;
     // call the implementation
     try {
@@ -74,6 +79,9 @@ SQInteger MidiABCReaderread(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 6) {
+        return sq_throwerror(vm, "too many parameters, expected at most 5");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
@@ -227,6 +235,9 @@ SQInteger MidiABCReaderreadTune(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
@@ -268,6 +279,11 @@ SQInteger MidiABCReaderreadTune(HSQUIRRELVM vm)
 //
 SQInteger MidiChordReaderCtor(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 1) {
+        return sq_throwerror(vm, "too many parameters, expected at most 0");
+    }
     ChordReader *obj;
     // call the implementation
     try {
@@ -290,6 +306,9 @@ SQInteger MidiChordReaderread(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 4) {
+        return sq_throwerror(vm, "too many parameters, expected at most 3");
+    }
     if(numargs < 4) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 3");
     }
@@ -343,6 +362,11 @@ SQInteger MidiChordReaderread(HSQUIRRELVM vm)
 //
 SQInteger MidiDrumTabReaderCtor(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 1) {
+        return sq_throwerror(vm, "too many parameters, expected at most 0");
+    }
     DrumTabReader *obj;
     // call the implementation
     try {
@@ -365,6 +389,9 @@ SQInteger MidiDrumTabReaderread(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
@@ -408,6 +435,9 @@ SQInteger MidiDrumTabReadervelocity(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 4) {
+        return sq_throwerror(vm, "too many parameters, expected at most 3");
+    }
     if(numargs < 4) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 3");
     }
@@ -455,6 +485,9 @@ SQInteger MidiSystemInCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 3) {
+        return sq_throwerror(vm, "too many parameters, expected at most 2");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
@@ -506,6 +539,9 @@ SQInteger MidiNoteCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 5) {
+        return sq_throwerror(vm, "too many parameters, expected at most 4");
+    }
     if(numargs < 5) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 4");
     }
@@ -553,6 +589,11 @@ SQInteger MidiNoteCtor(HSQUIRRELVM vm)
 //
 SQInteger MidiNotepitch(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 1) {
+        return sq_throwerror(vm, "too many parameters, expected at most 0");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
@@ -582,6 +623,9 @@ SQInteger MidiNotetranspose(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
@@ -616,6 +660,10 @@ SQInteger MidiNotetranspose(HSQUIRRELVM vm)
 SQInteger MidiNotevelocity(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
@@ -665,6 +713,9 @@ SQInteger MidiControlCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 3) {
+        return sq_throwerror(vm, "too many parameters, expected at most 2");
+    }
     if(numargs < 3) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 2");
     }
@@ -702,6 +753,9 @@ SQInteger MidiInputBufferCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
@@ -733,6 +787,9 @@ SQInteger MidiInputBufferlastControlValue(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
@@ -769,6 +826,11 @@ SQInteger MidiInputBufferlastControlValue(HSQUIRRELVM vm)
 //
 SQInteger MidiMMLReaderCtor(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 1) {
+        return sq_throwerror(vm, "too many parameters, expected at most 0");
+    }
     MMLReader *obj;
     // call the implementation
     try {
@@ -791,6 +853,9 @@ SQInteger MidiMMLReaderread(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
@@ -833,6 +898,10 @@ SQInteger MidiMMLReaderread(HSQUIRRELVM vm)
 SQInteger MidiPatternCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
     Pattern *obj;
     // 1 parameters passed in
     if(numargs == 2) {
@@ -881,6 +950,9 @@ SQInteger MidiPatternadd(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 5) {
+        return sq_throwerror(vm, "too many parameters, expected at most 4");
+    }
     if(numargs < 5) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 4");
     }
@@ -940,6 +1012,9 @@ SQInteger MidiPatternnote(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
@@ -981,6 +1056,11 @@ SQInteger MidiPatternnote(HSQUIRRELVM vm)
 //
 SQInteger MidiPatternprint(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 1) {
+        return sq_throwerror(vm, "too many parameters, expected at most 0");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
@@ -1005,6 +1085,11 @@ SQInteger MidiPatternprint(HSQUIRRELVM vm)
 //
 SQInteger MidiPatternsize(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 1) {
+        return sq_throwerror(vm, "too many parameters, expected at most 0");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
@@ -1034,6 +1119,9 @@ SQInteger MidiPatterntranspose(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
@@ -1070,6 +1158,11 @@ SQInteger MidiPatterntranspose(HSQUIRRELVM vm)
 //
 SQInteger MidiTunetimeSignature(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 1) {
+        return sq_throwerror(vm, "too many parameters, expected at most 0");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
@@ -1102,6 +1195,11 @@ SQInteger MidiTunetimeSignature(HSQUIRRELVM vm)
 //
 SQInteger MidiTunetitle(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 1) {
+        return sq_throwerror(vm, "too many parameters, expected at most 0");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
@@ -1131,6 +1229,9 @@ SQInteger MidiTunetrack(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
@@ -1172,6 +1273,11 @@ SQInteger MidiTunetrack(HSQUIRRELVM vm)
 //
 SQInteger MidiTunetrackCount(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 1) {
+        return sq_throwerror(vm, "too many parameters, expected at most 0");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
@@ -1201,6 +1307,9 @@ SQInteger MidiSystemOutCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 3) {
+        return sq_throwerror(vm, "too many parameters, expected at most 2");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
@@ -1251,6 +1360,10 @@ SQInteger MidiSystemOutCtor(HSQUIRRELVM vm)
 SQInteger MidiSystemOutmidiChannel(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
@@ -1307,6 +1420,9 @@ SQInteger MidiSystemOutschedule(HSQUIRRELVM vm)
     if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiNoteObject) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
+        if(numargs > 6) {
+            return sq_throwerror(vm, "too many parameters, expected at most 5");
+        }
         if(numargs < 3) {
             return sq_throwerror(vm, "insufficient parameters, expected at least 2");
         }
@@ -1418,6 +1534,9 @@ SQInteger MidiSystemOutschedule(HSQUIRRELVM vm)
     else if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiPatternObject) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
+        if(numargs > 6) {
+            return sq_throwerror(vm, "too many parameters, expected at most 5");
+        }
         if(numargs < 3) {
             return sq_throwerror(vm, "insufficient parameters, expected at least 2");
         }
@@ -1529,6 +1648,9 @@ SQInteger MidiSystemOutschedule(HSQUIRRELVM vm)
     else if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiPitchBendObject) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
+        if(numargs > 5) {
+            return sq_throwerror(vm, "too many parameters, expected at most 4");
+        }
         if(numargs < 5) {
             return sq_throwerror(vm, "insufficient parameters, expected at least 4");
         }
@@ -1578,6 +1700,9 @@ SQInteger MidiSystemOutschedule(HSQUIRRELVM vm)
     else if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiControlObject) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
+        if(numargs > 5) {
+            return sq_throwerror(vm, "too many parameters, expected at most 4");
+        }
         if(numargs < 5) {
             return sq_throwerror(vm, "insufficient parameters, expected at least 4");
         }
@@ -1627,6 +1752,9 @@ SQInteger MidiSystemOutschedule(HSQUIRRELVM vm)
     else if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiProgramChangeObject) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
+        if(numargs > 5) {
+            return sq_throwerror(vm, "too many parameters, expected at most 4");
+        }
         if(numargs < 5) {
             return sq_throwerror(vm, "insufficient parameters, expected at least 4");
         }
@@ -1685,6 +1813,9 @@ SQInteger MidiPitchBendCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
@@ -1716,6 +1847,9 @@ SQInteger MidiProgramChangeCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
@@ -1747,6 +1881,9 @@ SQInteger MidiBeatTrackerCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 4) {
+        return sq_throwerror(vm, "too many parameters, expected at most 3");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
@@ -1822,6 +1959,9 @@ SQInteger MidiBeatTrackerconnectMidi(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
@@ -1857,6 +1997,9 @@ SQInteger MidiBeatTrackercountIn(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
@@ -1892,6 +2035,9 @@ SQInteger MidiBeatTrackernoteWeight(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 3) {
+        return sq_throwerror(vm, "too many parameters, expected at most 2");
+    }
     if(numargs < 3) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 2");
     }
@@ -1933,6 +2079,9 @@ SQInteger MidiBeatTrackeronCount(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
@@ -1975,6 +2124,9 @@ SQInteger MidiBeatTrackerstopOnSilence(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }

@@ -30,6 +30,11 @@ HSQOBJECT MathRandomObject;
 //
 SQInteger MathRandomCtor(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 1) {
+        return sq_throwerror(vm, "too many parameters, expected at most 0");
+    }
     Random *obj;
     // call the implementation
     try {
@@ -52,6 +57,9 @@ SQInteger MathRandominteger(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }

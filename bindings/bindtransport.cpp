@@ -36,6 +36,9 @@ SQInteger Transportschedule(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 5) {
+        return sq_throwerror(vm, "too many parameters, expected at most 4");
+    }
     if(numargs < 3) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 2");
     }
@@ -119,6 +122,11 @@ SQInteger Transportschedule(HSQUIRRELVM vm)
 //
 SQInteger Transportstart(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 1) {
+        return sq_throwerror(vm, "too many parameters, expected at most 0");
+    }
     // call the implementation
     try {
         AudioEngine::instance().transportStart();
@@ -136,6 +144,11 @@ SQInteger Transportstart(HSQUIRRELVM vm)
 //
 SQInteger Transportstop(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 1) {
+        return sq_throwerror(vm, "too many parameters, expected at most 0");
+    }
     // call the implementation
     try {
         AudioEngine::instance().transportStop();
@@ -155,6 +168,9 @@ SQInteger TransportMasterCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 4) {
+        return sq_throwerror(vm, "too many parameters, expected at most 3");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
@@ -237,6 +253,9 @@ SQInteger TransportMastertimeSignature(HSQUIRRELVM vm)
     if(overrideType == OT_INSTANCE && overrideTypeTag == &TransportTimeSignatureObject) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
+        if(numargs > 2) {
+            return sq_throwerror(vm, "too many parameters, expected at most 1");
+        }
         if(numargs < 2) {
             return sq_throwerror(vm, "insufficient parameters, expected at least 1");
         }
@@ -268,6 +287,9 @@ SQInteger TransportMastertimeSignature(HSQUIRRELVM vm)
     else if(overrideType == OT_INTEGER) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
+        if(numargs > 3) {
+            return sq_throwerror(vm, "too many parameters, expected at most 2");
+        }
         if(numargs < 3) {
             return sq_throwerror(vm, "insufficient parameters, expected at least 2");
         }
@@ -314,6 +336,11 @@ SQInteger TransportMastertimeSignature(HSQUIRRELVM vm)
 //
 SQInteger TransportTimeSignaturedenominator(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 1) {
+        return sq_throwerror(vm, "too many parameters, expected at most 0");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
@@ -341,6 +368,11 @@ SQInteger TransportTimeSignaturedenominator(HSQUIRRELVM vm)
 //
 SQInteger TransportTimeSignaturenumerator(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 1) {
+        return sq_throwerror(vm, "too many parameters, expected at most 0");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {

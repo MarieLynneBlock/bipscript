@@ -36,6 +36,9 @@ SQInteger OscInputCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 3) {
+        return sq_throwerror(vm, "too many parameters, expected at most 2");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
@@ -87,6 +90,9 @@ SQInteger OscInputonReceive(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
@@ -127,6 +133,11 @@ SQInteger OscInputonReceive(HSQUIRRELVM vm)
 //
 SQInteger OscInputurl(HSQUIRRELVM vm)
 {
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 1) {
+        return sq_throwerror(vm, "too many parameters, expected at most 0");
+    }
     // get "this" pointer
     SQUserPointer userPtr = 0;
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
@@ -156,6 +167,9 @@ SQInteger OscMessageCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
     if(numargs < 2) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 1");
     }
@@ -194,6 +208,9 @@ SQInteger OscMessageadd(HSQUIRRELVM vm)
     if(overrideType == OT_INTEGER) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
+        if(numargs > 2) {
+            return sq_throwerror(vm, "too many parameters, expected at most 1");
+        }
         if(numargs < 2) {
             return sq_throwerror(vm, "insufficient parameters, expected at least 1");
         }
@@ -224,6 +241,9 @@ SQInteger OscMessageadd(HSQUIRRELVM vm)
     else if(overrideType == OT_FLOAT) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
+        if(numargs > 2) {
+            return sq_throwerror(vm, "too many parameters, expected at most 1");
+        }
         if(numargs < 2) {
             return sq_throwerror(vm, "insufficient parameters, expected at least 1");
         }
@@ -254,6 +274,9 @@ SQInteger OscMessageadd(HSQUIRRELVM vm)
     else if(overrideType == OT_STRING) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
+        if(numargs > 2) {
+            return sq_throwerror(vm, "too many parameters, expected at most 1");
+        }
         if(numargs < 2) {
             return sq_throwerror(vm, "insufficient parameters, expected at least 1");
         }
@@ -284,6 +307,9 @@ SQInteger OscMessageadd(HSQUIRRELVM vm)
     else if(overrideType == OT_BOOL) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
+        if(numargs > 2) {
+            return sq_throwerror(vm, "too many parameters, expected at most 1");
+        }
         if(numargs < 2) {
             return sq_throwerror(vm, "insufficient parameters, expected at least 1");
         }
@@ -323,6 +349,9 @@ SQInteger OscOutputCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 3) {
+        return sq_throwerror(vm, "too many parameters, expected at most 2");
+    }
     if(numargs < 3) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 2");
     }
@@ -360,6 +389,9 @@ SQInteger OscOutputschedule(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
+    if(numargs > 5) {
+        return sq_throwerror(vm, "too many parameters, expected at most 4");
+    }
     if(numargs < 3) {
         return sq_throwerror(vm, "insufficient parameters, expected at least 2");
     }
