@@ -42,11 +42,20 @@ public:
     void connect(AudioConnection &connection) {
         this->audioInput.store(&connection);
     }
-    void setThreshold(smpl_t threshold) {
-        aubio_onset_set_threshold(aubioOnset, threshold);
+    float threshold() {
+        return aubio_onset_get_threshold(aubioOnset);
     }
-    void setSilence(smpl_t silence) {
+    float threshold(smpl_t threshold) {
+        aubio_onset_set_threshold(aubioOnset, threshold);
+        return threshold;
+    }
+    // uncomment when supported by aubio
+//    float silence() {
+//        return aubio_onset_get_silence(aubioOnset);
+//    }
+    float silence(smpl_t silence) {
         aubio_onset_set_silence(aubioOnset, silence);
+        return silence;
     }
     void reset(const char *type);
     void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);

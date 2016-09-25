@@ -88,13 +88,13 @@ classes :
         parameters:
           - { name: handler, type: function }
       - name: threshold
-        cppname: setThreshold
         parameters:
-        - { name: threshold, type: float }
+        - { name: threshold, type: float, optional: true }
+        returns: float
       - name: silence
-        cppname: setSilence
         parameters:
-        - { name: threshold, type: float }
+        - { name: silence, type: float }
+        returns: float
 
     - name: Output
       cppname: AudioConnection
