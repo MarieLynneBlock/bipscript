@@ -653,6 +653,11 @@ SQInteger AudioOnsetDetectorthreshold(HSQUIRRELVM vm)
 //
 // Audio.Output class
 //
+SQInteger AudioOutputCtor(HSQUIRRELVM vm)
+{
+    return sq_throwerror(vm, "cannot directly instantiate Audio.Output");
+}
+
 //
 // Audio.SystemOut class
 //
@@ -1284,6 +1289,11 @@ void bindAudio(HSQUIRRELVM vm)
     sq_newclass(vm, false);
     sq_getstackobj(vm, -1, &AudioOutputObject);
     sq_settypetag(vm, -1, &AudioOutputObject);
+
+    // ctor for class Output
+    sq_pushstring(vm, _SC("constructor"), -1);
+    sq_newclosure(vm, &AudioOutputCtor, 0);
+    sq_newslot(vm, -3, false);
 
     // methods for class Output
     // push Output to Audio package table

@@ -1153,6 +1153,11 @@ SQInteger MidiPatterntranspose(HSQUIRRELVM vm)
 //
 // Midi.Tune class
 //
+SQInteger MidiTuneCtor(HSQUIRRELVM vm)
+{
+    return sq_throwerror(vm, "cannot directly instantiate Midi.Tune");
+}
+
 //
 // Midi.Tune timeSignature
 //
@@ -2362,6 +2367,11 @@ void bindMidi(HSQUIRRELVM vm)
     sq_newclass(vm, false);
     sq_getstackobj(vm, -1, &MidiTuneObject);
     sq_settypetag(vm, -1, &MidiTuneObject);
+
+    // ctor for class Tune
+    sq_pushstring(vm, _SC("constructor"), -1);
+    sq_newclosure(vm, &MidiTuneCtor, 0);
+    sq_newslot(vm, -3, false);
 
     // methods for class Tune
     sq_pushstring(vm, _SC("timeSignature"), -1);

@@ -331,6 +331,11 @@ SQInteger TransportMastertimeSignature(HSQUIRRELVM vm)
 //
 // Transport.TimeSignature class
 //
+SQInteger TransportTimeSignatureCtor(HSQUIRRELVM vm)
+{
+    return sq_throwerror(vm, "cannot directly instantiate Transport.TimeSignature");
+}
+
 //
 // Transport.TimeSignature denominator
 //
@@ -441,6 +446,11 @@ void bindTransport(HSQUIRRELVM vm)
     sq_newclass(vm, false);
     sq_getstackobj(vm, -1, &TransportTimeSignatureObject);
     sq_settypetag(vm, -1, &TransportTimeSignatureObject);
+
+    // ctor for class TimeSignature
+    sq_pushstring(vm, _SC("constructor"), -1);
+    sq_newclosure(vm, &TransportTimeSignatureCtor, 0);
+    sq_newslot(vm, -3, false);
 
     // methods for class TimeSignature
     sq_pushstring(vm, _SC("denominator"), -1);

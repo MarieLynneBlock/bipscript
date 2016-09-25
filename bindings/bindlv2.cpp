@@ -1049,11 +1049,6 @@ void bindLv2(HSQUIRRELVM vm)
     sq_newclosure(vm, &Lv2PluginCtor, 0);
     sq_newslot(vm, -3, false);
 
-    // ctor for class Plugin
-    sq_pushstring(vm, _SC("constructor"), -1);
-    sq_newclosure(vm, &Lv2PluginCtor, 0);
-    sq_newslot(vm, -3, false);
-
     // methods for class Plugin
     sq_pushstring(vm, _SC("addController"), -1);
     sq_newclosure(vm, &Lv2PluginaddController, 0);
@@ -1095,11 +1090,6 @@ void bindLv2(HSQUIRRELVM vm)
     sq_newclass(vm, false);
     sq_getstackobj(vm, -1, &Lv2StateObject);
     sq_settypetag(vm, -1, &Lv2StateObject);
-
-    // ctor for class State
-    sq_pushstring(vm, _SC("constructor"), -1);
-    sq_newclosure(vm, &Lv2StateCtor, 0);
-    sq_newslot(vm, -3, false);
 
     // ctor for class State
     sq_pushstring(vm, _SC("constructor"), -1);
