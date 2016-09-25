@@ -45,7 +45,7 @@ SQInteger OscInputCtor(HSQUIRRELVM vm)
     // get parameter 1 "port" as integer
     SQInteger port;
     if (SQ_FAILED(sq_getinteger(vm, 2, &port))){
-        return sq_throwerror(vm, "argument 1 is not of type integer");
+        return sq_throwerror(vm, "argument 1 \"port\" is not of type integer");
     }
 
     OscInput *obj;
@@ -55,7 +55,7 @@ SQInteger OscInputCtor(HSQUIRRELVM vm)
         // get parameter 2 "protocol" as string
         const SQChar* protocol;
         if (SQ_FAILED(sq_getstring(vm, 3, &protocol))){
-            return sq_throwerror(vm, "argument 2 is not of type string");
+            return sq_throwerror(vm, "argument 2 \"protocol\" is not of type string");
         }
 
         // call the implementation
@@ -106,10 +106,10 @@ SQInteger OscInputonReceive(HSQUIRRELVM vm)
     // get parameter 1 "handler" as function
     HSQOBJECT handlerObj;
     if (SQ_FAILED(sq_getstackobj(vm, 2, &handlerObj))) {
-        return sq_throwerror(vm, "argument 1 is not of type function");
+        return sq_throwerror(vm, "argument 1 \"handler\" is not of type function");
     }
     if (sq_gettype(vm, 2) != OT_CLOSURE) {
-        return sq_throwerror(vm, "argument 1 is not of type function");
+        return sq_throwerror(vm, "argument 1 \"handler\" is not of type function");
     }
     SQUnsignedInteger nparams, nfreevars;
     sq_getclosureinfo(vm, 2, &nparams, &nfreevars);
@@ -176,7 +176,7 @@ SQInteger OscMessageCtor(HSQUIRRELVM vm)
     // get parameter 1 "path" as string
     const SQChar* path;
     if (SQ_FAILED(sq_getstring(vm, 2, &path))){
-        return sq_throwerror(vm, "argument 1 is not of type string");
+        return sq_throwerror(vm, "argument 1 \"path\" is not of type string");
     }
 
     OscMessage *obj;
@@ -224,7 +224,7 @@ SQInteger OscMessageadd(HSQUIRRELVM vm)
         // get parameter 1 "value" as integer
         SQInteger value;
         if (SQ_FAILED(sq_getinteger(vm, 2, &value))){
-            return sq_throwerror(vm, "argument 1 is not of type integer");
+            return sq_throwerror(vm, "argument 1 \"value\" is not of type integer");
         }
 
         // call the implementation
@@ -257,7 +257,7 @@ SQInteger OscMessageadd(HSQUIRRELVM vm)
         // get parameter 1 "value" as float
         SQFloat value;
         if (SQ_FAILED(sq_getfloat(vm, 2, &value))){
-            return sq_throwerror(vm, "argument 1 is not of type float");
+            return sq_throwerror(vm, "argument 1 \"value\" is not of type float");
         }
 
         // call the implementation
@@ -290,7 +290,7 @@ SQInteger OscMessageadd(HSQUIRRELVM vm)
         // get parameter 1 "value" as string
         const SQChar* value;
         if (SQ_FAILED(sq_getstring(vm, 2, &value))){
-            return sq_throwerror(vm, "argument 1 is not of type string");
+            return sq_throwerror(vm, "argument 1 \"value\" is not of type string");
         }
 
         // call the implementation
@@ -323,7 +323,7 @@ SQInteger OscMessageadd(HSQUIRRELVM vm)
         // get parameter 1 "value" as bool
         SQBool value;
         if (SQ_FAILED(sq_getbool(vm, 2, &value))){
-            return sq_throwerror(vm, "argument 1 is not of type bool");
+            return sq_throwerror(vm, "argument 1 \"value\" is not of type bool");
         }
 
         // call the implementation
@@ -358,13 +358,13 @@ SQInteger OscOutputCtor(HSQUIRRELVM vm)
     // get parameter 1 "host" as string
     const SQChar* host;
     if (SQ_FAILED(sq_getstring(vm, 2, &host))){
-        return sq_throwerror(vm, "argument 1 is not of type string");
+        return sq_throwerror(vm, "argument 1 \"host\" is not of type string");
     }
 
     // get parameter 2 "port" as integer
     SQInteger port;
     if (SQ_FAILED(sq_getinteger(vm, 3, &port))){
-        return sq_throwerror(vm, "argument 2 is not of type integer");
+        return sq_throwerror(vm, "argument 2 \"port\" is not of type integer");
     }
 
     OscOutput *obj;
@@ -406,18 +406,18 @@ SQInteger OscOutputschedule(HSQUIRRELVM vm)
     OscMessage *message = 0;
     sq_getinstanceup(vm, 2, (SQUserPointer*)&message, 0);
     if(message == 0) {
-        return sq_throwerror(vm, "argument 1 is not of type Osc.Message");
+        return sq_throwerror(vm, "argument 1 \"message\" is not of type Osc.Message");
     }
     SQUserPointer messageTypeTag;
     sq_gettypetag(vm, 2, &messageTypeTag);
     if(messageTypeTag != &OscMessageObject) {
-        return sq_throwerror(vm, "argument 1 is not of type Osc.Message");
+        return sq_throwerror(vm, "argument 1 \"message\" is not of type Osc.Message");
     }
 
     // get parameter 2 "bar" as integer
     SQInteger bar;
     if (SQ_FAILED(sq_getinteger(vm, 3, &bar))){
-        return sq_throwerror(vm, "argument 2 is not of type integer");
+        return sq_throwerror(vm, "argument 2 \"bar\" is not of type integer");
     }
 
     // 3 parameters passed in
@@ -426,7 +426,7 @@ SQInteger OscOutputschedule(HSQUIRRELVM vm)
         // get parameter 3 "position" as integer
         SQInteger position;
         if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
-            return sq_throwerror(vm, "argument 3 is not of type integer");
+            return sq_throwerror(vm, "argument 3 \"position\" is not of type integer");
         }
 
         // call the implementation
@@ -444,13 +444,13 @@ SQInteger OscOutputschedule(HSQUIRRELVM vm)
         // get parameter 3 "position" as integer
         SQInteger position;
         if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
-            return sq_throwerror(vm, "argument 3 is not of type integer");
+            return sq_throwerror(vm, "argument 3 \"position\" is not of type integer");
         }
 
         // get parameter 4 "division" as integer
         SQInteger division;
         if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
-            return sq_throwerror(vm, "argument 4 is not of type integer");
+            return sq_throwerror(vm, "argument 4 \"division\" is not of type integer");
         }
 
         // call the implementation

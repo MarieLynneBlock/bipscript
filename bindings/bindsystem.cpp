@@ -40,7 +40,7 @@ SQInteger Systemargument(HSQUIRRELVM vm)
     // get parameter 1 "index" as integer
     SQInteger index;
     if (SQ_FAILED(sq_getinteger(vm, 2, &index))){
-        return sq_throwerror(vm, "argument 1 is not of type integer");
+        return sq_throwerror(vm, "argument 1 \"index\" is not of type integer");
     }
 
     // return value

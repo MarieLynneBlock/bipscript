@@ -45,10 +45,10 @@ SQInteger Transportschedule(HSQUIRRELVM vm)
     // get parameter 1 "function" as function
     HSQOBJECT functionObj;
     if (SQ_FAILED(sq_getstackobj(vm, 2, &functionObj))) {
-        return sq_throwerror(vm, "argument 1 is not of type function");
+        return sq_throwerror(vm, "argument 1 \"function\" is not of type function");
     }
     if (sq_gettype(vm, 2) != OT_CLOSURE) {
-        return sq_throwerror(vm, "argument 1 is not of type function");
+        return sq_throwerror(vm, "argument 1 \"function\" is not of type function");
     }
     SQUnsignedInteger nparams, nfreevars;
     sq_getclosureinfo(vm, 2, &nparams, &nfreevars);
@@ -58,7 +58,7 @@ SQInteger Transportschedule(HSQUIRRELVM vm)
     // get parameter 2 "bar" as integer
     SQInteger bar;
     if (SQ_FAILED(sq_getinteger(vm, 3, &bar))){
-        return sq_throwerror(vm, "argument 2 is not of type integer");
+        return sq_throwerror(vm, "argument 2 \"bar\" is not of type integer");
     }
 
     // 3 parameters passed in
@@ -67,7 +67,7 @@ SQInteger Transportschedule(HSQUIRRELVM vm)
         // get parameter 3 "position" as integer
         SQInteger position;
         if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
-            return sq_throwerror(vm, "argument 3 is not of type integer");
+            return sq_throwerror(vm, "argument 3 \"position\" is not of type integer");
         }
 
         // call the implementation
@@ -85,13 +85,13 @@ SQInteger Transportschedule(HSQUIRRELVM vm)
         // get parameter 3 "position" as integer
         SQInteger position;
         if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
-            return sq_throwerror(vm, "argument 3 is not of type integer");
+            return sq_throwerror(vm, "argument 3 \"position\" is not of type integer");
         }
 
         // get parameter 4 "division" as integer
         SQInteger division;
         if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
-            return sq_throwerror(vm, "argument 4 is not of type integer");
+            return sq_throwerror(vm, "argument 4 \"division\" is not of type integer");
         }
 
         // call the implementation
@@ -177,7 +177,7 @@ SQInteger TransportMasterCtor(HSQUIRRELVM vm)
     // get parameter 1 "bpm" as float
     SQFloat bpm;
     if (SQ_FAILED(sq_getfloat(vm, 2, &bpm))){
-        return sq_throwerror(vm, "argument 1 is not of type float");
+        return sq_throwerror(vm, "argument 1 \"bpm\" is not of type float");
     }
 
     TransportMaster *obj;
@@ -187,7 +187,7 @@ SQInteger TransportMasterCtor(HSQUIRRELVM vm)
         // get parameter 2 "numerator" as integer
         SQInteger numerator;
         if (SQ_FAILED(sq_getinteger(vm, 3, &numerator))){
-            return sq_throwerror(vm, "argument 2 is not of type integer");
+            return sq_throwerror(vm, "argument 2 \"numerator\" is not of type integer");
         }
 
         // call the implementation
@@ -205,13 +205,13 @@ SQInteger TransportMasterCtor(HSQUIRRELVM vm)
         // get parameter 2 "numerator" as integer
         SQInteger numerator;
         if (SQ_FAILED(sq_getinteger(vm, 3, &numerator))){
-            return sq_throwerror(vm, "argument 2 is not of type integer");
+            return sq_throwerror(vm, "argument 2 \"numerator\" is not of type integer");
         }
 
         // get parameter 3 "denominator" as integer
         SQInteger denominator;
         if (SQ_FAILED(sq_getinteger(vm, 4, &denominator))){
-            return sq_throwerror(vm, "argument 3 is not of type integer");
+            return sq_throwerror(vm, "argument 3 \"denominator\" is not of type integer");
         }
 
         // call the implementation
@@ -270,7 +270,7 @@ SQInteger TransportMastertimeSignature(HSQUIRRELVM vm)
         TimeSignature *signature = 0;
         sq_getinstanceup(vm, 2, (SQUserPointer*)&signature, 0);
         if(signature == 0) {
-            return sq_throwerror(vm, "argument 1 is not of type Transport.TimeSignature");
+            return sq_throwerror(vm, "argument 1 \"signature\" is not of type Transport.TimeSignature");
         }
 
         // call the implementation
@@ -303,13 +303,13 @@ SQInteger TransportMastertimeSignature(HSQUIRRELVM vm)
         // get parameter 1 "numerator" as integer
         SQInteger numerator;
         if (SQ_FAILED(sq_getinteger(vm, 2, &numerator))){
-            return sq_throwerror(vm, "argument 1 is not of type integer");
+            return sq_throwerror(vm, "argument 1 \"numerator\" is not of type integer");
         }
 
         // get parameter 2 "denominator" as integer
         SQInteger denominator;
         if (SQ_FAILED(sq_getinteger(vm, 3, &denominator))){
-            return sq_throwerror(vm, "argument 2 is not of type integer");
+            return sq_throwerror(vm, "argument 2 \"denominator\" is not of type integer");
         }
 
         // call the implementation

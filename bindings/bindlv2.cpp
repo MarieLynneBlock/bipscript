@@ -47,7 +47,7 @@ SQInteger Lv2PluginCtor(HSQUIRRELVM vm)
         // get parameter 1 "uri" as string
         const SQChar* uri;
         if (SQ_FAILED(sq_getstring(vm, 2, &uri))){
-            return sq_throwerror(vm, "argument 1 is not of type string");
+            return sq_throwerror(vm, "argument 1 \"uri\" is not of type string");
         }
 
         Lv2Plugin *obj;
@@ -82,7 +82,7 @@ SQInteger Lv2PluginCtor(HSQUIRRELVM vm)
         // get parameter 1 "uri" as string
         const SQChar* uri;
         if (SQ_FAILED(sq_getstring(vm, 2, &uri))){
-            return sq_throwerror(vm, "argument 1 is not of type string");
+            return sq_throwerror(vm, "argument 1 \"uri\" is not of type string");
         }
 
         Lv2Plugin *obj;
@@ -92,7 +92,7 @@ SQInteger Lv2PluginCtor(HSQUIRRELVM vm)
             // get parameter 2 "preset" as string
             const SQChar* preset;
             if (SQ_FAILED(sq_getstring(vm, 3, &preset))){
-                return sq_throwerror(vm, "argument 2 is not of type string");
+                return sq_throwerror(vm, "argument 2 \"preset\" is not of type string");
             }
 
             // call the implementation
@@ -131,7 +131,7 @@ SQInteger Lv2PluginCtor(HSQUIRRELVM vm)
         // get parameter 1 "uri" as string
         const SQChar* uri;
         if (SQ_FAILED(sq_getstring(vm, 2, &uri))){
-            return sq_throwerror(vm, "argument 1 is not of type string");
+            return sq_throwerror(vm, "argument 1 \"uri\" is not of type string");
         }
 
         Lv2Plugin *obj;
@@ -142,12 +142,12 @@ SQInteger Lv2PluginCtor(HSQUIRRELVM vm)
             Lv2State *state = 0;
             sq_getinstanceup(vm, 3, (SQUserPointer*)&state, 0);
             if(state == 0) {
-                return sq_throwerror(vm, "argument 2 is not of type Lv2.State");
+                return sq_throwerror(vm, "argument 2 \"state\" is not of type Lv2.State");
             }
             SQUserPointer stateTypeTag;
             sq_gettypetag(vm, 3, &stateTypeTag);
             if(stateTypeTag != &Lv2StateObject) {
-                return sq_throwerror(vm, "argument 2 is not of type Lv2.State");
+                return sq_throwerror(vm, "argument 2 \"state\" is not of type Lv2.State");
             }
 
             // call the implementation
@@ -202,19 +202,19 @@ SQInteger Lv2PluginaddController(HSQUIRRELVM vm)
     // get parameter 1 "source" as Midi.Source
     EventSource *source = getEventSource(vm);
     if(source == 0) {
-        return sq_throwerror(vm, "argument 1 is not of type Midi.Source");
+        return sq_throwerror(vm, "argument 1 \"source\" is not of type Midi.Source");
     }
 
     // get parameter 2 "cc" as integer
     SQInteger cc;
     if (SQ_FAILED(sq_getinteger(vm, 3, &cc))){
-        return sq_throwerror(vm, "argument 2 is not of type integer");
+        return sq_throwerror(vm, "argument 2 \"cc\" is not of type integer");
     }
 
     // get parameter 3 "symbol" as string
     const SQChar* symbol;
     if (SQ_FAILED(sq_getstring(vm, 4, &symbol))){
-        return sq_throwerror(vm, "argument 3 is not of type string");
+        return sq_throwerror(vm, "argument 3 \"symbol\" is not of type string");
     }
 
     // 4 parameters passed in
@@ -223,7 +223,7 @@ SQInteger Lv2PluginaddController(HSQUIRRELVM vm)
         // get parameter 4 "mininum" as integer
         SQInteger mininum;
         if (SQ_FAILED(sq_getinteger(vm, 5, &mininum))){
-            return sq_throwerror(vm, "argument 4 is not of type integer");
+            return sq_throwerror(vm, "argument 4 \"mininum\" is not of type integer");
         }
 
         // call the implementation
@@ -241,13 +241,13 @@ SQInteger Lv2PluginaddController(HSQUIRRELVM vm)
         // get parameter 4 "mininum" as integer
         SQInteger mininum;
         if (SQ_FAILED(sq_getinteger(vm, 5, &mininum))){
-            return sq_throwerror(vm, "argument 4 is not of type integer");
+            return sq_throwerror(vm, "argument 4 \"mininum\" is not of type integer");
         }
 
         // get parameter 5 "maximum" as integer
         SQInteger maximum;
         if (SQ_FAILED(sq_getinteger(vm, 6, &maximum))){
-            return sq_throwerror(vm, "argument 5 is not of type integer");
+            return sq_throwerror(vm, "argument 5 \"maximum\" is not of type integer");
         }
 
         // call the implementation
@@ -296,7 +296,7 @@ SQInteger Lv2Pluginconnect(HSQUIRRELVM vm)
     // get parameter 1 "source" as Audio.Source
     AudioSource *source = getAudioSource(vm);
     if(source == 0) {
-        return sq_throwerror(vm, "argument 1 is not of type Audio.Source");
+        return sq_throwerror(vm, "argument 1 \"source\" is not of type Audio.Source");
     }
 
     // call the implementation
@@ -334,7 +334,7 @@ SQInteger Lv2PluginconnectMidi(HSQUIRRELVM vm)
     // get parameter 1 "source" as Midi.Source
     EventSource *source = getEventSource(vm);
     if(source == 0) {
-        return sq_throwerror(vm, "argument 1 is not of type Midi.Source");
+        return sq_throwerror(vm, "argument 1 \"source\" is not of type Midi.Source");
     }
 
     // call the implementation
@@ -374,7 +374,7 @@ SQInteger Lv2PluginmidiChannel(HSQUIRRELVM vm)
         // get parameter 1 "channel" as integer
         SQInteger channel;
         if (SQ_FAILED(sq_getinteger(vm, 2, &channel))){
-            return sq_throwerror(vm, "argument 1 is not of type integer");
+            return sq_throwerror(vm, "argument 1 \"channel\" is not of type integer");
         }
 
         // call the implementation
@@ -424,7 +424,7 @@ SQInteger Lv2Pluginoutput(HSQUIRRELVM vm)
     // get parameter 1 "channel" as integer
     SQInteger channel;
     if (SQ_FAILED(sq_getinteger(vm, 2, &channel))){
-        return sq_throwerror(vm, "argument 1 is not of type integer");
+        return sq_throwerror(vm, "argument 1 \"channel\" is not of type integer");
     }
 
     // return value
@@ -478,13 +478,13 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
         Note *note = 0;
         sq_getinstanceup(vm, 2, (SQUserPointer*)&note, 0);
         if(note == 0) {
-            return sq_throwerror(vm, "argument 1 is not of type Midi.Note");
+            return sq_throwerror(vm, "argument 1 \"note\" is not of type Midi.Note");
         }
 
         // get parameter 2 "bar" as integer
         SQInteger bar;
         if (SQ_FAILED(sq_getinteger(vm, 3, &bar))){
-            return sq_throwerror(vm, "argument 2 is not of type integer");
+            return sq_throwerror(vm, "argument 2 \"bar\" is not of type integer");
         }
 
         // 3 parameters passed in
@@ -493,7 +493,7 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
             // get parameter 3 "position" as integer
             SQInteger position;
             if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
-                return sq_throwerror(vm, "argument 3 is not of type integer");
+                return sq_throwerror(vm, "argument 3 \"position\" is not of type integer");
             }
 
             // call the implementation
@@ -511,13 +511,13 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
             // get parameter 3 "position" as integer
             SQInteger position;
             if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
-                return sq_throwerror(vm, "argument 3 is not of type integer");
+                return sq_throwerror(vm, "argument 3 \"position\" is not of type integer");
             }
 
             // get parameter 4 "division" as integer
             SQInteger division;
             if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
-                return sq_throwerror(vm, "argument 4 is not of type integer");
+                return sq_throwerror(vm, "argument 4 \"division\" is not of type integer");
             }
 
             // call the implementation
@@ -535,19 +535,19 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
             // get parameter 3 "position" as integer
             SQInteger position;
             if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
-                return sq_throwerror(vm, "argument 3 is not of type integer");
+                return sq_throwerror(vm, "argument 3 \"position\" is not of type integer");
             }
 
             // get parameter 4 "division" as integer
             SQInteger division;
             if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
-                return sq_throwerror(vm, "argument 4 is not of type integer");
+                return sq_throwerror(vm, "argument 4 \"division\" is not of type integer");
             }
 
             // get parameter 5 "channel" as integer
             SQInteger channel;
             if (SQ_FAILED(sq_getinteger(vm, 6, &channel))){
-                return sq_throwerror(vm, "argument 5 is not of type integer");
+                return sq_throwerror(vm, "argument 5 \"channel\" is not of type integer");
             }
 
             // call the implementation
@@ -592,13 +592,13 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
         Pattern *pattern = 0;
         sq_getinstanceup(vm, 2, (SQUserPointer*)&pattern, 0);
         if(pattern == 0) {
-            return sq_throwerror(vm, "argument 1 is not of type Midi.Pattern");
+            return sq_throwerror(vm, "argument 1 \"pattern\" is not of type Midi.Pattern");
         }
 
         // get parameter 2 "bar" as integer
         SQInteger bar;
         if (SQ_FAILED(sq_getinteger(vm, 3, &bar))){
-            return sq_throwerror(vm, "argument 2 is not of type integer");
+            return sq_throwerror(vm, "argument 2 \"bar\" is not of type integer");
         }
 
         // 3 parameters passed in
@@ -607,7 +607,7 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
             // get parameter 3 "position" as integer
             SQInteger position;
             if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
-                return sq_throwerror(vm, "argument 3 is not of type integer");
+                return sq_throwerror(vm, "argument 3 \"position\" is not of type integer");
             }
 
             // call the implementation
@@ -625,13 +625,13 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
             // get parameter 3 "position" as integer
             SQInteger position;
             if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
-                return sq_throwerror(vm, "argument 3 is not of type integer");
+                return sq_throwerror(vm, "argument 3 \"position\" is not of type integer");
             }
 
             // get parameter 4 "division" as integer
             SQInteger division;
             if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
-                return sq_throwerror(vm, "argument 4 is not of type integer");
+                return sq_throwerror(vm, "argument 4 \"division\" is not of type integer");
             }
 
             // call the implementation
@@ -649,19 +649,19 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
             // get parameter 3 "position" as integer
             SQInteger position;
             if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
-                return sq_throwerror(vm, "argument 3 is not of type integer");
+                return sq_throwerror(vm, "argument 3 \"position\" is not of type integer");
             }
 
             // get parameter 4 "division" as integer
             SQInteger division;
             if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
-                return sq_throwerror(vm, "argument 4 is not of type integer");
+                return sq_throwerror(vm, "argument 4 \"division\" is not of type integer");
             }
 
             // get parameter 5 "channel" as integer
             SQInteger channel;
             if (SQ_FAILED(sq_getinteger(vm, 6, &channel))){
-                return sq_throwerror(vm, "argument 5 is not of type integer");
+                return sq_throwerror(vm, "argument 5 \"channel\" is not of type integer");
             }
 
             // call the implementation
@@ -706,25 +706,25 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
         PitchBend *pitchbend = 0;
         sq_getinstanceup(vm, 2, (SQUserPointer*)&pitchbend, 0);
         if(pitchbend == 0) {
-            return sq_throwerror(vm, "argument 1 is not of type Midi.PitchBend");
+            return sq_throwerror(vm, "argument 1 \"pitchbend\" is not of type Midi.PitchBend");
         }
 
         // get parameter 2 "bar" as integer
         SQInteger bar;
         if (SQ_FAILED(sq_getinteger(vm, 3, &bar))){
-            return sq_throwerror(vm, "argument 2 is not of type integer");
+            return sq_throwerror(vm, "argument 2 \"bar\" is not of type integer");
         }
 
         // get parameter 3 "position" as integer
         SQInteger position;
         if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
-            return sq_throwerror(vm, "argument 3 is not of type integer");
+            return sq_throwerror(vm, "argument 3 \"position\" is not of type integer");
         }
 
         // get parameter 4 "division" as integer
         SQInteger division;
         if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
-            return sq_throwerror(vm, "argument 4 is not of type integer");
+            return sq_throwerror(vm, "argument 4 \"division\" is not of type integer");
         }
 
         // call the implementation
@@ -758,25 +758,25 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
         Control *control = 0;
         sq_getinstanceup(vm, 2, (SQUserPointer*)&control, 0);
         if(control == 0) {
-            return sq_throwerror(vm, "argument 1 is not of type Midi.Control");
+            return sq_throwerror(vm, "argument 1 \"control\" is not of type Midi.Control");
         }
 
         // get parameter 2 "bar" as integer
         SQInteger bar;
         if (SQ_FAILED(sq_getinteger(vm, 3, &bar))){
-            return sq_throwerror(vm, "argument 2 is not of type integer");
+            return sq_throwerror(vm, "argument 2 \"bar\" is not of type integer");
         }
 
         // get parameter 3 "position" as integer
         SQInteger position;
         if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
-            return sq_throwerror(vm, "argument 3 is not of type integer");
+            return sq_throwerror(vm, "argument 3 \"position\" is not of type integer");
         }
 
         // get parameter 4 "division" as integer
         SQInteger division;
         if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
-            return sq_throwerror(vm, "argument 4 is not of type integer");
+            return sq_throwerror(vm, "argument 4 \"division\" is not of type integer");
         }
 
         // call the implementation
@@ -810,25 +810,25 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
         ProgramChange *programchange = 0;
         sq_getinstanceup(vm, 2, (SQUserPointer*)&programchange, 0);
         if(programchange == 0) {
-            return sq_throwerror(vm, "argument 1 is not of type Midi.ProgramChange");
+            return sq_throwerror(vm, "argument 1 \"programchange\" is not of type Midi.ProgramChange");
         }
 
         // get parameter 2 "bar" as integer
         SQInteger bar;
         if (SQ_FAILED(sq_getinteger(vm, 3, &bar))){
-            return sq_throwerror(vm, "argument 2 is not of type integer");
+            return sq_throwerror(vm, "argument 2 \"bar\" is not of type integer");
         }
 
         // get parameter 3 "position" as integer
         SQInteger position;
         if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
-            return sq_throwerror(vm, "argument 3 is not of type integer");
+            return sq_throwerror(vm, "argument 3 \"position\" is not of type integer");
         }
 
         // get parameter 4 "division" as integer
         SQInteger division;
         if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
-            return sq_throwerror(vm, "argument 4 is not of type integer");
+            return sq_throwerror(vm, "argument 4 \"division\" is not of type integer");
         }
 
         // call the implementation
@@ -870,31 +870,31 @@ SQInteger Lv2PluginscheduleControl(HSQUIRRELVM vm)
     // get parameter 1 "control" as string
     const SQChar* control;
     if (SQ_FAILED(sq_getstring(vm, 2, &control))){
-        return sq_throwerror(vm, "argument 1 is not of type string");
+        return sq_throwerror(vm, "argument 1 \"control\" is not of type string");
     }
 
     // get parameter 2 "value" as float
     SQFloat value;
     if (SQ_FAILED(sq_getfloat(vm, 3, &value))){
-        return sq_throwerror(vm, "argument 2 is not of type float");
+        return sq_throwerror(vm, "argument 2 \"value\" is not of type float");
     }
 
     // get parameter 3 "bar" as integer
     SQInteger bar;
     if (SQ_FAILED(sq_getinteger(vm, 4, &bar))){
-        return sq_throwerror(vm, "argument 3 is not of type integer");
+        return sq_throwerror(vm, "argument 3 \"bar\" is not of type integer");
     }
 
     // get parameter 4 "position" as integer
     SQInteger position;
     if (SQ_FAILED(sq_getinteger(vm, 5, &position))){
-        return sq_throwerror(vm, "argument 4 is not of type integer");
+        return sq_throwerror(vm, "argument 4 \"position\" is not of type integer");
     }
 
     // get parameter 5 "division" as integer
     SQInteger division;
     if (SQ_FAILED(sq_getinteger(vm, 6, &division))){
-        return sq_throwerror(vm, "argument 5 is not of type integer");
+        return sq_throwerror(vm, "argument 5 \"division\" is not of type integer");
     }
 
     // call the implementation
@@ -932,13 +932,13 @@ SQInteger Lv2PluginsetControl(HSQUIRRELVM vm)
     // get parameter 1 "control" as string
     const SQChar* control;
     if (SQ_FAILED(sq_getstring(vm, 2, &control))){
-        return sq_throwerror(vm, "argument 1 is not of type string");
+        return sq_throwerror(vm, "argument 1 \"control\" is not of type string");
     }
 
     // get parameter 2 "value" as float
     SQFloat value;
     if (SQ_FAILED(sq_getfloat(vm, 3, &value))){
-        return sq_throwerror(vm, "argument 2 is not of type float");
+        return sq_throwerror(vm, "argument 2 \"value\" is not of type float");
     }
 
     // call the implementation
@@ -976,10 +976,10 @@ SQInteger Lv2StateCtor(HSQUIRRELVM vm)
         // get parameter 1 "state" as table
         HSQOBJECT stateObj;
         if (SQ_FAILED(sq_getstackobj(vm, 2, &stateObj))) {
-            return sq_throwerror(vm, "argument 1 is not of type table");
+            return sq_throwerror(vm, "argument 1 \"state\" is not of type table");
         }
         if (sq_gettype(vm, 2) != OT_TABLE) {
-            return sq_throwerror(vm, "argument 1 is not of type table");
+            return sq_throwerror(vm, "argument 1 \"state\" is not of type table");
         }
         ScriptHashIterator state(vm, stateObj);
 
@@ -1009,7 +1009,7 @@ SQInteger Lv2StateCtor(HSQUIRRELVM vm)
         // get parameter 1 "file" as string
         const SQChar* file;
         if (SQ_FAILED(sq_getstring(vm, 2, &file))){
-            return sq_throwerror(vm, "argument 1 is not of type string");
+            return sq_throwerror(vm, "argument 1 \"file\" is not of type string");
         }
 
         Lv2State *obj;

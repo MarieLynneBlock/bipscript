@@ -52,13 +52,13 @@ SQInteger AudioMixerCtor(HSQUIRRELVM vm)
     // get parameter 1 "inputs" as integer
     SQInteger inputs;
     if (SQ_FAILED(sq_getinteger(vm, 2, &inputs))){
-        return sq_throwerror(vm, "argument 1 is not of type integer");
+        return sq_throwerror(vm, "argument 1 \"inputs\" is not of type integer");
     }
 
     // get parameter 2 "outputs" as integer
     SQInteger outputs;
     if (SQ_FAILED(sq_getinteger(vm, 3, &outputs))){
-        return sq_throwerror(vm, "argument 2 is not of type integer");
+        return sq_throwerror(vm, "argument 2 \"outputs\" is not of type integer");
     }
 
     Mixer *obj;
@@ -99,25 +99,25 @@ SQInteger AudioMixeraddGainController(HSQUIRRELVM vm)
     // get parameter 1 "source" as Midi.Source
     EventSource *source = getEventSource(vm);
     if(source == 0) {
-        return sq_throwerror(vm, "argument 1 is not of type Midi.Source");
+        return sq_throwerror(vm, "argument 1 \"source\" is not of type Midi.Source");
     }
 
     // get parameter 2 "control" as integer
     SQInteger control;
     if (SQ_FAILED(sq_getinteger(vm, 3, &control))){
-        return sq_throwerror(vm, "argument 2 is not of type integer");
+        return sq_throwerror(vm, "argument 2 \"control\" is not of type integer");
     }
 
     // get parameter 3 "input" as integer
     SQInteger input;
     if (SQ_FAILED(sq_getinteger(vm, 4, &input))){
-        return sq_throwerror(vm, "argument 3 is not of type integer");
+        return sq_throwerror(vm, "argument 3 \"input\" is not of type integer");
     }
 
     // get parameter 4 "output" as integer
     SQInteger output;
     if (SQ_FAILED(sq_getinteger(vm, 5, &output))){
-        return sq_throwerror(vm, "argument 4 is not of type integer");
+        return sq_throwerror(vm, "argument 4 \"output\" is not of type integer");
     }
 
     // call the implementation
@@ -158,7 +158,7 @@ SQInteger AudioMixerconnect(HSQUIRRELVM vm)
         // get parameter 1 "source" as Audio.Source
         AudioSource *source = getAudioSource(vm);
         if(source == 0) {
-            return sq_throwerror(vm, "argument 1 is not of type Audio.Source");
+            return sq_throwerror(vm, "argument 1 \"source\" is not of type Audio.Source");
         }
 
         // call the implementation
@@ -197,7 +197,7 @@ SQInteger AudioMixerconnect(HSQUIRRELVM vm)
         // get parameter 1 "source" as Audio.Source
         AudioSource *source = getAudioSource(vm);
         if(source == 0) {
-            return sq_throwerror(vm, "argument 1 is not of type Audio.Source");
+            return sq_throwerror(vm, "argument 1 \"source\" is not of type Audio.Source");
         }
 
         // 2 parameters passed in
@@ -206,7 +206,7 @@ SQInteger AudioMixerconnect(HSQUIRRELVM vm)
             // get parameter 2 "gain" as float
             SQFloat gain;
             if (SQ_FAILED(sq_getfloat(vm, 3, &gain))){
-                return sq_throwerror(vm, "argument 2 is not of type float");
+                return sq_throwerror(vm, "argument 2 \"gain\" is not of type float");
             }
 
             // call the implementation
@@ -250,7 +250,7 @@ SQInteger AudioMixerconnect(HSQUIRRELVM vm)
         // get parameter 1 "source" as Audio.Source
         AudioSource *source = getAudioSource(vm);
         if(source == 0) {
-            return sq_throwerror(vm, "argument 1 is not of type Audio.Source");
+            return sq_throwerror(vm, "argument 1 \"source\" is not of type Audio.Source");
         }
 
         // 2 parameters passed in
@@ -259,10 +259,10 @@ SQInteger AudioMixerconnect(HSQUIRRELVM vm)
             // get parameter 2 "gains" as array
             HSQOBJECT gainsObj;
             if (SQ_FAILED(sq_getstackobj(vm, 3, &gainsObj))) {
-                return sq_throwerror(vm, "argument 2 is not of type array");
+                return sq_throwerror(vm, "argument 2 \"gains\" is not of type array");
             }
             if (sq_gettype(vm, 3) != OT_ARRAY) {
-                return sq_throwerror(vm, "argument 2 is not of type array");
+                return sq_throwerror(vm, "argument 2 \"gains\" is not of type array");
             }
             ScriptArray gains(vm, gainsObj);
 
@@ -316,7 +316,7 @@ SQInteger AudioMixeroutput(HSQUIRRELVM vm)
     // get parameter 1 "channel" as integer
     SQInteger channel;
     if (SQ_FAILED(sq_getinteger(vm, 2, &channel))){
-        return sq_throwerror(vm, "argument 1 is not of type integer");
+        return sq_throwerror(vm, "argument 1 \"channel\" is not of type integer");
     }
 
     // return value
@@ -362,37 +362,37 @@ SQInteger AudioMixerscheduleGain(HSQUIRRELVM vm)
     // get parameter 1 "input" as integer
     SQInteger input;
     if (SQ_FAILED(sq_getinteger(vm, 2, &input))){
-        return sq_throwerror(vm, "argument 1 is not of type integer");
+        return sq_throwerror(vm, "argument 1 \"input\" is not of type integer");
     }
 
     // get parameter 2 "output" as integer
     SQInteger output;
     if (SQ_FAILED(sq_getinteger(vm, 3, &output))){
-        return sq_throwerror(vm, "argument 2 is not of type integer");
+        return sq_throwerror(vm, "argument 2 \"output\" is not of type integer");
     }
 
     // get parameter 3 "gain" as float
     SQFloat gain;
     if (SQ_FAILED(sq_getfloat(vm, 4, &gain))){
-        return sq_throwerror(vm, "argument 3 is not of type float");
+        return sq_throwerror(vm, "argument 3 \"gain\" is not of type float");
     }
 
     // get parameter 4 "bar" as integer
     SQInteger bar;
     if (SQ_FAILED(sq_getinteger(vm, 5, &bar))){
-        return sq_throwerror(vm, "argument 4 is not of type integer");
+        return sq_throwerror(vm, "argument 4 \"bar\" is not of type integer");
     }
 
     // get parameter 5 "position" as integer
     SQInteger position;
     if (SQ_FAILED(sq_getinteger(vm, 6, &position))){
-        return sq_throwerror(vm, "argument 5 is not of type integer");
+        return sq_throwerror(vm, "argument 5 \"position\" is not of type integer");
     }
 
     // get parameter 6 "division" as integer
     SQInteger division;
     if (SQ_FAILED(sq_getinteger(vm, 7, &division))){
-        return sq_throwerror(vm, "argument 6 is not of type integer");
+        return sq_throwerror(vm, "argument 6 \"division\" is not of type integer");
     }
 
     // call the implementation
@@ -424,7 +424,7 @@ SQInteger AudioOnsetDetectorCtor(HSQUIRRELVM vm)
         // get parameter 1 "type" as string
         const SQChar* type;
         if (SQ_FAILED(sq_getstring(vm, 2, &type))){
-            return sq_throwerror(vm, "argument 1 is not of type string");
+            return sq_throwerror(vm, "argument 1 \"type\" is not of type string");
         }
 
         // call the implementation
@@ -510,7 +510,7 @@ SQInteger AudioOnsetDetectorconnect(HSQUIRRELVM vm)
         AudioConnection *output = 0;
         sq_getinstanceup(vm, 2, (SQUserPointer*)&output, 0);
         if(output == 0) {
-            return sq_throwerror(vm, "argument 1 is not of type Audio.Output");
+            return sq_throwerror(vm, "argument 1 \"output\" is not of type Audio.Output");
         }
 
         // call the implementation
@@ -552,10 +552,10 @@ SQInteger AudioOnsetDetectoronOnset(HSQUIRRELVM vm)
     // get parameter 1 "handler" as function
     HSQOBJECT handlerObj;
     if (SQ_FAILED(sq_getstackobj(vm, 2, &handlerObj))) {
-        return sq_throwerror(vm, "argument 1 is not of type function");
+        return sq_throwerror(vm, "argument 1 \"handler\" is not of type function");
     }
     if (sq_gettype(vm, 2) != OT_CLOSURE) {
-        return sq_throwerror(vm, "argument 1 is not of type function");
+        return sq_throwerror(vm, "argument 1 \"handler\" is not of type function");
     }
     SQUnsignedInteger nparams, nfreevars;
     sq_getclosureinfo(vm, 2, &nparams, &nfreevars);
@@ -597,7 +597,7 @@ SQInteger AudioOnsetDetectorsilence(HSQUIRRELVM vm)
     // get parameter 1 "silence" as float
     SQFloat silence;
     if (SQ_FAILED(sq_getfloat(vm, 2, &silence))){
-        return sq_throwerror(vm, "argument 1 is not of type float");
+        return sq_throwerror(vm, "argument 1 \"silence\" is not of type float");
     }
 
     // return value
@@ -640,7 +640,7 @@ SQInteger AudioOnsetDetectorthreshold(HSQUIRRELVM vm)
         // get parameter 1 "threshold" as float
         SQFloat threshold;
         if (SQ_FAILED(sq_getfloat(vm, 2, &threshold))){
-            return sq_throwerror(vm, "argument 1 is not of type float");
+            return sq_throwerror(vm, "argument 1 \"threshold\" is not of type float");
         }
 
         // call the implementation
@@ -691,7 +691,7 @@ SQInteger AudioSystemOutCtor(HSQUIRRELVM vm)
     // get parameter 1 "name" as string
     const SQChar* name;
     if (SQ_FAILED(sq_getstring(vm, 2, &name))){
-        return sq_throwerror(vm, "argument 1 is not of type string");
+        return sq_throwerror(vm, "argument 1 \"name\" is not of type string");
     }
 
     AudioOutputPort *obj;
@@ -701,7 +701,7 @@ SQInteger AudioSystemOutCtor(HSQUIRRELVM vm)
         // get parameter 2 "connection" as string
         const SQChar* connection;
         if (SQ_FAILED(sq_getstring(vm, 3, &connection))){
-            return sq_throwerror(vm, "argument 2 is not of type string");
+            return sq_throwerror(vm, "argument 2 \"connection\" is not of type string");
         }
 
         // call the implementation
@@ -787,7 +787,7 @@ SQInteger AudioSystemOutconnect(HSQUIRRELVM vm)
         AudioConnection *output = 0;
         sq_getinstanceup(vm, 2, (SQUserPointer*)&output, 0);
         if(output == 0) {
-            return sq_throwerror(vm, "argument 1 is not of type Audio.Output");
+            return sq_throwerror(vm, "argument 1 \"output\" is not of type Audio.Output");
         }
 
         // call the implementation
@@ -822,7 +822,7 @@ SQInteger AudioSystemInCtor(HSQUIRRELVM vm)
     // get parameter 1 "name" as string
     const SQChar* name;
     if (SQ_FAILED(sq_getstring(vm, 2, &name))){
-        return sq_throwerror(vm, "argument 1 is not of type string");
+        return sq_throwerror(vm, "argument 1 \"name\" is not of type string");
     }
 
     AudioInputPort *obj;
@@ -832,7 +832,7 @@ SQInteger AudioSystemInCtor(HSQUIRRELVM vm)
         // get parameter 2 "connection" as string
         const SQChar* connection;
         if (SQ_FAILED(sq_getstring(vm, 3, &connection))){
-            return sq_throwerror(vm, "argument 2 is not of type string");
+            return sq_throwerror(vm, "argument 2 \"connection\" is not of type string");
         }
 
         // call the implementation
@@ -883,7 +883,7 @@ SQInteger AudioSystemInoutput(HSQUIRRELVM vm)
     // get parameter 1 "channel" as integer
     SQInteger channel;
     if (SQ_FAILED(sq_getinteger(vm, 2, &channel))){
-        return sq_throwerror(vm, "argument 1 is not of type integer");
+        return sq_throwerror(vm, "argument 1 \"channel\" is not of type integer");
     }
 
     // return value
@@ -922,19 +922,19 @@ SQInteger AudioStereoInCtor(HSQUIRRELVM vm)
     // get parameter 1 "name" as string
     const SQChar* name;
     if (SQ_FAILED(sq_getstring(vm, 2, &name))){
-        return sq_throwerror(vm, "argument 1 is not of type string");
+        return sq_throwerror(vm, "argument 1 \"name\" is not of type string");
     }
 
     // get parameter 2 "connectLeft" as string
     const SQChar* connectLeft;
     if (SQ_FAILED(sq_getstring(vm, 3, &connectLeft))){
-        return sq_throwerror(vm, "argument 2 is not of type string");
+        return sq_throwerror(vm, "argument 2 \"connectLeft\" is not of type string");
     }
 
     // get parameter 3 "connectRight" as string
     const SQChar* connectRight;
     if (SQ_FAILED(sq_getstring(vm, 4, &connectRight))){
-        return sq_throwerror(vm, "argument 3 is not of type string");
+        return sq_throwerror(vm, "argument 3 \"connectRight\" is not of type string");
     }
 
     AudioStereoInput *obj;
@@ -975,7 +975,7 @@ SQInteger AudioStereoInoutput(HSQUIRRELVM vm)
     // get parameter 1 "channel" as integer
     SQInteger channel;
     if (SQ_FAILED(sq_getinteger(vm, 2, &channel))){
-        return sq_throwerror(vm, "argument 1 is not of type integer");
+        return sq_throwerror(vm, "argument 1 \"channel\" is not of type integer");
     }
 
     // return value
@@ -1014,19 +1014,19 @@ SQInteger AudioStereoOutCtor(HSQUIRRELVM vm)
     // get parameter 1 "name" as string
     const SQChar* name;
     if (SQ_FAILED(sq_getstring(vm, 2, &name))){
-        return sq_throwerror(vm, "argument 1 is not of type string");
+        return sq_throwerror(vm, "argument 1 \"name\" is not of type string");
     }
 
     // get parameter 2 "connectLeft" as string
     const SQChar* connectLeft;
     if (SQ_FAILED(sq_getstring(vm, 3, &connectLeft))){
-        return sq_throwerror(vm, "argument 2 is not of type string");
+        return sq_throwerror(vm, "argument 2 \"connectLeft\" is not of type string");
     }
 
     // get parameter 3 "connectRight" as string
     const SQChar* connectRight;
     if (SQ_FAILED(sq_getstring(vm, 4, &connectRight))){
-        return sq_throwerror(vm, "argument 3 is not of type string");
+        return sq_throwerror(vm, "argument 3 \"connectRight\" is not of type string");
     }
 
     AudioStereoOutput *obj;
@@ -1102,7 +1102,7 @@ SQInteger AudioStereoOutconnect(HSQUIRRELVM vm)
         AudioConnection *output = 0;
         sq_getinstanceup(vm, 2, (SQUserPointer*)&output, 0);
         if(output == 0) {
-            return sq_throwerror(vm, "argument 1 is not of type Audio.Output");
+            return sq_throwerror(vm, "argument 1 \"output\" is not of type Audio.Output");
         }
 
         // call the implementation
@@ -1137,7 +1137,7 @@ SQInteger AudioBeatTrackerCtor(HSQUIRRELVM vm)
     // get parameter 1 "bpm" as float
     SQFloat bpm;
     if (SQ_FAILED(sq_getfloat(vm, 2, &bpm))){
-        return sq_throwerror(vm, "argument 1 is not of type float");
+        return sq_throwerror(vm, "argument 1 \"bpm\" is not of type float");
     }
 
     BeatTracker *obj;
@@ -1213,7 +1213,7 @@ SQInteger AudioBeatTrackerconnect(HSQUIRRELVM vm)
         AudioConnection *output = 0;
         sq_getinstanceup(vm, 2, (SQUserPointer*)&output, 0);
         if(output == 0) {
-            return sq_throwerror(vm, "argument 1 is not of type Audio.Output");
+            return sq_throwerror(vm, "argument 1 \"output\" is not of type Audio.Output");
         }
 
         // call the implementation

@@ -73,7 +73,7 @@ SQInteger MathRandominteger(HSQUIRRELVM vm)
     // get parameter 1 "max" as integer
     SQInteger max;
     if (SQ_FAILED(sq_getinteger(vm, 2, &max))){
-        return sq_throwerror(vm, "argument 1 is not of type integer");
+        return sq_throwerror(vm, "argument 1 \"max\" is not of type integer");
     }
 
     // return value

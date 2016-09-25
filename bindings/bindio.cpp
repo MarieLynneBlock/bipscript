@@ -41,7 +41,7 @@ SQInteger IOFileCtor(HSQUIRRELVM vm)
     // get parameter 1 "name" as string
     const SQChar* name;
     if (SQ_FAILED(sq_getstring(vm, 2, &name))){
-        return sq_throwerror(vm, "argument 1 is not of type string");
+        return sq_throwerror(vm, "argument 1 \"name\" is not of type string");
     }
 
     File *obj;
