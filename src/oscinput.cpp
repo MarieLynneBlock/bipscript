@@ -29,9 +29,10 @@ OscInput::OscInput(int port, const char *protocol)
 
 int OscInput::handle(const char *path, const char *types, lo_arg **argv, int argc, void *data)
 {
+    OscMessage *message = new OscMessage(path);
     ScriptFunction *handler = onReceiveHandler.load();
     if(handler) {
-        (new OnReceiveClosure(*handler, path))->dispatch();
+        (new OnReceiveClosure(*handler, message))->dispatch();
     }
 }
 

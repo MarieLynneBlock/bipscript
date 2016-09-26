@@ -373,6 +373,38 @@ SQInteger OscMessageadd(HSQUIRRELVM vm)
 }
 
 //
+// Osc.Message path
+//
+SQInteger OscMessagepath(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 1) {
+        return sq_throwerror(vm, "too many parameters, expected at most 0");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "path method needs an instance of Message");
+    }
+    OscMessage *obj = static_cast<OscMessage*>(userPtr);
+
+    // return value
+    const SQChar* ret;
+    // call the implementation
+    try {
+        ret = obj->getPath();
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushstring(vm, ret, strlen(ret));
+    return 1;
+}
+
+//
 // Osc.Output class
 //
 SQInteger OscOutputCtor(HSQUIRRELVM vm)
@@ -550,6 +582,10 @@ void bindOsc(HSQUIRRELVM vm)
     // methods for class Message
     sq_pushstring(vm, _SC("add"), -1);
     sq_newclosure(vm, &OscMessageadd, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("path"), -1);
+    sq_newclosure(vm, &OscMessagepath, 0);
     sq_newslot(vm, -3, false);
 
     // push Message to Osc package table

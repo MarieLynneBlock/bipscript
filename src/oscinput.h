@@ -4,6 +4,7 @@
 #include "objectcache.h"
 #include "scripttypes.h"
 #include "oscmessage.h"
+#include "bindosc.h"
 
 #include "lo/lo.h"
 #include <string>
@@ -24,17 +25,14 @@ public:
 };
 
 class OnReceiveClosure : public ScriptFunctionClosure {
-    //OscMessage *message;
-    std::string path;
+    OscMessage *message;
 protected:
-     bool addParameters() {
-         // TODO: return OscMessage object
-         // addObject(message);
-         addString(path.c_str(), path.length());
-     }
+    bool addParameters() {
+        addObject(message, binding::OscMessageObject);
+    }
 public:
-    OnReceiveClosure(ScriptFunction function, const char *path) :
-        ScriptFunctionClosure(function), path(path) {}
+    OnReceiveClosure(ScriptFunction function, OscMessage *message) :
+        ScriptFunctionClosure(function), message(message) {}
 };
 
 class OscInputFactory : public ObjectCache

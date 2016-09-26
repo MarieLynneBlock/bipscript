@@ -106,6 +106,12 @@ protected:
     void addString(const char *s, int size) {
         sq_pushstring(vm, s, size);
     }
+    void addObject(void *obj, HSQOBJECT &type) {
+        sq_pushobject(vm, type);
+        sq_createinstance(vm, -1);
+        sq_remove(vm, -2);
+        sq_setinstanceup(vm, -1, obj);
+    }
     virtual bool addParameters() = 0;
 };
 
