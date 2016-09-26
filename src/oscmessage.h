@@ -59,6 +59,10 @@ public:
         OscParameter param(value ? 'T' : 'F');
         parameters.push_back(param);
     }
+    void addNull(const char*) {
+        OscParameter param('N');
+        parameters.push_back(param);
+    }
     int getParameterCount() {
         return parameters.size();
     }

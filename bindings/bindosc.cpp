@@ -337,8 +337,38 @@ SQInteger OscMessageadd(HSQUIRRELVM vm)
         // void method, returns no value
         return 0;
     }
+    else if(overrideType == OT_NULL) {
+        SQInteger numargs = sq_gettop(vm);
+        // check parameter count
+        if(numargs > 2) {
+            return sq_throwerror(vm, "too many parameters, expected at most 1");
+        }
+        if(numargs < 2) {
+            return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+        }
+        // get "this" pointer
+        SQUserPointer userPtr = 0;
+        if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+            return sq_throwerror(vm, "add method needs an instance of Message");
+        }
+        OscMessage *obj = static_cast<OscMessage*>(userPtr);
+
+        // get parameter 1 "value" as null
+        const char *value = 0;
+
+        // call the implementation
+        try {
+            obj->addNull(value);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
+
+        // void method, returns no value
+        return 0;
+    }
     else {
-        return sq_throwerror(vm, "argument 1 is not of type {integer, float, string, bool}");
+        return sq_throwerror(vm, "argument 1 is not of type {integer, float, string, bool, null}");
     }
 }
 

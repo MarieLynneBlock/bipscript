@@ -79,6 +79,8 @@ void OscOutput::run()
                         lo_message_add_true(mesg);
                     } else if(param.type == 'F') {
                         lo_message_add_false(mesg);
+                    } else if(param.type == 'N') {
+                        lo_message_add_nil(mesg);
                     }
                 }
                 lo_send_message (loAddress, event->getMessage().getPath(), mesg);
