@@ -100,6 +100,9 @@ public:
     }
     virtual ~ScriptFunctionClosure() {}
 protected:
+    void addFloat(float f) {
+        sq_pushfloat(vm, f);
+    }
     void addInteger(int i) {
         sq_pushinteger(vm, i);
     }

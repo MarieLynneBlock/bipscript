@@ -85,6 +85,15 @@ public:
         ScriptFunctionClosure(function), count(count) {}
 };
 
+class OnBeatClosure : public ScriptFunctionClosure {
+    double bpm;
+protected:
+    bool addParameters() { addFloat(bpm); }
+public:
+    OnBeatClosure(ScriptFunction function, double bpm) :
+        ScriptFunctionClosure(function), bpm(bpm) {}
+};
+
 class MidiBeatTracker {
     BTrack btrack;
     uint32_t frameIndex;
@@ -92,6 +101,7 @@ class MidiBeatTracker {
     TransportMaster *master;
     std::atomic<EventConnection*> midiInput;
     float noteWeight[128];
+    std::atomic<ScriptFunction*> onBeatHandler;
     // for count-in
     std::atomic<uint8_t> countInNote;
     uint8_t countInCount;
@@ -113,6 +123,7 @@ public:
     void setNoteWeight(uint32_t note, float weight);
     void countIn(uint8_t note) { countInNote.store(note); }
     void onCount(ScriptFunction &handler);
+    void onBeat(ScriptFunction &handler);
     void stopOnSilence(uint32_t seconds) { stopSeconds.store(seconds); }
     void reset(double bpm, float beatsPerBar, float beatUnit);
     void reposition() {}

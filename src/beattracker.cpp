@@ -202,6 +202,14 @@ void MidiBeatTracker::stopIfSilent(bool rolling, jack_position_t &pos, jack_nfra
     }
 }
 
+void MidiBeatTracker::onBeat(ScriptFunction &handler)
+{
+    if(handler.getNumargs() != 2) {
+        throw std::logic_error("onBeat handler should take one argument");
+    }
+    onBeatHandler.store(new ScriptFunction(handler));
+}
+
 void MidiBeatTracker::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
 {
     // process MIDI input
@@ -237,7 +245,13 @@ void MidiBeatTracker::process(bool rolling, jack_position_t &pos, jack_nframes_t
             btrack.processOnsetDetectionFunctionSample(currentOnset);
             if(btrack.beatDueInCurrentFrame()) {
                 // set bpm
-                master->forceBeat(btrack.getCurrentTempoEstimate());
+                double tempo = btrack.getCurrentTempoEstimate();
+                master->forceBeat(tempo);
+                // fire event if handler
+                ScriptFunction *handler = onBeatHandler.load();
+                if(handler) {
+                    (new OnBeatClosure(*handler, tempo))->dispatch();
+                }
             }
             frameIndex = 0;
             currentOnset = 0;

@@ -242,6 +242,9 @@ classes :
         - name: onCount
           parameters:
             - { name: handler, type: function }
+        - name: onBeat
+          parameters:
+            - { name: handler, type: function }
         - name: noteWeight
           cppname: setNoteWeight
           parameters:
