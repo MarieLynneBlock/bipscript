@@ -151,7 +151,7 @@ void Lv2MidiInput::process(bool rolling, jack_position_t &pos, jack_nframes_t nf
     localRolling = rolling;
 
     // get connection and event count
-    EventConnection *connection = eventConnector.getConnection();
+    MidiConnection *connection = eventConnector.getConnection();
     uint32_t eventCount = 0;
     if(connection) {
         connection->process(rolling, pos, nframes, time);
@@ -365,14 +365,14 @@ void Lv2Plugin::connect(AudioConnection *connection, uint32_t channel)
     audioInput[channel - 1].setConnection(connection, this);
 }
 
-void Lv2Plugin::connectMidi(EventSource &source)
+void Lv2Plugin::connectMidi(MidiSource &source)
 {
-    if(source.getEventOutputCount() == 0) {
+    if(source.getMidiOutputCount() == 0) {
         throw std::logic_error("cannot connect: the source has no MIDI outputs");
     }
     Lv2MidiInput *input = midiInputList.getFirst();
     if(input) {
-        input->connect(&source.getEventConnection(0), this);
+        input->connect(&source.getMidiConnection(0), this);
     }
     else {
         throw std::logic_error("cannot connect: this plugin has no MIDI inputs");
@@ -548,7 +548,7 @@ void Lv2Plugin::scheduleControl(const char *symbol, float value, int bar, int po
  * Add a control
  */
 
-void Lv2Plugin::addController(EventSource &source, unsigned int cc, const char *symbol, float minimum, float maximum) {
+void Lv2Plugin::addController(MidiSource &source, unsigned int cc, const char *symbol, float minimum, float maximum) {
     if(cc == 0) {
         throw std::logic_error("There is no MIDI control number zero");
     }
@@ -559,7 +559,7 @@ void Lv2Plugin::addController(EventSource &source, unsigned int cc, const char *
         throw std::logic_error("Minimum cannot be greater than maximum");
     }
     Lv2ControlPort *port = getPort(symbol);
-    EventConnection &connection = source.getEventConnection(0); // TODO: how to specify other connections
+    MidiConnection &connection = source.getMidiConnection(0); // TODO: how to specify other connections
     // check hash for existing connection
     Lv2ControlConnection *controlConnection = controlConnectionMap[&connection];
     if(!controlConnection) {
@@ -572,12 +572,12 @@ void Lv2Plugin::addController(EventSource &source, unsigned int cc, const char *
     while(!newControlMappingsQueue.push(new Lv2ControlMapping(controlConnection, cc, port, minimum, maximum)));
 }
 
-void Lv2Plugin::addController(EventSource &source, unsigned int cc, const char *symbol, float minimum) {    
+void Lv2Plugin::addController(MidiSource &source, unsigned int cc, const char *symbol, float minimum) {    
     Lv2ControlPort *port = getPort(symbol);
     addController(source, cc, symbol, minimum, port->maximum);
 }
 
-void Lv2Plugin::addController(EventSource &source, unsigned int cc, const char *symbol) {
+void Lv2Plugin::addController(MidiSource &source, unsigned int cc, const char *symbol) {
     Lv2ControlPort *port = getPort(symbol);
     addController(source, cc, symbol, port->minimum, port->maximum);
 }
@@ -620,7 +620,7 @@ bool Lv2Plugin::connectsTo(Source *source) {
     return false;
 }
 
-EventConnection &Lv2Plugin::getEventConnection(unsigned int index) {
+MidiConnection &Lv2Plugin::getMidiConnection(unsigned int index) {
     unsigned int count = 0;
     Lv2MidiOutput *output = midiOutputList.getFirst();
     while(output && count < index) {

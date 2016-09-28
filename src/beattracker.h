@@ -22,7 +22,7 @@
 #include "BTrack.h"
 #include "transportmaster.h"
 #include "audioconnection.h"
-#include "eventconnection.h"
+#include "midiconnection.h"
 #include "objectcache.h"
 #include "scripttypes.h"
 
@@ -99,7 +99,7 @@ class MidiBeatTracker {
     uint32_t frameIndex;
     double currentOnset;
     TransportMaster *master;
-    std::atomic<EventConnection*> midiInput;
+    std::atomic<MidiConnection*> midiInput;
     float noteWeight[128];
     std::atomic<ScriptFunction*> onBeatHandler;
     // for count-in
@@ -117,8 +117,8 @@ public:
           countInCount(0), onCountHandler(0), lastEventTime(0) {
         reset(bpm, beatsPerBar, beatUnit);
     }
-    void connectMidi(EventSource &source) {
-        this->midiInput.store(&source.getEventConnection(0));
+    void connectMidi(MidiSource &source) {
+        this->midiInput.store(&source.getMidiConnection(0));
     }
     void setNoteWeight(uint32_t note, float weight);
     void countIn(uint8_t note) { countInNote.store(note); }
@@ -130,7 +130,7 @@ public:
     void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
 private:
     void dispatchCountInEvent(uint32_t count);
-    void detectCountIn(jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time, uint32_t eventCount, EventConnection *connection);
+    void detectCountIn(jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time, uint32_t eventCount, MidiConnection *connection);
     void countInEvent(MidiEvent *nextEvent, jack_position_t &pos, jack_nframes_t time);
     void stopIfSilent(bool rolling, jack_position_t &pos, jack_nframes_t time);
 };

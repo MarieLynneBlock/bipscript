@@ -19,12 +19,12 @@
 #include "midiinputbuffer.h"
 #include "objectcollector.h"
 
-MidiInputBuffer::MidiInputBuffer(EventSource &source) :
+MidiInputBuffer::MidiInputBuffer(MidiSource &source) :
     inputBuffer(1000)//, clientWaiting(false),
     //activeMutex(PTHREAD_MUTEX_INITIALIZER),
     //inactiveCondition(PTHREAD_COND_INITIALIZER)
 {
-    eventInput.store(&source.getEventConnection(0));
+    eventInput.store(&source.getMidiConnection(0));
     outputBuffer = (MidiEvent*)malloc(1000 * sizeof(MidiEvent));
     for(unsigned char i = 0; i < 128; i++) {
         controlValue[i] = 0;
@@ -138,7 +138,7 @@ void MidiInputBuffer::processAll(bool rolling, jack_position_t &pos, jack_nframe
 //    }}
 
     // roll new events into ring buffer
-    EventConnection *connection = eventInput.load();
+    MidiConnection *connection = eventInput.load();
     connection->process(rolling, pos, nframes, time);
     uint32_t numEvents = connection->getEventCount();
     for(uint32_t i = 0; i < numEvents; i++) {
@@ -185,7 +185,7 @@ void MidiInputBuffer::processAll(bool rolling, jack_position_t &pos, jack_nframe
 }
 
 
-MidiInputBuffer *MidiInputBufferCache::getMidiInputBuffer(EventSource &source) {
+MidiInputBuffer *MidiInputBufferCache::getMidiInputBuffer(MidiSource &source) {
     // hash on pointer
     int key = static_cast<int>(reinterpret_cast<intptr_t>(&source));
     MidiInputBuffer *inputBuffer = findObject(key);

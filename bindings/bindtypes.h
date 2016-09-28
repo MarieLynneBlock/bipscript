@@ -20,14 +20,14 @@
 #include "squirrel.h"
 
 #include "audioconnection.h"
-#include "eventconnection.h"
+#include "midiconnection.h"
 #include "midisink.h"
 
 namespace binding
 {
     // type conversion methods
     AudioSource *getAudioSource(HSQUIRRELVM &vm);
-    EventSource *getEventSource(HSQUIRRELVM &vm);
+    MidiSource *getMidiSource(HSQUIRRELVM &vm);
     MidiSink *getMidiSink(HSQUIRRELVM &vm);
 }
 

@@ -18,7 +18,7 @@
 #define MIDIPORT_H
 
 #include "eventbuffer.h"
-#include "eventconnection.h"
+#include "midiconnection.h"
 #include "midisink.h"
 #include "objectcache.h"
 #include "audioengine.h"
@@ -29,14 +29,14 @@
 #include <map>
 #include <set>
 
-class MidiInputConnection : public EventConnection
+class MidiInputConnection : public MidiConnection
 {
     jack_port_t* jackPort;
     void *buffer;
     MidiEvent lastEvent;
 public:
-    MidiInputConnection(EventSource *source, jack_port_t *jackPort)
-        : EventConnection(source), jackPort(jackPort) {}
+    MidiInputConnection(MidiSource *source, jack_port_t *jackPort)
+        : MidiConnection(source), jackPort(jackPort) {}
     void process(jack_nframes_t nframes) {
         buffer = jack_port_get_buffer(jackPort, nframes);
     }
@@ -49,7 +49,7 @@ public:
     MidiEvent *getEvent(uint32_t i);
 };
 
-class MidiInputPort : public EventSource
+class MidiInputPort : public MidiSource
 {
     MidiInputConnection connection;
 public:
@@ -58,10 +58,10 @@ public:
     void systemConnect(const char *name) {
         connection.systemConnect(name);
     }
-    EventConnection &getEventConnection(unsigned int) {
+    MidiConnection &getMidiConnection(unsigned int) {
         return connection;
     }
-    unsigned int getEventOutputCount() { return 1; }
+    unsigned int getMidiOutputCount() { return 1; }
     // Source interface
     bool connectsTo(Source *) { return false; }
     void reset() {}

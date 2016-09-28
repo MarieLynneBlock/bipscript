@@ -45,7 +45,7 @@ namespace binding
         return 0;
     }
     
-    EventSource *getEventSource(HSQUIRRELVM &vm) {
+    MidiSource *getMidiSource(HSQUIRRELVM &vm) {
         SQUserPointer sourcePtr;
         if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &Lv2PluginObject))) {
             return static_cast<Lv2Plugin*>(sourcePtr);

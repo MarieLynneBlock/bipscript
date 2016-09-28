@@ -31,7 +31,7 @@
 #include <set>
 
 #include "audioconnection.h"
-#include "eventconnection.h"
+#include "midiconnection.h"
 #include "eventbuffer.h"
 #include "midisink.h"
 #include "scripttypes.h"
@@ -104,7 +104,7 @@ class Lv2MidiInput : public Listable
 {
     const u_int32_t CAPACITY = 1024;
     LV2_Atom_Sequence *atomSequence;
-    EventConnector eventConnector;
+    MidiConnector eventConnector;
     EventBuffer eventBuffer;
     bool localRolling;
 public:
@@ -114,11 +114,11 @@ public:
     LV2_Atom_Sequence *getAtomSequence() {
         return atomSequence;
     }
-    void connect(EventConnection *connection, Source *source) {
+    void connect(MidiConnection *connection, Source *source) {
         eventConnector.setConnection(connection, source);
     }
     bool connectsTo(Source *source) {
-        EventConnection *connection = eventConnector.getConnection();
+        MidiConnection *connection = eventConnector.getConnection();
         return connection && connection->connectsTo(source);
     }
     void addEvent(MidiEvent *evt) {
@@ -133,13 +133,13 @@ public:
     }
 };
 
-class Lv2MidiOutput : public Listable, public EventConnection 
+class Lv2MidiOutput : public Listable, public MidiConnection 
 {
     const u_int32_t CAPACITY = 1024;
     LV2_Atom_Sequence *atomSequence;    
     MidiEvent event;
 public:
-    Lv2MidiOutput(EventSource *source) : EventConnection(source) {
+    Lv2MidiOutput(MidiSource *source) : MidiConnection(source) {
         atomSequence = (LV2_Atom_Sequence *)malloc(sizeof(LV2_Atom_Sequence) + CAPACITY);
         atomSequence->atom.size = CAPACITY;
     }
@@ -207,9 +207,9 @@ public:
 class Lv2ControlConnection : public Listable
 {
     List<Lv2ControlMapping> mappings;
-    EventConnection *connection;
+    MidiConnection *connection;
 public:
-    Lv2ControlConnection(EventConnection *connection) :
+    Lv2ControlConnection(MidiConnection *connection) :
         connection(connection) {}
     void addMapping(Lv2ControlMapping *mapping) { mappings.add(mapping); }
     void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
@@ -245,7 +245,7 @@ public:
     void setInstance(LilvInstance *instance);
 };
 
-class Lv2Plugin : public Listable, public AudioSource, public EventSource, public MidiSink
+class Lv2Plugin : public Listable, public AudioSource, public MidiSource, public MidiSink
 {
     const LilvPlugin *plugin;
     LilvInstance *instance;
@@ -269,7 +269,7 @@ class Lv2Plugin : public Listable, public AudioSource, public EventSource, publi
     // worker
     Lv2Worker *worker;
     // control connections
-    std::map<EventConnection*,Lv2ControlConnection*> controlConnectionMap;
+    std::map<MidiConnection*,Lv2ControlConnection*> controlConnectionMap;
     QueueList<Lv2ControlConnection> controlConnections;
     boost::lockfree::spsc_queue<Lv2ControlMapping*> newControlMappingsQueue;
 public:
@@ -279,13 +279,13 @@ public:
     // public methods
     void connect(AudioSource &source);
     void connect(AudioConnection *connection, uint32_t channel);
-    void connectMidi(EventSource &source);
+    void connectMidi(MidiSource &source);
     void setPortValue(const char*, const void*, uint32_t);
     void setControlValue(const char *symbol, float value);
     void scheduleControl(const char *symbol, float value, int bar, int position, int division);
-    void addController(EventSource &source, unsigned int cc, const char *symbol, float minimum, float maximum);
-    void addController(EventSource &source, unsigned int cc, const char *symbol, float minimum);
-    void addController(EventSource &source, unsigned int cc, const char *symbol);
+    void addController(MidiSource &source, unsigned int cc, const char *symbol, float minimum, float maximum);
+    void addController(MidiSource &source, unsigned int cc, const char *symbol, float minimum);
+    void addController(MidiSource &source, unsigned int cc, const char *symbol);
     void restore();
     void reposition();
     void processAll(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
@@ -299,9 +299,9 @@ public:
     AudioConnection *getAudioConnection(unsigned int index) {
         return audioOutput[index];
     }
-    // EventSource interface
-    unsigned int getEventOutputCount() { return midiOutputCount; }
-    EventConnection &getEventConnection(unsigned int index);
+    // MidiSource interface
+    unsigned int getMidiOutputCount() { return midiOutputCount; }
+    MidiConnection &getMidiConnection(unsigned int index);
 private:
     Lv2ControlPort *getPort(const char *symbol);
     void connectPort(int index, Lv2Plugin *other, int otherIndex);

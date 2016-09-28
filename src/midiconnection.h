@@ -14,27 +14,27 @@
  * You should have received a copy of the GNU General Public License
  * along with Bipscript.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef EVENTCONNECTION_H
-#define EVENTCONNECTION_H
+#ifndef MIDICONNECTION_H
+#define MIDICONNECTION_H
 
 #include <atomic>
 #include <jack/types.h>
 #include "source.h"
 #include "midievent.h"
 
-class EventConnection;
+class MidiConnection;
 
-class EventSource : virtual public Source
+class MidiSource : virtual public Source
 {
 public:
-    virtual unsigned int getEventOutputCount() = 0;
-    virtual EventConnection &getEventConnection(unsigned int index) = 0;
+    virtual unsigned int getMidiOutputCount() = 0;
+    virtual MidiConnection &getMidiConnection(unsigned int index) = 0;
 };
 
-class EventConnection {
-    EventSource *source;
+class MidiConnection {
+    MidiSource *source;
 public:
-    EventConnection(EventSource *source) : source(source) {}
+    MidiConnection(MidiSource *source) : source(source) {}
     void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time) {
         source->process(rolling, pos, nframes, time);
     }
@@ -45,19 +45,19 @@ public:
     }
 };
 
-class EventConnector {
-    std::atomic<EventConnection *> connection;
+class MidiConnector {
+    std::atomic<MidiConnection *> connection;
 public:
-    EventConnector() : connection(0) {}
-    void setConnection(EventConnection *conn, Source *source) {
+    MidiConnector() : connection(0) {}
+    void setConnection(MidiConnection *conn, Source *source) {
         if(conn->connectsTo(source)) {
             throw std::logic_error("Cannot connect infinite loop");
         }
         connection.store(conn);
     }
-    EventConnection *getConnection() {
+    MidiConnection *getConnection() {
         return connection.load();
     }
 };
 
-#endif // EVENTCONNECTION_H
+#endif // MIDICONNECTION_H

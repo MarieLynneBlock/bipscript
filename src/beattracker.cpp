@@ -145,7 +145,7 @@ void MidiBeatTracker::countInEvent(MidiEvent *nextEvent, jack_position_t &pos, j
 /**
  * process thread
  */
-void MidiBeatTracker::detectCountIn(jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time, uint32_t eventCount, EventConnection *connection)
+void MidiBeatTracker::detectCountIn(jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time, uint32_t eventCount, MidiConnection *connection)
 {
     // count-in scheduled start
     if(countInCount == 4 && time + nframes >= countStartTime) {
@@ -213,7 +213,7 @@ void MidiBeatTracker::onBeat(ScriptFunction &handler)
 void MidiBeatTracker::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
 {
     // process MIDI input
-    EventConnection *connection = midiInput.load();
+    MidiConnection *connection = midiInput.load();
     uint32_t eventCount = 0;
     if(connection) {
         connection->process(rolling, pos, nframes, time);

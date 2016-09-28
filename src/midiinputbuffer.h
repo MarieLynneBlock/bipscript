@@ -25,7 +25,7 @@
 class MidiInputBuffer : public Listable
 {
     // buffers
-    std::atomic<EventConnection *> eventInput;
+    std::atomic<MidiConnection *> eventInput;
     boost::circular_buffer<MidiEvent> inputBuffer;
     MidiEvent *outputBuffer;
     unsigned int eventCount;
@@ -40,7 +40,7 @@ class MidiInputBuffer : public Listable
 //    pthread_mutex_t activeMutex;
 //    pthread_cond_t inactiveCondition;
 public:
-    MidiInputBuffer(EventSource &source);
+    MidiInputBuffer(MidiSource &source);
     ~MidiInputBuffer();
 //    MidiEvent *getEvents(int bar, int position, int division, int *numEvents);
 //    MidiEvent *getEvents(int bar, Position &start, Position &end, int *numEvents);
@@ -51,7 +51,7 @@ public:
 
 class MidiInputBufferCache : public ProcessorCache<MidiInputBuffer>
 {
-    MidiInputBuffer *createObject(EventSource *source) {
+    MidiInputBuffer *createObject(MidiSource *source) {
         return new MidiInputBuffer(*source);
     }
 public:
@@ -59,7 +59,7 @@ public:
         static MidiInputBufferCache instance;
         return instance;
     }
-    MidiInputBuffer *getMidiInputBuffer(EventSource &source);
+    MidiInputBuffer *getMidiInputBuffer(MidiSource &source);
 };
 
 #endif // MIDIINPUTBUFFER_H

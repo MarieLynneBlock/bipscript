@@ -200,7 +200,7 @@ SQInteger Lv2PluginaddController(HSQUIRRELVM vm)
     Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
 
     // get parameter 1 "source" as Midi.Source
-    EventSource *source = getEventSource(vm);
+    MidiSource *source = getMidiSource(vm);
     if(source == 0) {
         return sq_throwerror(vm, "argument 1 \"source\" is not of type Midi.Source");
     }
@@ -332,7 +332,7 @@ SQInteger Lv2PluginconnectMidi(HSQUIRRELVM vm)
     Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
 
     // get parameter 1 "source" as Midi.Source
-    EventSource *source = getEventSource(vm);
+    MidiSource *source = getMidiSource(vm);
     if(source == 0) {
         return sq_throwerror(vm, "argument 1 \"source\" is not of type Midi.Source");
     }

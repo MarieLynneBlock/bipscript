@@ -97,7 +97,7 @@ SQInteger AudioMixeraddGainController(HSQUIRRELVM vm)
     Mixer *obj = static_cast<Mixer*>(userPtr);
 
     // get parameter 1 "source" as Midi.Source
-    EventSource *source = getEventSource(vm);
+    MidiSource *source = getMidiSource(vm);
     if(source == 0) {
         return sq_throwerror(vm, "argument 1 \"source\" is not of type Midi.Source");
     }

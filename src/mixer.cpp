@@ -222,7 +222,7 @@ void Mixer::connect(AudioSource &source, float initialGain)
  * Allocates MixerControlMapping, MixerControlConnection objects.
  */
 
-void Mixer::addGainController(EventSource &source, unsigned int cc, unsigned int input, unsigned int output)
+void Mixer::addGainController(MidiSource &source, unsigned int cc, unsigned int input, unsigned int output)
 {
     if(cc == 0) {
         throw std::logic_error("There is no MIDI control number zero");
@@ -232,7 +232,7 @@ void Mixer::addGainController(EventSource &source, unsigned int cc, unsigned int
     }
     validateInputChannel(input);
     validateOutputChannel(output);
-    EventConnection &connection = source.getEventConnection(0); // TODO: how to specify other connections
+    MidiConnection &connection = source.getMidiConnection(0); // TODO: how to specify other connections
     // check hash for existing connection
     MixerControlConnection *mixerConnection = controlConnectionMap[&connection];
     if(!mixerConnection) {

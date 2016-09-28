@@ -18,7 +18,7 @@
 #define MIXER_H
 
 #include "audioconnection.h"
-#include "eventconnection.h"
+#include "midiconnection.h"
 #include "listable.h"
 #include "eventbuffer.h"
 #include "objectcache.h"
@@ -47,11 +47,11 @@ struct MixerControlMapping : public Listable
 class MixerControlConnection : public Listable
 {
     List<MixerControlMapping> mappings;
-    EventConnection *connection;
+    MidiConnection *connection;
     u_int32_t eventCount;
     u_int32_t eventIndex;
 public:
-    MixerControlConnection(EventConnection *connection) :
+    MixerControlConnection(MidiConnection *connection) :
         connection(connection) {}
     void addMapping(MixerControlMapping *mapping) {
         mappings.add(mapping);
@@ -93,7 +93,7 @@ class Mixer : public AudioSource, public Listable
     const unsigned int audioOutputCount;
     AudioConnection **audioOutput;
     // control connections
-    map<EventConnection*,MixerControlConnection*> controlConnectionMap;
+    map<MidiConnection*,MixerControlConnection*> controlConnectionMap;
     spsc_queue<MixerControlMapping*> newControlMappingsQueue;
     QueueList<MixerControlConnection> controlConnections;
     EventBuffer gainEventBuffer;
@@ -105,7 +105,7 @@ public:
     void connect(AudioSource &source) {
         connect(source, 1.0);
     }
-    void addGainController(EventSource &source, unsigned int cc, unsigned int input, unsigned int output);
+    void addGainController(MidiSource &source, unsigned int cc, unsigned int input, unsigned int output);
     void scheduleGain(uint32_t input, uint32_t output, float gain, uint32_t bar, uint32_t position, uint32_t division);
     void restore();
     void processAll(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
