@@ -113,7 +113,7 @@ class MidiBeatTracker {
     jack_nframes_t lastEventTime;
 public:
     MidiBeatTracker(double bpm, float beatsPerBar, float beatUnit)
-        : frameIndex(0), currentOnset(0), countInNote(0),
+        : frameIndex(0), currentOnset(0), onBeatHandler(0), countInNote(0),
           countInCount(0), onCountHandler(0), lastEventTime(0) {
         reset(bpm, beatsPerBar, beatUnit);
     }
