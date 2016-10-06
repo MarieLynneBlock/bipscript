@@ -23,10 +23,10 @@
 
 struct ABCError
 {
-    char *mesg;
+    const char *mesg;
     int lineNo;
     int linePos;
-    ABCError(char *msg, int lineno, int linepos) :
+    ABCError(const char *msg, int lineno, int linepos) :
         mesg(msg), lineNo(lineno), linePos(linepos) {}
 };
 
@@ -72,8 +72,8 @@ public:
     int writeMetaEvent(long delta_time, int type, char *data, int size);
     int writeMidiEvent(long delta_time, int type, int chan, char *data, int size);
     void singleNoteTuningChange(int key, float midipitch);
-    void addError(char *mesg, int lineno, int linepos);
-    void addWarning(char *mesg, int lineno, int linepos);
+    void addError(const char *mesg, int lineno, int linepos);
+    void addWarning(const char *mesg, int lineno, int linepos);
 };
 
 #endif // ABCREADER_H

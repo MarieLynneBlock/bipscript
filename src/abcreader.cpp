@@ -215,12 +215,12 @@ void ABCReader::singleNoteTuningChange(int key, float midipitch)
 {
 }
 
-void ABCReader::addError(char *mesg, int lineno, int linepos)
+void ABCReader::addError(const char *mesg, int lineno, int linepos)
 {
     errors.push_back(ABCError(mesg, lineno, linepos));
 }
 
-void ABCReader::addWarning(char *mesg, int lineno, int linepos)
+void ABCReader::addWarning(const char *mesg, int lineno, int linepos)
 {
     if(verbose) {
         std::string message("ABC Warning [");
