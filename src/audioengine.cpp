@@ -199,7 +199,7 @@ int AudioEngine::process(jack_nframes_t nframes)
     ScriptHost::instance().process(rolling, pos, nframes, time);
 
     // push out objects to delete
-    ObjectCollector::instance()->update();
+    ObjectCollector::scriptCollector().update();
 
     // free process-allocated objects
     ObjectCollector::processCollector().free();

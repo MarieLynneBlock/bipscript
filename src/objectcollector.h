@@ -29,9 +29,9 @@ class ObjectCollector
     ObjectCollector(ObjectCollector const&);
     void operator=(ObjectCollector const&);
 public:
-    static ObjectCollector *instance() {
+    static ObjectCollector &scriptCollector() {
         static ObjectCollector instance;
-        return &instance;
+        return instance;
     }
     static ObjectCollector &processCollector() {
         static ObjectCollector instance;

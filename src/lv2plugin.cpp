@@ -179,7 +179,7 @@ void Lv2MidiInput::process(bool rolling, jack_position_t &pos, jack_nframes_t nf
         // get next event
         if(bufferNext) {
             // recycle and get next buffer event
-            ObjectCollector::instance()->recycle(bufferEvent);
+            ObjectCollector::scriptCollector().recycle(bufferEvent);
             bufferEvent = static_cast<MidiEvent*>(eventBuffer.getNextEvent(rolling, pos, nframes));
         } else {
             connectionEvent = eventIndex < eventCount ? connection->getEvent(eventIndex++) : 0;
@@ -244,7 +244,7 @@ void Lv2ControlConnection::reset()
     while (mapping) {
         Lv2ControlMapping *done = mapping;
         mapping = mappings.pop();
-        ObjectCollector::instance()->recycle(done);
+        ObjectCollector::scriptCollector().recycle(done);
     }
 }
 
@@ -666,7 +666,7 @@ void Lv2Plugin::process(bool rolling, jack_position_t &pos, jack_nframes_t nfram
     while(nextEvent) {
         Lv2ControlEvent *evt = static_cast<Lv2ControlEvent*>(nextEvent);
         evt->getPort()->value = evt->getValue();
-        ObjectCollector::instance()->recycle(nextEvent);
+        ObjectCollector::scriptCollector().recycle(nextEvent);
         nextEvent = controlBuffer.getNextEvent(rolling, pos, nframes);
     }
 
@@ -715,7 +715,7 @@ void Lv2Plugin::reposition() {
         connection->reset();
         Lv2ControlConnection *done = connection;
         connection = controlConnections.pop();
-        ObjectCollector::instance()->recycle(done);
+        ObjectCollector::scriptCollector().recycle(done);
     }
 
     // recycle control buffer

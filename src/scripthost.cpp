@@ -103,7 +103,7 @@ bool ScriptHost::waitForRestart(HSQOBJECT &context)
             closure = MethodQueue::instance().next();
         }
         // free collected objects
-        ObjectCollector::instance()->free();
+        ObjectCollector::scriptCollector().free();
         // sleep
         struct timespec req = {0, 25000};
         while(nanosleep(&req,&req)==-1) {

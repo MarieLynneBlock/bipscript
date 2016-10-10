@@ -92,7 +92,7 @@ public:
         T *done;
         while(deletedObjects.pop(done)) {
             activeProcessObjects.remove(done);
-            ObjectCollector::instance()->recycle(done);
+            ObjectCollector::scriptCollector().recycle(done);
         }
         // process active ports
         T *obj = activeProcessObjects.getFirst();
@@ -136,7 +136,7 @@ public:
         T *done;
         while(deletedObjects.pop(done)) {
             activeProcessObjects.remove(done);
-            ObjectCollector::instance()->recycle(done);
+            ObjectCollector::scriptCollector().recycle(done);
         }
         // loop over MIDI output ports and reset
         T *obj = activeProcessObjects.getFirst();

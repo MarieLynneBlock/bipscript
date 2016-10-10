@@ -85,7 +85,7 @@ void OscOutput::run()
                 }
                 lo_send_message (loAddress, event->getMessage().getPath(), mesg);
                 lo_message_free (mesg);
-                ObjectCollector::instance()->recycle(event);
+                ObjectCollector::scriptCollector().recycle(event);
                 event = static_cast<OscEvent*>(eventBuffer.getNextEvent(rolling, jack_pos, nframes));
             }
         }

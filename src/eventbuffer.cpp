@@ -46,7 +46,7 @@ Event *EventBuffer::getNextEvent(bool rolling, jack_position_t &pos, jack_nframe
         while(first && first->updateFrameOffset(pos) < -256) { // TODO: grace period depends on framerate
             Event *late = first; // grab reference, cannot delete before pop()
             first = sortedEvents.pop();
-            ObjectCollector::instance()->recycle(late);
+            ObjectCollector::scriptCollector().recycle(late);
         }
         // return the top event if it fits in this buffer
         if(first && first->getFrameOffset() < nframes) {
@@ -60,13 +60,13 @@ Event *EventBuffer::getNextEvent(bool rolling, jack_position_t &pos, jack_nframe
 
 void EventBuffer::recycleRemaining()
 {
-    ObjectCollector *collector = ObjectCollector::instance();
+    ObjectCollector &collector = ObjectCollector::scriptCollector();
     // clear incoming queue
     Event *nextEvent;
     while (eventQueue.pop(nextEvent)) {
-        collector->recycle(nextEvent);
+        collector.recycle(nextEvent);
     }
     // clear existing events
-    collector->recycleAll(sortedEvents);
+    collector.recycleAll(sortedEvents);
     sortedEvents.clear();
 }

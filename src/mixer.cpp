@@ -78,7 +78,7 @@ void MixerControlConnection::reposition()
     while (mapping) {
         MixerControlMapping *done = mapping;
         mapping = mappings.pop();
-        ObjectCollector::instance()->recycle(done);
+        ObjectCollector::scriptCollector().recycle(done);
     }
 }
 
@@ -361,7 +361,7 @@ void Mixer::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, 
             // update gain
             gain[event->getInput()][event->getOutput()] = event->getValue();
             // recycle and get next buffer event
-            ObjectCollector::instance()->recycle(event);
+            ObjectCollector::scriptCollector().recycle(event);
             event = static_cast<MixerGainEvent*>(gainEventBuffer.getNextEvent(rolling, pos, nframes));
         }
 
@@ -395,7 +395,7 @@ void Mixer::reposition()
         connection->reposition();
         MixerControlConnection *done = connection;
         connection = controlConnections.pop();
-        ObjectCollector::instance()->recycle(done);
+        ObjectCollector::scriptCollector().recycle(done);
     }
     // gain event buffer
     gainEventBuffer.recycleRemaining();
