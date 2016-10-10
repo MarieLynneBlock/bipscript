@@ -20,6 +20,7 @@
 #include "event.h"
 
 #include <string>
+#include <cstring>
 
 struct OscParameter
 {
@@ -39,6 +40,13 @@ class OscMessage
 public:
     OscMessage(std::string path)
         : path(path) {}
+    ~OscMessage() {
+      for (auto & param: parameters) {
+          if(param.type == 's') {
+              delete param.value.stringValue;
+          }
+      }
+    }
     const char *getPath() { return path.c_str(); }
     void addInteger(int value) {
         OscParameter param('i');
@@ -52,7 +60,10 @@ public:
     }
     void addString(const char *value) {
         OscParameter param('s');
-        param.value.stringValue = value;
+        size_t len = std::strlen(value) + 1;
+        char *copy = new char[len];
+        std::strncpy(copy, value, len);
+        param.value.stringValue = copy;
         parameters.push_back(param);
     }
     void addBoolean(bool value) {
