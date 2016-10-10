@@ -24,7 +24,7 @@
 #include "audioconnection.h"
 #include "midiconnection.h"
 #include "objectcache.h"
-#include "scripttypes.h"
+#include "eventclosure.h"
 
 const unsigned int BT_HOP_SIZE = 512;
 
@@ -72,26 +72,26 @@ public:
     // object cache interface
     void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
     void reposition();
-	bool repositionComplete() { return true; }
+    bool repositionComplete() { return true; }
     bool scriptComplete();
 };
 
-class OnCountClosure : public ScriptFunctionClosure {
+class OnCountClosure : public EventClosure {
     int count;
 protected:
     bool addParameters() { addInteger(count); }
 public:
     OnCountClosure(ScriptFunction function, int count) :
-        ScriptFunctionClosure(function), count(count) {}
+        EventClosure(function), count(count) {}
 };
 
-class OnBeatClosure : public ScriptFunctionClosure {
+class OnBeatClosure : public EventClosure {
     double bpm;
 protected:
     bool addParameters() { addFloat(bpm); }
 public:
     OnBeatClosure(ScriptFunction function, double bpm) :
-        ScriptFunctionClosure(function), bpm(bpm) {}
+        EventClosure(function), bpm(bpm) {}
 };
 
 class MidiBeatTracker {

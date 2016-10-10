@@ -33,6 +33,10 @@ public:
         static ObjectCollector instance;
         return &instance;
     }
+    static ObjectCollector &processCollector() {
+        static ObjectCollector instance;
+        return instance;
+    }
     void recycle(Listable *collectable);
     void recycleAll(EventList &list);
     void update();

@@ -33,6 +33,7 @@ protected:
 public:
     OnReceiveClosure(ScriptFunction function, OscMessage *message) :
         ScriptFunctionClosure(function), message(message) {}
+    void recycle() { delete this; }
 };
 
 class OscInputFactory : public ObjectCache

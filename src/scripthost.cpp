@@ -99,7 +99,7 @@ bool ScriptHost::waitForRestart(HSQOBJECT &context)
         ScriptFunctionClosure *closure = MethodQueue::instance().next();
         while(closure) {
             closure->execute(context);
-            delete closure;
+            closure->recycle();
             closure = MethodQueue::instance().next();
         }
         // free collected objects

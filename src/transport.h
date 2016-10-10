@@ -43,6 +43,7 @@ public:
     {
         nparams = function.getNumargs();
     }
+    void recycle() { delete this; }
 };
 
 class Transport : public ObjectCache

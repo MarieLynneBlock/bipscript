@@ -201,5 +201,8 @@ int AudioEngine::process(jack_nframes_t nframes)
     // push out objects to delete
     ObjectCollector::instance()->update();
 
+    // free process-allocated objects
+    ObjectCollector::processCollector().free();
+
     return 0;
 }

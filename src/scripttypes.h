@@ -99,6 +99,7 @@ public:
         MethodQueue::instance().dispatch(this);
     }
     virtual ~ScriptFunctionClosure() {}
+    virtual void recycle() = 0;
 protected:
     void addFloat(float f) {
         sq_pushfloat(vm, f);

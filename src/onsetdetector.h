@@ -17,9 +17,10 @@
 #ifndef ONSETDETECTOR_H
 #define ONSETDETECTOR_H
 
-#include "scripttypes.h"
 #include "audioconnection.h"
 #include "objectcache.h"
+#include "eventclosure.h"
+
 #include "aubio/aubio.h"
 
 const unsigned int ONSET_HOP_SIZE = 512;
@@ -61,13 +62,13 @@ public:
     void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
 };
 
-class OnOnsetClosure : public ScriptFunctionClosure {
+class OnOnsetClosure : public EventClosure {
     int count;
 protected:
      bool addParameters() { addInteger(count); }
 public:
     OnOnsetClosure(ScriptFunction function, int count) :
-        ScriptFunctionClosure(function), count(count) {}
+        EventClosure(function), count(count) {}
 };
 
 class OnsetDetectorCache : public ObjectCache

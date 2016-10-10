@@ -69,10 +69,9 @@ void OnsetDetector::process(bool rolling, jack_position_t &pos, jack_nframes_t n
             smpl_t onset = fvec_get_sample(aubioOutput, 0);
             fvec_zeros(aubioOutput);
             if(onset) {
-                // TODO: compute position from smpl_t onset value
                 ScriptFunction *handler = onOnsetHandler.load();
                 if(handler) {
-                    // TODO: no allocation in process thread
+                    // TODO: compute position from smpl_t onset value
                     (new OnOnsetClosure(*handler, 0))->dispatch();
                 }
             }
