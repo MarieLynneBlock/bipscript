@@ -28,6 +28,11 @@ HSQOBJECT MathRandomObject;
 //
 // Math.Random class
 //
+SQInteger MathRandomRelease(SQUserPointer p, SQInteger size)
+{
+    delete static_cast<Random*>(p);
+}
+
 SQInteger MathRandomCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
@@ -46,7 +51,7 @@ SQInteger MathRandomCtor(HSQUIRRELVM vm)
 
     // return pointer to new object
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-    //sq_setreleasehook(vm, 1, release_hook);
+    sq_setreleasehook(vm, 1, MathRandomRelease);
     return 1;
 }
 

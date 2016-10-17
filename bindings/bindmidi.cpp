@@ -50,6 +50,11 @@ HSQOBJECT MidiBeatTrackerObject;
 //
 // Midi.ABCReader class
 //
+SQInteger MidiABCReaderRelease(SQUserPointer p, SQInteger size)
+{
+    delete static_cast<ABCReader*>(p);
+}
+
 SQInteger MidiABCReaderCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
@@ -68,7 +73,7 @@ SQInteger MidiABCReaderCtor(HSQUIRRELVM vm)
 
     // return pointer to new object
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-    //sq_setreleasehook(vm, 1, release_hook);
+    sq_setreleasehook(vm, 1, MidiABCReaderRelease);
     return 1;
 }
 
@@ -277,6 +282,11 @@ SQInteger MidiABCReaderreadTune(HSQUIRRELVM vm)
 //
 // Midi.ChordReader class
 //
+SQInteger MidiChordReaderRelease(SQUserPointer p, SQInteger size)
+{
+    delete static_cast<ChordReader*>(p);
+}
+
 SQInteger MidiChordReaderCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
@@ -295,7 +305,7 @@ SQInteger MidiChordReaderCtor(HSQUIRRELVM vm)
 
     // return pointer to new object
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-    //sq_setreleasehook(vm, 1, release_hook);
+    sq_setreleasehook(vm, 1, MidiChordReaderRelease);
     return 1;
 }
 
@@ -360,6 +370,11 @@ SQInteger MidiChordReaderread(HSQUIRRELVM vm)
 //
 // Midi.DrumTabReader class
 //
+SQInteger MidiDrumTabReaderRelease(SQUserPointer p, SQInteger size)
+{
+    delete static_cast<DrumTabReader*>(p);
+}
+
 SQInteger MidiDrumTabReaderCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
@@ -378,7 +393,7 @@ SQInteger MidiDrumTabReaderCtor(HSQUIRRELVM vm)
 
     // return pointer to new object
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-    //sq_setreleasehook(vm, 1, release_hook);
+    sq_setreleasehook(vm, 1, MidiDrumTabReaderRelease);
     return 1;
 }
 
@@ -528,13 +543,17 @@ SQInteger MidiSystemInCtor(HSQUIRRELVM vm)
 
     // return pointer to new object
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-    //sq_setreleasehook(vm, 1, release_hook);
     return 1;
 }
 
 //
 // Midi.Note class
 //
+SQInteger MidiNoteRelease(SQUserPointer p, SQInteger size)
+{
+    delete static_cast<Note*>(p);
+}
+
 SQInteger MidiNoteCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
@@ -580,7 +599,7 @@ SQInteger MidiNoteCtor(HSQUIRRELVM vm)
 
     // return pointer to new object
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-    //sq_setreleasehook(vm, 1, release_hook);
+    sq_setreleasehook(vm, 1, MidiNoteRelease);
     return 1;
 }
 
@@ -709,6 +728,11 @@ SQInteger MidiNotevelocity(HSQUIRRELVM vm)
 //
 // Midi.Control class
 //
+SQInteger MidiControlRelease(SQUserPointer p, SQInteger size)
+{
+    delete static_cast<Control*>(p);
+}
+
 SQInteger MidiControlCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
@@ -742,7 +766,7 @@ SQInteger MidiControlCtor(HSQUIRRELVM vm)
 
     // return pointer to new object
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-    //sq_setreleasehook(vm, 1, release_hook);
+    sq_setreleasehook(vm, 1, MidiControlRelease);
     return 1;
 }
 
@@ -776,7 +800,6 @@ SQInteger MidiInputBufferCtor(HSQUIRRELVM vm)
 
     // return pointer to new object
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-    //sq_setreleasehook(vm, 1, release_hook);
     return 1;
 }
 
@@ -824,6 +847,11 @@ SQInteger MidiInputBufferlastControlValue(HSQUIRRELVM vm)
 //
 // Midi.MMLReader class
 //
+SQInteger MidiMMLReaderRelease(SQUserPointer p, SQInteger size)
+{
+    delete static_cast<MMLReader*>(p);
+}
+
 SQInteger MidiMMLReaderCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
@@ -842,7 +870,7 @@ SQInteger MidiMMLReaderCtor(HSQUIRRELVM vm)
 
     // return pointer to new object
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-    //sq_setreleasehook(vm, 1, release_hook);
+    sq_setreleasehook(vm, 1, MidiMMLReaderRelease);
     return 1;
 }
 
@@ -895,6 +923,11 @@ SQInteger MidiMMLReaderread(HSQUIRRELVM vm)
 //
 // Midi.Pattern class
 //
+SQInteger MidiPatternRelease(SQUserPointer p, SQInteger size)
+{
+    delete static_cast<Pattern*>(p);
+}
+
 SQInteger MidiPatternCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
@@ -939,7 +972,7 @@ SQInteger MidiPatternCtor(HSQUIRRELVM vm)
 
     // return pointer to new object
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-    //sq_setreleasehook(vm, 1, release_hook);
+    sq_setreleasehook(vm, 1, MidiPatternRelease);
     return 1;
 }
 
@@ -1355,7 +1388,6 @@ SQInteger MidiSystemOutCtor(HSQUIRRELVM vm)
 
     // return pointer to new object
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-    //sq_setreleasehook(vm, 1, release_hook);
     return 1;
 }
 
@@ -1814,6 +1846,11 @@ SQInteger MidiSystemOutschedule(HSQUIRRELVM vm)
 //
 // Midi.PitchBend class
 //
+SQInteger MidiPitchBendRelease(SQUserPointer p, SQInteger size)
+{
+    delete static_cast<PitchBend*>(p);
+}
+
 SQInteger MidiPitchBendCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
@@ -1841,13 +1878,18 @@ SQInteger MidiPitchBendCtor(HSQUIRRELVM vm)
 
     // return pointer to new object
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-    //sq_setreleasehook(vm, 1, release_hook);
+    sq_setreleasehook(vm, 1, MidiPitchBendRelease);
     return 1;
 }
 
 //
 // Midi.ProgramChange class
 //
+SQInteger MidiProgramChangeRelease(SQUserPointer p, SQInteger size)
+{
+    delete static_cast<ProgramChange*>(p);
+}
+
 SQInteger MidiProgramChangeCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
@@ -1875,7 +1917,7 @@ SQInteger MidiProgramChangeCtor(HSQUIRRELVM vm)
 
     // return pointer to new object
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-    //sq_setreleasehook(vm, 1, release_hook);
+    sq_setreleasehook(vm, 1, MidiProgramChangeRelease);
     return 1;
 }
 
@@ -1953,7 +1995,6 @@ SQInteger MidiBeatTrackerCtor(HSQUIRRELVM vm)
 
     // return pointer to new object
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-    //sq_setreleasehook(vm, 1, release_hook);
     return 1;
 }
 

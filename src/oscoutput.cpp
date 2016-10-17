@@ -28,7 +28,8 @@ void *run_output(void *arg)
     ((OscOutput*)arg)->run();
 }
 
-OscOutput::OscOutput(const char *host, int port) : cancelled(false)
+OscOutput::OscOutput(const char *host, int port) :
+    repositionNeeded(false), cancelled(false)
 {
     std::string portString = std::to_string(port);
     loAddress = lo_address_new(host, portString.c_str());

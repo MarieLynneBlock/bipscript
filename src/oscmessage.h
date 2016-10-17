@@ -40,12 +40,24 @@ class OscMessage
 public:
     OscMessage(std::string path)
         : path(path) {}
+    OscMessage(OscMessage &copy) :
+      path(copy.path), parameters(copy.parameters)
+    {
+        for (auto & param: parameters) {
+            if(param.type == 's') {
+                size_t len = std::strlen(param.value.stringValue) + 1;
+                char* const copy = new char[len];
+                std::strncpy(copy, param.value.stringValue, len);
+                param.value.stringValue = copy;
+            }
+        }
+    }
     ~OscMessage() {
-      for (auto & param: parameters) {
-          if(param.type == 's') {
-              delete param.value.stringValue;
-          }
-      }
+        for (auto & param: parameters) {
+            if(param.type == 's') {
+                delete[] param.value.stringValue;
+            }
+        }
     }
     const char *getPath() { return path.c_str(); }
     void addInteger(int value) {
@@ -61,7 +73,7 @@ public:
     void addString(const char *value) {
         OscParameter param('s');
         size_t len = std::strlen(value) + 1;
-        char *copy = new char[len];
+        char* const copy = new char[len];
         std::strncpy(copy, value, len);
         param.value.stringValue = copy;
         parameters.push_back(param);

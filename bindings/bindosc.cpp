@@ -79,7 +79,6 @@ SQInteger OscInputCtor(HSQUIRRELVM vm)
 
     // return pointer to new object
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-    //sq_setreleasehook(vm, 1, release_hook);
     return 1;
 }
 
@@ -163,6 +162,11 @@ SQInteger OscInputurl(HSQUIRRELVM vm)
 //
 // Osc.Message class
 //
+SQInteger OscMessageRelease(SQUserPointer p, SQInteger size)
+{
+    delete static_cast<OscMessage*>(p);
+}
+
 SQInteger OscMessageCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
@@ -190,7 +194,7 @@ SQInteger OscMessageCtor(HSQUIRRELVM vm)
 
     // return pointer to new object
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-    //sq_setreleasehook(vm, 1, release_hook);
+    sq_setreleasehook(vm, 1, OscMessageRelease);
     return 1;
 }
 
@@ -440,7 +444,6 @@ SQInteger OscOutputCtor(HSQUIRRELVM vm)
 
     // return pointer to new object
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-    //sq_setreleasehook(vm, 1, release_hook);
     return 1;
 }
 

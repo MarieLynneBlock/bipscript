@@ -72,7 +72,6 @@ SQInteger AudioMixerCtor(HSQUIRRELVM vm)
 
     // return pointer to new object
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-    //sq_setreleasehook(vm, 1, release_hook);
     return 1;
 }
 
@@ -448,7 +447,6 @@ SQInteger AudioOnsetDetectorCtor(HSQUIRRELVM vm)
 
     // return pointer to new object
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-    //sq_setreleasehook(vm, 1, release_hook);
     return 1;
 }
 
@@ -725,7 +723,6 @@ SQInteger AudioSystemOutCtor(HSQUIRRELVM vm)
 
     // return pointer to new object
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-    //sq_setreleasehook(vm, 1, release_hook);
     return 1;
 }
 
@@ -856,7 +853,6 @@ SQInteger AudioSystemInCtor(HSQUIRRELVM vm)
 
     // return pointer to new object
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-    //sq_setreleasehook(vm, 1, release_hook);
     return 1;
 }
 
@@ -940,7 +936,7 @@ SQInteger AudioStereoInCtor(HSQUIRRELVM vm)
     AudioStereoInput *obj;
     // call the implementation
     try {
-        obj = new AudioStereoInput(name, connectLeft, connectRight);
+        obj = AudioStereoInputCache::instance().getAudioStereoInput(name, connectLeft, connectRight);
     }
     catch(std::exception const& e) {
         return sq_throwerror(vm, e.what());
@@ -948,7 +944,6 @@ SQInteger AudioStereoInCtor(HSQUIRRELVM vm)
 
     // return pointer to new object
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-    //sq_setreleasehook(vm, 1, release_hook);
     return 1;
 }
 
@@ -1001,6 +996,11 @@ SQInteger AudioStereoInoutput(HSQUIRRELVM vm)
 //
 // Audio.StereoOut class
 //
+SQInteger AudioStereoOutRelease(SQUserPointer p, SQInteger size)
+{
+    delete static_cast<AudioStereoOutput*>(p);
+}
+
 SQInteger AudioStereoOutCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
@@ -1040,7 +1040,7 @@ SQInteger AudioStereoOutCtor(HSQUIRRELVM vm)
 
     // return pointer to new object
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-    //sq_setreleasehook(vm, 1, release_hook);
+    sq_setreleasehook(vm, 1, AudioStereoOutRelease);
     return 1;
 }
 
@@ -1151,7 +1151,6 @@ SQInteger AudioBeatTrackerCtor(HSQUIRRELVM vm)
 
     // return pointer to new object
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-    //sq_setreleasehook(vm, 1, release_hook);
     return 1;
 }
 

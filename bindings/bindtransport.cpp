@@ -235,7 +235,6 @@ SQInteger TransportMasterCtor(HSQUIRRELVM vm)
 
     // return pointer to new object
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-    //sq_setreleasehook(vm, 1, release_hook);
     return 1;
 }
 

@@ -97,6 +97,11 @@ public:
     }
 };
 
+/**
+ * represents a stereo system output
+ *
+ * does not need a cache, lifecycle is simple script object
+ */
 class AudioStereoOutput
 {
     AudioOutputPort *portLeft;
@@ -121,6 +126,20 @@ public:
     // AudioSource interface
     unsigned int getAudioOutputCount() { return 2; }
     AudioConnection *getAudioConnection(unsigned int index);
+};
+
+class AudioStereoInputCache
+{
+public:
+    static AudioStereoInputCache &instance() {
+        static AudioStereoInputCache instance;
+        return instance;
+    }
+    AudioStereoInput *getAudioStereoInput(const char* name, const char *connectLeft, const char *connectRight)
+    {
+        // TODO: never deallocated
+        return new AudioStereoInput(name, connectLeft, connectRight);
+    }
 };
 
 #endif // AUDIOOUTPUT_H

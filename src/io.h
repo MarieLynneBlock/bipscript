@@ -30,7 +30,7 @@ public:
     File(const char *cname) : buffer(0) {
         name = cname;
     }
-    ~File() { delete buffer; }
+    ~File() { delete[] buffer; }
     uintmax_t size() { return fs::file_size(name); }
     bool exists() { return fs::exists(name); }
     bool isFolder() { return fs::is_directory(name); }

@@ -61,7 +61,6 @@ SQInteger Lv2PluginCtor(HSQUIRRELVM vm)
 
         // return pointer to new object
         sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-        //sq_setreleasehook(vm, 1, release_hook);
         return 1;
     }
     SQObjectType overrideType = sq_gettype(vm, 3);
@@ -116,7 +115,6 @@ SQInteger Lv2PluginCtor(HSQUIRRELVM vm)
 
         // return pointer to new object
         sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-        //sq_setreleasehook(vm, 1, release_hook);
         return 1;
     }
     else if(overrideType == OT_INSTANCE && overrideTypeTag == &Lv2StateObject) {
@@ -171,7 +169,6 @@ SQInteger Lv2PluginCtor(HSQUIRRELVM vm)
 
         // return pointer to new object
         sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-        //sq_setreleasehook(vm, 1, release_hook);
         return 1;
     }
     else {
@@ -956,6 +953,11 @@ SQInteger Lv2PluginsetControl(HSQUIRRELVM vm)
 //
 // Lv2.State class
 //
+SQInteger Lv2StateRelease(SQUserPointer p, SQInteger size)
+{
+    delete static_cast<Lv2State*>(p);
+}
+
 SQInteger Lv2StateCtor(HSQUIRRELVM vm)
 {
     SQObjectType overrideType = sq_gettype(vm, 2);
@@ -994,7 +996,7 @@ SQInteger Lv2StateCtor(HSQUIRRELVM vm)
 
         // return pointer to new object
         sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-        //sq_setreleasehook(vm, 1, release_hook);
+        sq_setreleasehook(vm, 1, Lv2StateRelease);
         return 1;
     }
     else if(overrideType == OT_STRING) {
@@ -1023,7 +1025,7 @@ SQInteger Lv2StateCtor(HSQUIRRELVM vm)
 
         // return pointer to new object
         sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-        //sq_setreleasehook(vm, 1, release_hook);
+        sq_setreleasehook(vm, 1, Lv2StateRelease);
         return 1;
     }
     else {

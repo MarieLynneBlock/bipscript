@@ -134,6 +134,7 @@ classes :
           - { name: name, type: string }
           - { name: connectLeft, type: string }
           - { name: connectRight, type: string }
+        expression: AudioStereoInputCache::instance().getAudioStereoInput
 
     - name: StereoOut
       interface:
