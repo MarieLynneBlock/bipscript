@@ -24,6 +24,8 @@ namespace binding
     // object references to types in this package
     extern HSQOBJECT Lv2PluginObject;
     extern HSQOBJECT Lv2StateObject;
+    // release hooks for types in this package
+    SQInteger Lv2StateRelease(SQUserPointer p, SQInteger size);
     // method to bind this package
     void bindLv2(HSQUIRRELVM vm);
 }

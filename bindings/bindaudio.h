@@ -30,6 +30,8 @@ namespace binding
     extern HSQOBJECT AudioStereoInObject;
     extern HSQOBJECT AudioStereoOutObject;
     extern HSQOBJECT AudioBeatTrackerObject;
+    // release hooks for types in this package
+    SQInteger AudioStereoOutRelease(SQUserPointer p, SQInteger size);
     // method to bind this package
     void bindAudio(HSQUIRRELVM vm);
 }

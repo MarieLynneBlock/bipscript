@@ -59,6 +59,10 @@ classes:
 
     - name: TimeSignature
       include: timesignature
+      ctor:
+        parameters:
+          - {name: numerator, type: integer }
+          - {name: denominator, type: integer }
       methods:
         - name: numerator
           cppname: getNumerator

@@ -36,6 +36,17 @@ namespace binding
     extern HSQOBJECT MidiPitchBendObject;
     extern HSQOBJECT MidiProgramChangeObject;
     extern HSQOBJECT MidiBeatTrackerObject;
+    // release hooks for types in this package
+    SQInteger MidiABCReaderRelease(SQUserPointer p, SQInteger size);
+    SQInteger MidiChordReaderRelease(SQUserPointer p, SQInteger size);
+    SQInteger MidiDrumTabReaderRelease(SQUserPointer p, SQInteger size);
+    SQInteger MidiNoteRelease(SQUserPointer p, SQInteger size);
+    SQInteger MidiControlRelease(SQUserPointer p, SQInteger size);
+    SQInteger MidiMMLReaderRelease(SQUserPointer p, SQInteger size);
+    SQInteger MidiPatternRelease(SQUserPointer p, SQInteger size);
+    SQInteger MidiTuneRelease(SQUserPointer p, SQInteger size);
+    SQInteger MidiPitchBendRelease(SQUserPointer p, SQInteger size);
+    SQInteger MidiProgramChangeRelease(SQUserPointer p, SQInteger size);
     // method to bind this package
     void bindMidi(HSQUIRRELVM vm);
 }

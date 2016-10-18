@@ -16,6 +16,9 @@ public:
         numTracks(numTracks) {
         tracks = new Pattern[numTracks];
     }
+    ~MidiTune() {
+        delete[] tracks;
+    }
     void setTitle(const char *t) { title = t; }
     const char *getTitle() { return title.c_str(); }
     void addMidiNote(uint32_t tracknum, Note &note, Position &position) {

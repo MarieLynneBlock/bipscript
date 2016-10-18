@@ -228,7 +228,7 @@ SQInteger MidiABCReaderread(HSQUIRRELVM vm)
     sq_createinstance(vm, -1);
     sq_remove(vm, -2);
     sq_setinstanceup(vm, -1, ret);
-    //sq_setreleasehook(vm, -1, &?);
+    sq_setreleasehook(vm, -1, &MidiPatternRelease);
 
     return 1;
 }
@@ -274,7 +274,7 @@ SQInteger MidiABCReaderreadTune(HSQUIRRELVM vm)
     sq_createinstance(vm, -1);
     sq_remove(vm, -2);
     sq_setinstanceup(vm, -1, ret);
-    //sq_setreleasehook(vm, -1, &?);
+    sq_setreleasehook(vm, -1, &MidiTuneRelease);
 
     return 1;
 }
@@ -362,7 +362,7 @@ SQInteger MidiChordReaderread(HSQUIRRELVM vm)
     sq_createinstance(vm, -1);
     sq_remove(vm, -2);
     sq_setinstanceup(vm, -1, ret);
-    //sq_setreleasehook(vm, -1, &?);
+    sq_setreleasehook(vm, -1, &MidiPatternRelease);
 
     return 1;
 }
@@ -438,7 +438,7 @@ SQInteger MidiDrumTabReaderread(HSQUIRRELVM vm)
     sq_createinstance(vm, -1);
     sq_remove(vm, -2);
     sq_setinstanceup(vm, -1, ret);
-    //sq_setreleasehook(vm, -1, &?);
+    sq_setreleasehook(vm, -1, &MidiPatternRelease);
 
     return 1;
 }
@@ -915,7 +915,7 @@ SQInteger MidiMMLReaderread(HSQUIRRELVM vm)
     sq_createinstance(vm, -1);
     sq_remove(vm, -2);
     sq_setinstanceup(vm, -1, ret);
-    //sq_setreleasehook(vm, -1, &?);
+    sq_setreleasehook(vm, -1, &MidiPatternRelease);
 
     return 1;
 }
@@ -1079,7 +1079,7 @@ SQInteger MidiPatternnote(HSQUIRRELVM vm)
     sq_createinstance(vm, -1);
     sq_remove(vm, -2);
     sq_setinstanceup(vm, -1, ret);
-    //sq_setreleasehook(vm, -1, &?);
+    // no release hook, release ignored per binding
 
     return 1;
 }
@@ -1186,9 +1186,40 @@ SQInteger MidiPatterntranspose(HSQUIRRELVM vm)
 //
 // Midi.Tune class
 //
+SQInteger MidiTuneRelease(SQUserPointer p, SQInteger size)
+{
+    delete static_cast<MidiTune*>(p);
+}
+
 SQInteger MidiTuneCtor(HSQUIRRELVM vm)
 {
-    return sq_throwerror(vm, "cannot directly instantiate Midi.Tune");
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get parameter 1 "tracks" as integer
+    SQInteger tracks;
+    if (SQ_FAILED(sq_getinteger(vm, 2, &tracks))){
+        return sq_throwerror(vm, "argument 1 \"tracks\" is not of type integer");
+    }
+
+    MidiTune *obj;
+    // call the implementation
+    try {
+        obj = new MidiTune(tracks);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // return pointer to new object
+    sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
+    sq_setreleasehook(vm, 1, MidiTuneRelease);
+    return 1;
 }
 
 //
@@ -1223,7 +1254,7 @@ SQInteger MidiTunetimeSignature(HSQUIRRELVM vm)
     sq_createinstance(vm, -1);
     sq_remove(vm, -2);
     sq_setinstanceup(vm, -1, ret);
-    //sq_setreleasehook(vm, -1, &?);
+    sq_setreleasehook(vm, -1, &TransportTimeSignatureRelease);
 
     return 1;
 }
@@ -1301,7 +1332,7 @@ SQInteger MidiTunetrack(HSQUIRRELVM vm)
     sq_createinstance(vm, -1);
     sq_remove(vm, -2);
     sq_setinstanceup(vm, -1, ret);
-    //sq_setreleasehook(vm, -1, &?);
+    // no release hook, release ignored per binding
 
     return 1;
 }

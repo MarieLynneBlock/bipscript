@@ -25,6 +25,8 @@ namespace binding
     extern HSQOBJECT OscInputObject;
     extern HSQOBJECT OscMessageObject;
     extern HSQOBJECT OscOutputObject;
+    // release hooks for types in this package
+    SQInteger OscMessageRelease(SQUserPointer p, SQInteger size);
     // method to bind this package
     void bindOsc(HSQUIRRELVM vm);
 }

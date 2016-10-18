@@ -330,9 +330,46 @@ SQInteger TransportMastertimeSignature(HSQUIRRELVM vm)
 //
 // Transport.TimeSignature class
 //
+SQInteger TransportTimeSignatureRelease(SQUserPointer p, SQInteger size)
+{
+    delete static_cast<TimeSignature*>(p);
+}
+
 SQInteger TransportTimeSignatureCtor(HSQUIRRELVM vm)
 {
-    return sq_throwerror(vm, "cannot directly instantiate Transport.TimeSignature");
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 3) {
+        return sq_throwerror(vm, "too many parameters, expected at most 2");
+    }
+    if(numargs < 3) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 2");
+    }
+    // get parameter 1 "numerator" as integer
+    SQInteger numerator;
+    if (SQ_FAILED(sq_getinteger(vm, 2, &numerator))){
+        return sq_throwerror(vm, "argument 1 \"numerator\" is not of type integer");
+    }
+
+    // get parameter 2 "denominator" as integer
+    SQInteger denominator;
+    if (SQ_FAILED(sq_getinteger(vm, 3, &denominator))){
+        return sq_throwerror(vm, "argument 2 \"denominator\" is not of type integer");
+    }
+
+    TimeSignature *obj;
+    // call the implementation
+    try {
+        obj = new TimeSignature(numerator, denominator);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // return pointer to new object
+    sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
+    sq_setreleasehook(vm, 1, TransportTimeSignatureRelease);
+    return 1;
 }
 
 //

@@ -22,6 +22,7 @@
 namespace binding
 {
     // object references to types in this package
+    // release hooks for types in this package
     // method to bind this package
     void bindSystem(HSQUIRRELVM vm);
 }

@@ -333,7 +333,7 @@ SQInteger AudioMixeroutput(HSQUIRRELVM vm)
     sq_createinstance(vm, -1);
     sq_remove(vm, -2);
     sq_setinstanceup(vm, -1, ret);
-    //sq_setreleasehook(vm, -1, &?);
+    // no release hook, release ignored per binding
 
     return 1;
 }
@@ -897,7 +897,7 @@ SQInteger AudioSystemInoutput(HSQUIRRELVM vm)
     sq_createinstance(vm, -1);
     sq_remove(vm, -2);
     sq_setinstanceup(vm, -1, ret);
-    //sq_setreleasehook(vm, -1, &?);
+    // no release hook, release ignored per binding
 
     return 1;
 }
@@ -988,7 +988,7 @@ SQInteger AudioStereoInoutput(HSQUIRRELVM vm)
     sq_createinstance(vm, -1);
     sq_remove(vm, -2);
     sq_setinstanceup(vm, -1, ret);
-    //sq_setreleasehook(vm, -1, &?);
+    // no release hook, release ignored per binding
 
     return 1;
 }

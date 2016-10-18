@@ -23,6 +23,8 @@ namespace binding
 {
     // object references to types in this package
     extern HSQOBJECT IOFileObject;
+    // release hooks for types in this package
+    SQInteger IOFileRelease(SQUserPointer p, SQInteger size);
     // method to bind this package
     void bindIO(HSQUIRRELVM vm);
 }

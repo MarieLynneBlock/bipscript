@@ -24,6 +24,8 @@ namespace binding
     // object references to types in this package
     extern HSQOBJECT TransportMasterObject;
     extern HSQOBJECT TransportTimeSignatureObject;
+    // release hooks for types in this package
+    SQInteger TransportTimeSignatureRelease(SQUserPointer p, SQInteger size);
     // method to bind this package
     void bindTransport(HSQUIRRELVM vm);
 }

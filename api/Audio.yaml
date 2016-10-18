@@ -27,6 +27,7 @@ interfaces:
           cppname: getAudioConnection
           parameters: { name: channel, type: integer }
           returns: Audio.Output
+          release: none
 
     - name: Sink
       methods:
