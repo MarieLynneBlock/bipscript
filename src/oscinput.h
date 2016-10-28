@@ -21,7 +21,9 @@ public:
                 lo_arg ** argv, int argc, void *data);
     const char *getUrl();
     void onReceive(ScriptFunction &function);
-    void cancel();
+    void cancel() {
+        lo_server_thread_free(st);
+    }
 };
 
 class OnReceiveClosure : public ScriptFunctionClosure {
@@ -36,28 +38,21 @@ public:
     void recycle() { delete this; }
 };
 
-class OscInputFactory : public ObjectCache
+class OscInputFactory : public ActiveCache<OscInput>
 {
-    std::map<std::string, OscInput*> instanceMap;
-    std::set<OscInput*> activeScriptObjects;
-    QueueList<OscInput> activeProcessObjects;
-    boost::lockfree::spsc_queue<OscInput*> deletedObjects;
-    OscInputFactory() : activeProcessObjects(16), deletedObjects(16) {}
-    OscInput *createObject(std::string key);
 public:
     static OscInputFactory &instance() {
         static OscInputFactory instance;
         return instance;
     }
-    void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time) {}
-    bool scriptComplete();
-    void reposition();
-    bool repositionComplete() { return true; }
     OscInput *getOscInput(int port, const char *protocol);
     OscInput *getOscInput(int port) {
         return getOscInput(port, 0);
     }
-    void shutdown();
+    void newObject(OscInput *) {}
+    void removeObject(OscInput *input) {
+        input->cancel();
+    }
 };
 
 #endif // OSCINPUT_H

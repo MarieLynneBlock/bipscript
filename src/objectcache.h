@@ -19,20 +19,13 @@
 
 #include <map>
 #include <set>
-#include <jack/types.h>
+#include <iostream>
 
-#include "listable.h"
-#include "objectcollector.h"
+#include "audioengine.h"
 
 class ObjectCache
 {
 public:
-    /**
-     * Run at the end of every process cycle to update objects that would otherwise block.
-     *
-     * Runs in the process thread.
-     */
-    virtual void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time) = 0;
     /**
      * Called after the script has completed so factories can reset for the next run.
      *
@@ -41,31 +34,21 @@ public:
      * Runs in the script thread.
      */
     virtual bool scriptComplete() = 0;
-    /**
-     * Called when a reposition has been requested so objects can flush/recycle queued events.
-     *
-     * Runs in the process thread.
-     */
-    virtual void reposition() = 0;
-    /**
-     * Called after a reposition has been requested until all objects return true.
-     *
-     * Returns true when the reposition is complete.
-     *
-     * Runs in the process thread.
-     */
-    virtual bool repositionComplete() = 0;
 };
 
-template <class T> class ProcessorCache : public ObjectCache
+/**
+ * Cache template for resuable objects
+ *
+ * T must be a Listable
+ */
+template <class T> class ActiveCache : public ObjectCache
 {
     std::map<int, T*> instanceMap;
     std::set<T*> activeScriptObjects;
-    QueueList<T> activeProcessObjects;
-    boost::lockfree::spsc_queue<T*> deletedObjects;
     virtual void scriptReset() {}
+    virtual void newObject(T *) = 0;
+    virtual void removeObject(T *) = 0;
 protected:
-    ProcessorCache() : activeProcessObjects(16), deletedObjects(4) {}
     /**
      * find an existing object with this key
      */
@@ -81,26 +64,24 @@ protected:
      */
     void registerObject(int key, T *obj) {
         instanceMap[key] = obj;
-        activeProcessObjects.add(obj);
         activeScriptObjects.insert(obj);
+        newObject(obj);
     }
-
+    /**
+      * remove all existing objects
+      */
+    void removeAll() {
+        for(auto iterator = instanceMap.begin(); iterator != instanceMap.end();) {
+            T *obj = iterator->second;
+            auto it = activeScriptObjects.find(obj);
+            if(it != activeScriptObjects.end()) {
+                activeScriptObjects.erase(it);
+            }
+            iterator = instanceMap.erase(iterator);
+            removeObject(obj);
+        }
+    }
 public:
-    void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
-    {
-        // remove deleted objects
-        T *done;
-        while(deletedObjects.pop(done)) {
-            activeProcessObjects.remove(done);
-            ObjectCollector::scriptCollector().recycle(done);
-        }
-        // process active ports
-        T *obj = activeProcessObjects.getFirst();
-        while(obj) {
-            obj->processAll(rolling, pos, nframes, time);
-            obj = activeProcessObjects.getNext(obj);
-        }
-    }
     /**
       * Restore cache state after script has completed.
       *
@@ -112,7 +93,7 @@ public:
         // loop over cached ports
         for(auto iterator = instanceMap.begin(); iterator != instanceMap.end();) {
             T *obj = iterator->second;
-            // port was used in the last script run?
+            // object was used in the last script run?
             auto it = activeScriptObjects.find(obj);
             if(it != activeScriptObjects.end()) {
                 // std::cout << typeid(T).name() << " was used in the last run: " << iterator->first << std::endl;
@@ -120,37 +101,31 @@ public:
                 activeObjects = true;
                 iterator++;
             } else {
-                // remove port from map and audio engine
+                // remove object from map and audio engine
                 // std::cout << typeid(T).name() << " NOT used in the last run: " << iterator->first << std::endl;
                 iterator = instanceMap.erase(iterator);
-                while(!deletedObjects.push(obj));
+                removeObject(obj);
             }
         }
         scriptReset();
         return activeObjects;
     }
+};
 
-    void reposition()
-    {
-        // remove deleted ports
-        T *done;
-        while(deletedObjects.pop(done)) {
-            activeProcessObjects.remove(done);
-            ObjectCollector::scriptCollector().recycle(done);
-        }
-        // loop over MIDI output ports and reset
-        T *obj = activeProcessObjects.getFirst();
-        while(obj) {
-            obj->reposition();
-            obj = activeProcessObjects.getNext(obj);
-        }
+/**
+ * Cache template for resuable processors
+ *
+ * T must be a Processor
+ */
+template <class T> class ProcessorCache : public ActiveCache<T>
+{
+    void newObject(T *obj) {
+        AudioEngine::instance().addProcessor(obj);
     }
 
-    bool repositionComplete()
-    {
-        return true;
+    void removeObject(T *obj) {
+        AudioEngine::instance().removeProcessor(obj);
     }
-
 };
 
 #endif // OBJECTCACHE_H

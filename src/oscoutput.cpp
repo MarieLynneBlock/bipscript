@@ -95,63 +95,7 @@ void OscOutput::run()
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
     // we're done with the entire object
-    delete this;
-}
-
-/**
- * Called after the script has completed so factory can reset for the next run.
- *
- * Runs in the script thread.
- */
-bool OscOutputFactory::scriptComplete()
-{
-    bool activeObjects = false;
-    // loop over cached ports
-    for(auto iterator = instanceMap.begin(); iterator != instanceMap.end();) {
-        OscOutput *obj = iterator->second;
-        // was used in the last script run?
-        auto it = activeScriptObjects.find(obj);
-        if(it != activeScriptObjects.end()) {
-            activeScriptObjects.erase(it);
-            activeObjects = true;
-            iterator++;
-        } else {
-            // remove port from map and audio engine
-            iterator = instanceMap.erase(iterator);
-            // delete
-            while(!deletedObjects.push(obj));
-        }
-    }
-    return activeObjects;
-}
-
-/**
- * Runs in the process thread.
- */
-void OscOutputFactory::reposition()
-{
-    OscOutput *done;
-    while(deletedObjects.pop(done)) {
-        activeProcessObjects.remove(done);
-        done->cancel();
-    }
-    OscOutput *obj = activeProcessObjects.getFirst();
-    while(obj) {
-        obj->reposition();
-        obj = activeProcessObjects.getNext(obj);
-    }
-}
-
-bool OscOutputFactory::repositionComplete()
-{
-    OscOutput *obj = activeProcessObjects.getFirst();
-    while(obj) {
-        if(!obj->repositionComplete()) {
-            return false;
-        }
-        obj = activeProcessObjects.getNext(obj);
-    }
-    return true;
+    AudioEngine::instance().removeProcessor(this);
 }
 
 /**
@@ -159,26 +103,12 @@ bool OscOutputFactory::repositionComplete()
  */
 OscOutput *OscOutputFactory::getOscOutput(const char *host, int port)
 {
-    // create key
-    std::string key(host);
-    key.append(std::to_string(port));
-    // check instance map
-    OscOutput *obj = instanceMap[key];
+    // TODO: needs better hash
+    int key = std::hash<std::string>()(host) + port;
+    OscOutput *obj = findObject(key);
     if (!obj) {
         obj = new OscOutput(host, port);
-        instanceMap[key] = obj;
-        activeProcessObjects.add(obj);
+        registerObject(key, obj);
     }
-    activeScriptObjects.insert(obj);
     return obj;
-}
-
-void OscOutputFactory::shutdown()
-{
-    OscOutput *obj = activeProcessObjects.getFirst();
-    while(obj) {
-        OscOutput *done = obj;
-        obj = activeProcessObjects.pop();
-        done->cancel();
-    }
 }

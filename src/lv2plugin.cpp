@@ -252,7 +252,7 @@ void Lv2ControlConnection::reset()
 
 Lv2Plugin::Lv2Plugin(const LilvPlugin *plugin, LilvInstance *instance,
                      const Lv2Constants &uris, Lv2Worker *worker) :
-    plugin(plugin), instance(instance), processedUntil(0),
+    plugin(plugin), instance(instance),
     controlConnections(4), newControlMappingsQueue(16), worker(worker)
 {
     // audio inputs
@@ -630,17 +630,12 @@ MidiConnection &Lv2Plugin::getMidiConnection(unsigned int index) {
     return *output;
 }
 
-void Lv2Plugin::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time) {
+void Lv2Plugin::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time) {
 
     // pull in new control mappings
     Lv2ControlMapping *freshMapping;
     while(newControlMappingsQueue.pop(freshMapping)) {
         freshMapping->getConnection()->addMapping(freshMapping);
-    }
-
-    // have we already processed this cycle
-    if(processedUntil >= time) {
-        return;
     }
 
     // process MIDI inputs
@@ -696,9 +691,6 @@ void Lv2Plugin::process(bool rolling, jack_position_t &pos, jack_nframes_t nfram
     if(worker) {
         worker->respond();
     }
-
-    // update the processed time
-    processedUntil = time;
 }
 
 void Lv2Plugin::reposition() {
@@ -720,23 +712,6 @@ void Lv2Plugin::reposition() {
 
     // recycle control buffer
     controlBuffer.recycleRemaining();
-}
-
-void Lv2Plugin::processAll(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
-{
-    // update midi inputs
-    Lv2MidiInput *midiInput = midiInputList.getFirst();
-    while(midiInput) {
-        midiInput->update();
-        midiInput = midiInputList.getNext(midiInput);
-    }
-    // pull in new control mappings
-    Lv2ControlMapping *freshMapping;
-    while(newControlMappingsQueue.pop(freshMapping)) {
-        freshMapping->getConnection()->addMapping(freshMapping);
-    }
-    // update control buffer
-    controlBuffer.update();
 }
 
 void Lv2Plugin::print() {
@@ -936,11 +911,12 @@ Lv2Plugin *Lv2PluginCache::getPlugin(const char *uri, const char *preset, Lv2Sta
         }
     }
 
+    // activate plugin
+    lilv_instance_activate(instance);
+
     // add to cache
     registerObject(key, plugin);
 
-    // activate plugin
-    lilv_instance_activate(instance);
     return plugin;
 }
 

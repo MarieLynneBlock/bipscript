@@ -25,7 +25,7 @@
 #include <atomic>
 #include <lo/lo.h>
 
-class OscOutput : public Listable
+class OscOutput : public Processor
 {
     pthread_t thread;
     lo_address loAddress;
@@ -43,30 +43,22 @@ public:
     }
     void run();
     void reset();
+    void doProcess(bool, jack_position_t&, jack_nframes_t, jack_nframes_t) {}
     void reposition() { repositionNeeded.store(true); }
     bool repositionComplete() { return !repositionNeeded.load(); }
     void cancel() { cancelled.store(true); }
 };
 
-class OscOutputFactory : public ObjectCache
+class OscOutputFactory : public ProcessorCache<OscOutput>
 {
-    std::map<std::string, OscOutput*> instanceMap;
-    std::set<OscOutput*> activeScriptObjects;
-    QueueList<OscOutput> activeProcessObjects;
-    boost::lockfree::spsc_queue<OscOutput*> deletedObjects;
-    OscOutputFactory() : activeProcessObjects(16), deletedObjects(16) {}
-    OscOutput *createObject(std::string key);
 public:
     static OscOutputFactory &instance() {
         static OscOutputFactory instance;
         return instance;
     }
-    void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time) {}
-    bool scriptComplete();
-    void reposition();
-    bool repositionComplete();
     OscOutput *getOscOutput(const char *host, int port);
-    void shutdown();
+    void shutdown() { removeAll(); }
+    void removeObject(OscOutput *obj) { obj->cancel(); }
 };
 
 #endif // OSCOUTPUT_H

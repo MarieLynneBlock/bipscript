@@ -245,11 +245,10 @@ public:
     void setInstance(LilvInstance *instance);
 };
 
-class Lv2Plugin : public Listable, public AudioSource, public MidiSource, public MidiSink
+class Lv2Plugin : public AudioSource, public MidiSource, public MidiSink
 {
     const LilvPlugin *plugin;
     LilvInstance *instance;
-    jack_nframes_t processedUntil;
     // event inputs
     List<Lv2MidiInput> midiInputList;
     // event outputs
@@ -287,13 +286,13 @@ public:
     void addController(MidiSource &source, unsigned int cc, const char *symbol, float minimum);
     void addController(MidiSource &source, unsigned int cc, const char *symbol);
     void restore();
-    void reposition();
-    void processAll(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
     // MidiSink
     void addMidiEvent(MidiEvent* evt);
     // Source interface
     bool connectsTo(Source *source);
-    void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
+    // Processor interface
+    void doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
+    void reposition();
     // AudioSource interface
     unsigned int getAudioOutputCount() { return audioOutputCount; }
     AudioConnection *getAudioConnection(unsigned int index) {

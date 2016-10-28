@@ -16,21 +16,15 @@
  */
 
 #include "audioport.h"
-
-#include <cstring>
-#include <iostream>
-
 #include "audioengine.h"
 
-void AudioInputPort::process(bool, jack_position_t &, jack_nframes_t nframes, jack_nframes_t)
-{
-    connection.setBuffer((float*)jack_port_get_buffer (port, nframes));
-}
+#include <cstring>
 
 AudioInputPort *AudioInputPortCache::getAudioInputPort(const char *name, const char *connection)
 {
     // see if port already exists in map
-    AudioInputPort *port = audioInputPortMap[name];
+    int key = std::hash<std::string>()(name);
+    AudioInputPort *port = findObject(key);
     if (!port) {
         // create new jack port
         jack_port_t *jackPort = AudioEngine::instance().registerAudioInputPort(name);
@@ -39,7 +33,7 @@ AudioInputPort *AudioInputPortCache::getAudioInputPort(const char *name, const c
         }
         // add to map
         port = new AudioInputPort(jackPort);
-        audioInputPortMap[name] = port;
+        registerObject(key, port);
         // auto connect output port
     }
     if (connection) {
@@ -53,7 +47,7 @@ AudioOutputPort::~AudioOutputPort()
     AudioEngine::instance().unregisterPort(port);
 }
 
-void AudioOutputPort::processAll(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time) {
+void AudioOutputPort::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time) {
     float *buffer = (float*)jack_port_get_buffer(port, nframes);
     AudioConnection *connection = audioInput.load();
     if(connection) {
@@ -110,13 +104,13 @@ void AudioStereoOutput::connect(AudioSource &source) {
     }
 }
 
-void AudioStereoInput::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
+void AudioStereoInput::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
 {
     portLeft->process(rolling, pos, nframes, time);
     portRight->process(rolling, pos, nframes, time);
 }
 
-AudioStereoInput::AudioStereoInput(std::string name, const char *connectLeft, const char *connectRight)
+void AudioStereoInput::reset(std::string name, const char *connectLeft, const char *connectRight)
 {
     portLeft = AudioInputPortCache::instance().getAudioInputPort((name + "L").c_str(), connectLeft);
     portRight = AudioInputPortCache::instance().getAudioInputPort((name + "R").c_str(), connectRight);
@@ -131,4 +125,17 @@ AudioConnection *AudioStereoInput::getAudioConnection(unsigned int index)
     } else {
         throw std::logic_error("stereo port has only two connections");
     }
+}
+
+AudioStereoInput *AudioStereoInputCache::getAudioStereoInput(const char *name, const char *connectLeft, const char *connectRight)
+{
+    int key = std::hash<std::string>()(name);
+    AudioStereoInput *input = findObject(key);
+    if(!input) {
+        input = new AudioStereoInput(name, connectLeft, connectRight);
+        registerObject(key, input);
+    } else {
+        input->reset(name, connectLeft, connectRight);
+    }
+    return input;
 }

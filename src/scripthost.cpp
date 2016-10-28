@@ -26,43 +26,8 @@
 
 #include "scripthost.h"
 #include "extension.h"
-#include "audioengine.h"
 #include "objectcollector.h"
 #include <iostream>
-
-void ScriptHost::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
-{
-    for(uint16_t i = 0; i < objectCacheCount; i++) {
-        objectCacheList[i]->process(rolling, pos, nframes, time);
-    }
-}
-
-// from the API docs: TRUE (non-zero) when ready to roll
-bool ScriptHost::reposition(uint16_t attempt)
-{
-    if(!attempt) { // first run- notify
-        if(running.load()) {
-            abort.store(true);
-        }
-        for(uint16_t i = 0; i < objectCacheCount; i++) {
-            objectCacheList[i]->reposition();
-        }
-    }
-    // check that the script is ready
-    if(running.load()) {
-        return false; // it's not
-    }
-    // check script objects are ready
-    for(uint16_t i = 0; i < objectCacheCount; i++) {
-        if(!objectCacheList[i]->repositionComplete()) {
-            return false;
-        }
-    }
-    // ready to roll
-    abort.store(false);
-    restart.store(true);
-    return true;
-}
 
 static void squirrel_print_function(HSQUIRRELVM sqvm, const SQChar *format, ...)
 {
@@ -74,7 +39,7 @@ static void squirrel_print_function(HSQUIRRELVM sqvm, const SQChar *format, ...)
 
 bool ScriptHost::waitForRestart(HSQOBJECT &context)
 {
-    running.store(false);
+    runningFlag.store(false);
     bool activeObjects = false;
     for(uint16_t i = 0; i < objectCacheCount; i++) {
         if(objectCacheList[i]->scriptComplete()) {
@@ -88,11 +53,11 @@ bool ScriptHost::waitForRestart(HSQOBJECT &context)
         return false;
     }
     while(true) {
-        if(restart.load()) {
+        if(restartFlag.load()) {
             // release fresh run table
             sq_release(vm, &context);
-            restart.store(false);
-            running.store(true);
+            restartFlag.store(false);
+            runningFlag.store(true);
             return true;
         }
         // run any dispatched methods

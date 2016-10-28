@@ -38,7 +38,10 @@ public:
     }
     // Source interface
     bool connectsTo(Source *) { return false; }
-    void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
+    void doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time) {
+        connection.setBuffer((float*)jack_port_get_buffer (port, nframes));
+    }
+    void reposition() {}
     // AudioSource interface
     unsigned int getAudioOutputCount() { return 1; }
     AudioConnection *getAudioConnection(unsigned int) {
@@ -46,9 +49,8 @@ public:
     }
 };
 
-class AudioInputPortCache // TODO: extend ObjectCache
+class AudioInputPortCache : public ProcessorCache<AudioInputPort>
 {
-    std::map<std::string, AudioInputPort *> audioInputPortMap;
 public:
     static AudioInputPortCache &instance() {
         static AudioInputPortCache instance;
@@ -61,7 +63,7 @@ public:
 };
 
 // represents a system output port
-class AudioOutputPort : public Listable
+class AudioOutputPort : public Processor
 {
     jack_port_t* port;
     std::atomic<AudioConnection *> audioInput;
@@ -70,7 +72,7 @@ public:
     AudioOutputPort(jack_port_t *jackPort) : port(jackPort), audioInput(0) { }
     ~AudioOutputPort();
     jack_port_t* getJackPort() { return port; }
-    void processAll(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
+    void doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
     void connect(AudioSource &source) {
         connect(source.getAudioConnection(0));
     }
@@ -119,27 +121,27 @@ class AudioStereoInput : public AudioSource
     AudioInputPort *portLeft;
     AudioInputPort *portRight;
 public:
-    AudioStereoInput(std::string name, const char *connectLeft, const char *connectRight);
+    AudioStereoInput(const char *name, const char *connectLeft, const char *connectRight) {
+        reset(name, connectLeft, connectRight);
+    }
+    void reset(std::string name, const char *connectLeft, const char *connectRight);
     // Source interface
     bool connectsTo(Source *) { return false; }
-    void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
+    void doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
+    void reposition() {}
     // AudioSource interface
     unsigned int getAudioOutputCount() { return 2; }
     AudioConnection *getAudioConnection(unsigned int index);
 };
 
-class AudioStereoInputCache
+class AudioStereoInputCache : public ProcessorCache<AudioStereoInput>
 {
 public:
     static AudioStereoInputCache &instance() {
         static AudioStereoInputCache instance;
         return instance;
     }
-    AudioStereoInput *getAudioStereoInput(const char* name, const char *connectLeft, const char *connectRight)
-    {
-        // TODO: never deallocated
-        return new AudioStereoInput(name, connectLeft, connectRight);
-    }
+    AudioStereoInput *getAudioStereoInput(const char* name, const char *connectLeft, const char *connectRight);
 };
 
 #endif // AUDIOOUTPUT_H

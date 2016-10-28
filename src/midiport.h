@@ -21,7 +21,6 @@
 #include "midiconnection.h"
 #include "midisink.h"
 #include "objectcache.h"
-#include "audioengine.h"
 
 #include <jack/jack.h>
 #include <jack/midiport.h>
@@ -64,15 +63,14 @@ public:
     unsigned int getMidiOutputCount() { return 1; }
     // Source interface
     bool connectsTo(Source *) { return false; }
-    void reset() {}
-    void process(bool, jack_position_t&, jack_nframes_t nframes, jack_nframes_t) {
+    void doProcess(bool, jack_position_t&, jack_nframes_t nframes, jack_nframes_t) {
         connection.process(nframes);
     }
+    void reposition() {}
 };
 
-class MidiInputPortCache // TODO: extend ObjectCache
+class MidiInputPortCache : public ProcessorCache<MidiInputPort>
 {
-    std::map<std::string, MidiInputPort *> inputPorts;
 public:
     static MidiInputPortCache &instance() {
         static MidiInputPortCache instance;
@@ -84,7 +82,7 @@ public:
     }
 };
 
-class MidiOutputPort : public Listable, public MidiSink
+class MidiOutputPort : public Processor, public MidiSink
 {
     jack_port_t* jackPort;
     EventBuffer buffer;
@@ -92,10 +90,11 @@ class MidiOutputPort : public Listable, public MidiSink
 public:
     MidiOutputPort(jack_port_t *jackPort) : jackPort(jackPort) {}
     ~MidiOutputPort();
-    void addMidiEvent(MidiEvent* evt)  { buffer.addEvent(evt);}
-    void processAll(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
-    void reposition() { buffer.recycleRemaining(); }
     void systemConnect(const char *connection);
+    void addMidiEvent(MidiEvent* evt)  { buffer.addEvent(evt);}
+    // Processor interface
+    void doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
+    void reposition() { buffer.recycleRemaining(); }
 };
 
 class MidiOutputPortCache : public ProcessorCache<MidiOutputPort>

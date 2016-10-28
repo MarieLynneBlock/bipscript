@@ -128,7 +128,7 @@ unsigned int MidiInputBuffer::lastControlValue(int control)
     return controlValue[control].load();
 }
 
-void MidiInputBuffer::processAll(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
+void MidiInputBuffer::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
 {
 //    // DEBUG
 //    if(eventCount) {

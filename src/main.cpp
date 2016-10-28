@@ -78,9 +78,12 @@ int main(int argc, char **argv)
 
     // add object caches
     ObjectCache *caches[] = {
+                            &AudioInputPortCache::instance(),
                             &AudioOutputPortCache::instance(),
+                            &AudioStereoInputCache::instance(),
                             &MixerCache::instance(),
                             &Lv2PluginCache::instance(),
+                            &MidiInputPortCache::instance(),
                             &MidiOutputPortCache::instance(),
                             &MidiInputBufferCache::instance(),
                             &TransportMasterCache::instance(),
@@ -91,7 +94,7 @@ int main(int argc, char **argv)
                             &OnsetDetectorCache::instance(),
                             &Transport::instance()
                             };
-    host.setObjectCaches(12, caches);
+    host.setObjectCaches(15, caches);
 
     // create and  start audioengine
     AudioEngine &audioEngine = AudioEngine::instance();

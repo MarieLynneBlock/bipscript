@@ -17,12 +17,11 @@
 #ifndef SOURCE_H
 #define SOURCE_H
 
-#include <jack/types.h>
+#include "processor.h"
 
-class Source {
+class Source : public Processor {
 public:
     virtual bool connectsTo(Source *) = 0;
-    virtual void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time) = 0;
 };
 
 #endif // SOURCE_H

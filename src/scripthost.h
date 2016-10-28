@@ -36,12 +36,11 @@ class ScriptHost
     ObjectCache **objectCacheList;
 
     // script thread communication
-    std::atomic<bool> abort;
-    std::atomic<bool> restart;
-    std::atomic<bool> running;
+    std::atomic<bool> restartFlag;
+    std::atomic<bool> runningFlag;
 
     // singleton
-    ScriptHost() : abort(false), restart(false), running(true)  {}
+    ScriptHost() : restartFlag(false), runningFlag(true)  {}
     ScriptHost(ScriptHost const&) = delete;
     void operator=(ScriptHost const&);
 public:
@@ -61,11 +60,8 @@ public:
         return folder;
     }
     int run();
-    void schedule(ScriptFunction &function, unsigned int bar, unsigned int position, unsigned int division);
-    // for AE
-    void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
-    bool reposition(uint16_t attempt);
-
+    bool running() { return runningFlag.load(); }
+    void restart() { restartFlag.store(true); }
 private:
     void objectReposition(bool final);
     void bindModules(HSQUIRRELVM vm);
@@ -73,4 +69,3 @@ private:
 };
 
 #endif // SCRIPTHOST_H
-

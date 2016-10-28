@@ -49,7 +49,6 @@ public:
         this->beatUnit = timeSignature.getDenominator();
     }
     void setTime(jack_transport_state_t state, jack_nframes_t nframes, jack_position_t *pos, int new_pos);
-    void reposition() {} // TODO: need this?
 };
 
 class TransportMasterCache : public ObjectCache
@@ -70,9 +69,6 @@ public:
         return getTransportMaster(bpm, 4);
     }
     // object cache interface
-    void process(bool, jack_position_t &, jack_nframes_t, jack_nframes_t) {}
-    void reposition();
-	bool repositionComplete() { return true; }
     bool scriptComplete();
 };
 

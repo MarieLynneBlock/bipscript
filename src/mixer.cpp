@@ -70,7 +70,6 @@ void MixerControlConnection::updateGains(jack_nframes_t frame, float **gain)
  *
  * Recycles MixerControlMapping objects.
  */
-
 void MixerControlConnection::reposition()
 {
     // recycle mappings
@@ -90,9 +89,8 @@ void MixerControlConnection::reposition()
  *
  * Allocates AudioConnector, AudioConnection objects, routing and gain matrices.
  */
-
 Mixer::Mixer(unsigned int inputs, const unsigned int outputs)
-    : processedUntil(0), connectedInputs(0), audioInputCount(inputs),
+    : connectedInputs(0), audioInputCount(inputs),
       audioOutputCount(outputs), newControlMappingsQueue(16), controlConnections(4) {
     audioInput = new AudioConnector[inputs];
     audioOutput = new AudioConnection*[outputs];
@@ -221,7 +219,6 @@ void Mixer::connect(AudioSource &source, float initialGain)
  *
  * Allocates MixerControlMapping, MixerControlConnection objects.
  */
-
 void Mixer::addGainController(MidiSource &source, unsigned int cc, unsigned int input, unsigned int output)
 {
     if(cc == 0) {
@@ -253,7 +250,6 @@ void Mixer::addGainController(MidiSource &source, unsigned int cc, unsigned int 
  *
  * Allocates MixerGainEvent.
  */
-
 void Mixer::scheduleGain(uint32_t input, uint32_t output, float gain, uint32_t bar, uint32_t position, uint32_t division) {
     validateInputChannel(input);
     validateOutputChannel(output);
@@ -270,22 +266,6 @@ void Mixer::scheduleGain(uint32_t input, uint32_t output, float gain, uint32_t b
 void Mixer::restore()
 {
     controlConnectionMap.clear();
-}
-
-/**
- * Postprocess method, called even when disconnected.
- *
- * Runs in the process thread.
- */
-void Mixer::processAll(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
-{
-    // pull in new control mappings
-    MixerControlMapping *freshMapping;
-    while(newControlMappingsQueue.pop(freshMapping)) {
-        freshMapping->connection->addMapping(freshMapping);
-    }
-	// update gain buffer
-    gainEventBuffer.update();
 }
 
 /**
@@ -311,18 +291,12 @@ bool Mixer::connectsTo(Source *source) {
  *
  * Recycles MidiGainEvent.
  */
-
-void Mixer::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
+void Mixer::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
 {    
     // pull in new control mappings
     MixerControlMapping *freshMapping;
     while(newControlMappingsQueue.pop(freshMapping)) {
         freshMapping->connection->addMapping(freshMapping);
-    }
-
-    // have we already processed this cycle
-    if(processedUntil >= time) {
-        return;
     }
 
     // get audio from input connections
@@ -376,8 +350,6 @@ void Mixer::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, 
             }
         }
     }
-    // update the processed time
-    processedUntil = time;
 }
 
 /**

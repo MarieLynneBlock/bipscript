@@ -81,10 +81,9 @@ public:
 };
 
 
-class Mixer : public AudioSource, public Listable
+class Mixer : public AudioSource
 {
     float **gain;   // TODO: threadsafe?
-    jack_nframes_t processedUntil;
     // audio inputs
     std::atomic<unsigned int> connectedInputs;
     const unsigned int audioInputCount;
@@ -108,10 +107,9 @@ public:
     void addGainController(MidiSource &source, unsigned int cc, unsigned int input, unsigned int output);
     void scheduleGain(uint32_t input, uint32_t output, float gain, uint32_t bar, uint32_t position, uint32_t division);
     void restore();
-    void processAll(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
     // Source interface
     bool connectsTo(Source *source);
-    void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
+    void doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
     void reposition();
     // AudioSource interface
     unsigned int getAudioOutputCount() { return audioOutputCount; }

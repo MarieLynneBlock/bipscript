@@ -158,7 +158,7 @@ int AudioEngine::sync(jack_transport_state_t state, jack_position_t *pos)
 {
     // currently in a restart
     if(multiplePeriodRestart) {
-        if(!ScriptHost::instance().reposition(multiplePeriodRestart)) {
+        if(!reposition(multiplePeriodRestart)) {
             multiplePeriodRestart++;
             return 0;
         }
@@ -168,7 +168,7 @@ int AudioEngine::sync(jack_transport_state_t state, jack_position_t *pos)
 
     // if we've jumped backwards, need to reset
     else if(pos->frame < runningFrame) {
-        if(!ScriptHost::instance().reposition(0)) {
+        if(!reposition(0)) {
             multiplePeriodRestart = 1;
             return 0;
         }
@@ -181,6 +181,50 @@ int AudioEngine::sync(jack_transport_state_t state, jack_position_t *pos)
     // ready to roll
     return 1;
 }
+
+
+/**
+ * Called when a reposition has been requested so objects can flush/recycle queued events.
+ *
+ * from the API docs: TRUE (non-zero) when ready to roll
+ *
+ * Runs in the process thread.
+ */
+
+// 
+bool AudioEngine::reposition(uint16_t attempt)
+{
+    // remove deleted processors
+    Processor *done;
+    while(deletedProcessors.pop(done)) {
+        activeProcessors.remove(done);
+        ObjectCollector::scriptCollector().recycle(done);
+    }
+    if(!attempt) { // first run- notify
+        Processor *obj = activeProcessors.getFirst();
+        while(obj) {
+            obj->reposition();
+            obj = activeProcessors.getNext(obj);
+        }
+    }
+    // check that the script is ready
+    if(ScriptHost::instance().running()) {
+        return false; // it's not
+    }
+    // check script objects are ready
+    Processor *obj = activeProcessors.getFirst();
+    while(obj) {
+        if(!obj->repositionComplete()) {
+            return false;
+        }
+        obj = activeProcessors.getNext(obj);
+    }
+
+    // ready to roll
+    ScriptHost::instance().restart();
+    return true;
+}
+
 
 int AudioEngine::process(jack_nframes_t nframes)
 {   
@@ -195,8 +239,18 @@ int AudioEngine::process(jack_nframes_t nframes)
 
     jack_nframes_t time = jack_last_frame_time(client);
 
-    // process
-    ScriptHost::instance().process(rolling, pos, nframes, time);
+    // remove deleted processors
+    Processor *done;
+    while(deletedProcessors.pop(done)) {
+        activeProcessors.remove(done);
+        ObjectCollector::scriptCollector().recycle(done);
+    }
+    // run active processors
+    Processor *obj = activeProcessors.getFirst();
+    while(obj) {
+        obj->process(rolling, pos, nframes, time);
+        obj = activeProcessors.getNext(obj);
+    }
 
     // push out objects to delete
     ObjectCollector::scriptCollector().update();

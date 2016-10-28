@@ -30,7 +30,8 @@ MidiEvent *MidiInputConnection::getEvent(uint32_t i) {
 MidiInputPort *MidiInputPortCache::getMidiInputPort(const char *name, const char *connectTo)
 {
     // see if port already exists in map
-    MidiInputPort *port = inputPorts[name];
+    int key = std::hash<std::string>()(name);
+    MidiInputPort *port = findObject(key);
     if (!port) {
         // create new jack port
         jack_port_t *jackPort = AudioEngine::instance().registerMidiInputPort(name);
@@ -40,7 +41,7 @@ MidiInputPort *MidiInputPortCache::getMidiInputPort(const char *name, const char
         }
         // add to map
         port = new MidiInputPort(jackPort);
-        inputPorts[name] = port;
+        registerObject(key, port);
     }
     // auto-connect
     if(connectTo) {
@@ -54,7 +55,7 @@ MidiOutputPort::~MidiOutputPort()
     AudioEngine::instance().unregisterPort(jackPort);
 }
 
-void MidiOutputPort::processAll(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t) {
+void MidiOutputPort::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t) {
 
     // grab and clear the buffer for this port
     void* port_buf = jack_port_get_buffer(jackPort, nframes);

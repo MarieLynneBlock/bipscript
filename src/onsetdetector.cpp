@@ -50,7 +50,7 @@ void OnsetDetector::reset(const char *type)
     }
 }
 
-void OnsetDetector::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
+void OnsetDetector::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
 {
     // get incoming audio
     AudioConnection *connection = audioInput.load();
@@ -86,37 +86,12 @@ void OnsetDetector::process(bool rolling, jack_position_t &pos, jack_nframes_t n
  */
 OnsetDetector *OnsetDetectorCache::getOnsetDetector(const char *type)
 {
-    OnsetDetector *cached = cachedDetector.load();
-    if(cached) {
-        cached->reset(type);
+    OnsetDetector *detector = findObject(1); // TODO: allow multiple?
+    if(!detector) {
+        detector = new OnsetDetector(type);
+        registerObject(1, detector);
     } else {
-        cached = new OnsetDetector(type);
-        cachedDetector.store(cached);
+        detector->reset(type);
     }
-    active = true;
-    return cached;
+    return detector;
 }
-
-
-void OnsetDetectorCache::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
-{
-    OnsetDetector *cached = cachedDetector.load();
-    if(cached) {
-        cached->process(rolling, pos, nframes, time);
-    }
-}
-
-/**
- * runs in script thread
- */
-bool OnsetDetectorCache::scriptComplete()
-{
-    OnsetDetector *cached = cachedDetector.load();
-    if(cached && !active) {
-        cachedDetector.store(0);
-        delete cached;
-    }
-    active = false;
-    return false;
-}
-

@@ -28,7 +28,7 @@
 
 const unsigned int BT_HOP_SIZE = 512;
 
-class BeatTracker
+class BeatTracker : public Processor
 {
     BTrack btrack;
     double *btbuffer;
@@ -48,15 +48,12 @@ public:
         this->audioInput.store(&connection);
     }
     void reset(double bpm, float beatsPerBar, float beatUnit);
+    void doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
     void reposition() {}
-    void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
 };
 
-class BeatTrackerCache : public ObjectCache
+class BeatTrackerCache : public ProcessorCache<BeatTracker>
 {
-    bool active;
-    std::atomic<BeatTracker *> cachedTracker;
-    BeatTrackerCache() : active(false) {}
 public:
     static BeatTrackerCache &instance() {
         static BeatTrackerCache instance;
@@ -69,11 +66,6 @@ public:
     BeatTracker *getBeatTracker(float bpm) {
         return getBeatTracker(bpm, 4);
     }
-    // object cache interface
-    void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
-    void reposition();
-    bool repositionComplete() { return true; }
-    bool scriptComplete();
 };
 
 class OnCountClosure : public EventClosure {
@@ -94,7 +86,7 @@ public:
         EventClosure(function), bpm(bpm) {}
 };
 
-class MidiBeatTracker {
+class MidiBeatTracker : public Processor {
     BTrack btrack;
     uint32_t frameIndex;
     double currentOnset;
@@ -126,8 +118,8 @@ public:
     void onBeat(ScriptFunction &handler);
     void stopOnSilence(uint32_t seconds) { stopSeconds.store(seconds); }
     void reset(double bpm, float beatsPerBar, float beatUnit);
+    void doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
     void reposition() {}
-    void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
 private:
     void dispatchCountInEvent(uint32_t count);
     void detectCountIn(jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time, uint32_t eventCount, MidiConnection *connection);
@@ -135,10 +127,7 @@ private:
     void stopIfSilent(bool rolling, jack_position_t &pos, jack_nframes_t time);
 };
 
-class MidiBeatTrackerCache : public ObjectCache {
-    bool active;
-    std::atomic<MidiBeatTracker *> cachedTracker;
-    MidiBeatTrackerCache() : active(false) {}
+class MidiBeatTrackerCache : public ProcessorCache<MidiBeatTracker> {
 public:
     static MidiBeatTrackerCache &instance() {
         static MidiBeatTrackerCache instance;
@@ -151,12 +140,6 @@ public:
     MidiBeatTracker *getMidiBeatTracker(float bpm) {
         return getMidiBeatTracker(bpm, 4);
     }
-    // object cache interface
-    void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
-    void reposition();
-	bool repositionComplete() { return true; }
-    bool scriptComplete();
 };
-
 
 #endif // BEATTRACKER_H

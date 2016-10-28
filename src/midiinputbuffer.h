@@ -22,7 +22,7 @@
 #include <boost/circular_buffer.hpp>
 #include <atomic>
 
-class MidiInputBuffer : public Listable
+class MidiInputBuffer : public Processor
 {
     // buffers
     std::atomic<MidiConnection *> eventInput;
@@ -45,7 +45,7 @@ public:
 //    MidiEvent *getEvents(int bar, int position, int division, int *numEvents);
 //    MidiEvent *getEvents(int bar, Position &start, Position &end, int *numEvents);
     unsigned int lastControlValue(int control);
-    void processAll(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
+    void doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
     void reposition() {}
 };
 

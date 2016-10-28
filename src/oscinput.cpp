@@ -49,64 +49,17 @@ void OscInput::onReceive(ScriptFunction &handler)
     onReceiveHandler.store(new ScriptFunction(handler));
 }
 
-void OscInput::cancel() {
-    lo_server_thread_free(st);
-}
-
-/**
- * Called after the script has completed so factory can reset for the next run.
- *
- * Runs in the script thread.
- */
-bool OscInputFactory::scriptComplete()
-{
-    bool activeObjects = false;
-    // loop over cached ports
-    for(auto iterator = instanceMap.begin(); iterator != instanceMap.end();) {
-        OscInput *obj = iterator->second;
-        // was used in the last script run?
-        auto it = activeScriptObjects.find(obj);
-        if(it != activeScriptObjects.end()) {
-            activeScriptObjects.erase(it);
-            activeObjects = true;
-            iterator++;
-        } else {
-            // remove port from map
-            iterator = instanceMap.erase(iterator);
-            // delete
-            while(!deletedObjects.push(obj));
-        }
-    }
-    return activeObjects;
-}
-
-/**
- * Runs in the process thread.
- */
-void OscInputFactory::reposition()
-{
-    OscInput *done;
-    while(deletedObjects.pop(done)) {
-        activeProcessObjects.remove(done);
-        done->cancel();
-    }
-}
-
 /**
  * script thread
  */
 OscInput *OscInputFactory::getOscInput(int port, const char *protocol)
 {
-    // create key
-    std::string key(protocol ? protocol : "");
-    key.append(std::to_string(port));
-    // check instance map
-    OscInput *obj = instanceMap[key];
+    // TODO: needs better hash
+    int key = protocol ? std::hash<std::string>()(protocol) : port;
+    OscInput *obj = findObject(key);
     if (!obj) {
         obj = new OscInput(port, protocol);
-        instanceMap[key] = obj;
-        activeProcessObjects.add(obj);
+        registerObject(key, obj);
     }
-    activeScriptObjects.insert(obj);
     return obj;
 }

@@ -19,13 +19,10 @@
 
 #include <jack/jack.h>
 
-#include "position.h"
-#include "objectcache.h"
 #include "timesignature.h"
+#include "processor.h"
 
 class TransportMaster;
-
-#include <map> // need it?
 
 class AudioEngine
 {
@@ -41,11 +38,15 @@ class AudioEngine
     unsigned int multiplePeriodRestart;
     TimeSignature currentTimeSignature;
 
+    // processors
+    QueueList<Processor> activeProcessors;
+    boost::lockfree::spsc_queue<Processor*> deletedProcessors; // TODO: also a QueueList?
+
     // private methods
-    void reset(bool final);
+    bool reposition(uint16_t attempt);
 
     // singleton
-    AudioEngine() : client(0) {}
+    AudioEngine() : client(0), activeProcessors(128), deletedProcessors(16) {}
     AudioEngine(AudioEngine const&);
     void operator=(AudioEngine const&);
 public:
@@ -63,6 +64,12 @@ public:
     }
     TimeSignature &getTimeSignature();
     void setBufferSize(jack_nframes_t size);
+    void addProcessor(Processor *obj) {
+        activeProcessors.add(obj);
+    }
+    void removeProcessor(Processor *obj) {
+        while(!deletedProcessors.push(obj));
+    }
     // public methods
     int activate(const char *clientName);
     int process(jack_nframes_t nframes);

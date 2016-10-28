@@ -99,17 +99,6 @@ TransportMaster *TransportMasterCache::getTransportMaster(float bpm, float beats
 }
 
 /**
- * runs in process thread
- */
-void TransportMasterCache::reposition()
-{
-    TransportMaster *cached = cachedMaster.load();
-    if(cached) {
-        cached->reposition();
-    }
-}
-
-/**
  * runs in script thread
  */
 bool TransportMasterCache::scriptComplete()

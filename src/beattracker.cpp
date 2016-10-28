@@ -24,7 +24,7 @@ void BeatTracker::reset(double bpm, float beatsPerBar, float beatUnit) {
     btrack.setTempo(bpm);
 }
 
-void BeatTracker::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
+void BeatTracker::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
 {
     // get incoming audio
     AudioConnection *connection = audioInput.load();
@@ -56,49 +56,16 @@ void BeatTracker::process(bool rolling, jack_position_t &pos, jack_nframes_t nfr
  */
 BeatTracker *BeatTrackerCache::getBeatTracker(float bpm, float beatsPerBar, float beatUnit)
 {
-    BeatTracker *cached = cachedTracker.load();
-    if(cached) {
-        cached->reset(bpm, beatsPerBar, beatUnit);
+    BeatTracker *tracker = findObject(1); // TODO: allow multiple?
+    if(tracker) {
+        tracker->reset(bpm, beatsPerBar, beatUnit);
     } else {
-        cached = new BeatTracker(bpm, beatsPerBar, beatUnit);
-        cachedTracker.store(cached);
+        tracker = new BeatTracker(bpm, beatsPerBar, beatUnit);
+        registerObject(1, tracker);
     }
-    active = true;
-    return cached;
+    return tracker;
 }
 
-void BeatTrackerCache::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
-{
-    BeatTracker *cached = cachedTracker.load();
-    if(cached) {
-        cached->process(rolling, pos, nframes, time);
-    }
-}
-
-/**
- * runs in process thread
- */
-void BeatTrackerCache::reposition()
-{
-    BeatTracker *cached = cachedTracker.load();
-    if(cached) {
-        cached->reposition();
-    }
-}
-
-/**
- * runs in script thread
- */
-bool BeatTrackerCache::scriptComplete()
-{
-    BeatTracker *cached = cachedTracker.load();
-    if(cached && !active) {
-        cachedTracker.store(0);
-        delete cached;
-    }
-    active = false;
-    return false;
-}
 
 /**
  * process thread
@@ -210,7 +177,7 @@ void MidiBeatTracker::onBeat(ScriptFunction &handler)
     onBeatHandler.store(new ScriptFunction(handler));
 }
 
-void MidiBeatTracker::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
+void MidiBeatTracker::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
 {
     // process MIDI input
     MidiConnection *connection = midiInput.load();
@@ -310,47 +277,12 @@ void MidiBeatTracker::reset(double bpm, float beatsPerBar, float beatUnit)
  */
 MidiBeatTracker *MidiBeatTrackerCache::getMidiBeatTracker(float bpm, float beatsPerBar, float beatUnit)
 {
-    MidiBeatTracker *cached = cachedTracker.load();
-    if(cached) {
-        cached->reset(bpm, beatsPerBar, beatUnit);
+    MidiBeatTracker *tracker = findObject(1); // TODO: allow multiple
+    if(tracker) {
+        tracker->reset(bpm, beatsPerBar, beatUnit);
     } else {
-        cached = new MidiBeatTracker(bpm, beatsPerBar, beatUnit);
-        cachedTracker.store(cached);
-    }
-    active = true;
-    return cached;
-}
-
-
-void MidiBeatTrackerCache::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
-{
-    MidiBeatTracker *cached = cachedTracker.load();
-    if(cached) {
-        cached->process(rolling, pos, nframes, time);
-    }
-}
-
-/**
- * runs in process thread
- */
-void MidiBeatTrackerCache::reposition()
-{
-    MidiBeatTracker *cached = cachedTracker.load();
-    if(cached) {
-        cached->reposition();
-    }
-}
-
-/**
- * runs in script thread
- */
-bool MidiBeatTrackerCache::scriptComplete()
-{
-    MidiBeatTracker *cached = cachedTracker.load();
-    if(cached && !active) {
-        cachedTracker.store(0);
-        delete cached;
-    }
-    active = false;
-    return false;
+        tracker = new MidiBeatTracker(bpm, beatsPerBar, beatUnit);
+        registerObject(1, tracker);
+    }    
+    return tracker;
 }

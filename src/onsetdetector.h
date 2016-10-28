@@ -25,7 +25,7 @@
 
 const unsigned int ONSET_HOP_SIZE = 512;
 
-class OnsetDetector
+class OnsetDetector : public Processor
 {
     aubio_onset_t *aubioOnset;
     fvec_t *aubioInput;
@@ -59,7 +59,8 @@ public:
         return silence;
     }
     void reset(const char *type);
-    void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
+    void doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
+    void reposition() {}
 };
 
 class OnOnsetClosure : public EventClosure {
@@ -71,11 +72,8 @@ public:
         EventClosure(function), count(count) {}
 };
 
-class OnsetDetectorCache : public ObjectCache
+class OnsetDetectorCache : public ProcessorCache<OnsetDetector>
 {
-    bool active;
-    std::atomic<OnsetDetector *> cachedDetector;
-    OnsetDetectorCache() : active(false) {}
 public:
     static OnsetDetectorCache &instance() {
         static OnsetDetectorCache instance;
@@ -85,11 +83,6 @@ public:
     OnsetDetector *getOnsetDetector() {
         return getOnsetDetector("default");
     }
-    // object cache interface
-    void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
-    void reposition() {}
-    bool repositionComplete() { return true; }
-    bool scriptComplete();
 };
 
 
