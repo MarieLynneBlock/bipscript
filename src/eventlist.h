@@ -19,7 +19,7 @@
 
 #include "event.h"
 
-class EventList : public ListImpl
+class EventList : public List<Listable>
 {
 public:
     void insert(Event *elem)
@@ -46,10 +46,10 @@ public:
         first = 0;
     }
     Event *getFirst() {
-        return (Event*)ListImpl::getFirst();
+        return (Event*)List::getFirst();
     }
     Event *pop() {
-        return (Event*)ListImpl::pop();
+        return (Event*)List::pop();
     }
 };
 

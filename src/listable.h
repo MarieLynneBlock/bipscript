@@ -21,30 +21,27 @@
 
 class Listable
 {
-    friend class ListImpl;
-    friend class EventList;
-private:
-    Listable *next;
 public:
+    Listable *next;
     Listable() : next(0) {}
     virtual ~Listable() {}
 };
 
-class ListImpl
+template <class T> class List
 {
 protected:
-    Listable *first;
-    Listable *last;
+    T *first;
+    T *last;
 public:
-    ListImpl() : first(0) {}
-    void add(Listable *elem) {
+    List() : first(0) {}
+    void add(T *elem) {
         if(!first) {
             last = elem;
         }
         elem->next = first;
         first = elem;
     }
-    void addAll(ListImpl &list) {
+    void addAll(List &list) {
         if(!first) {
             first = list.first;
             last = list.last;
@@ -53,18 +50,18 @@ public:
             last = list.last;
         }
     }
-    Listable *getFirst() {
+    T *getFirst() {
         return first;
     }
-    Listable *getNext(Listable *elem) {
-        return elem->next;
+    T *getNext(T *elem) {
+        return static_cast<T*>(elem->next);
     }
-    Listable *pop() {
-        return first = first->next;
+    T *pop() {
+        return first = static_cast<T*>(first->next);
     }
-    Listable *remove(Listable *elem) {
+    T *remove(T *elem) {
         if(first == elem) {
-            first = first->next;
+            first = static_cast<T*>(first->next);
             return first;
         } else {
             Listable *l = first;
@@ -72,7 +69,7 @@ public:
                 l = l->next;
             }
             l->next = l->next->next;
-            return l->next;
+            return static_cast<T*>(l->next);
         }
     }
     void clear() {
@@ -80,67 +77,36 @@ public:
     }
 };
 
-template <class T> class List : public ListImpl
-{
-public:
-    T *getFirst() {
-        return (T*)ListImpl::getFirst();
-    }
-    T *getNext(T *elem) {
-        return (T*)ListImpl::getNext(elem);
-    }
-    T *pop() {
-        return (T*)ListImpl::pop();
-    }
-};
 
-class QueueListImpl
+template <class T> class QueueList
 {
-    ListImpl list;
-    boost::lockfree::spsc_queue<Listable*> queue;
+    List<T> list;
+    boost::lockfree::spsc_queue<T*> queue;
 public:
-    QueueListImpl(std::size_t size) : queue(size) {}
-    void add(Listable *elem) {
+    QueueList(std::size_t size) : queue(size) {}
+    void add(T *elem) {
         while(!queue.push(elem));
     }
-    Listable *getFirst() {
-        Listable *fresh;
+    T *getFirst() {
+        T *fresh;
         while(queue.pop(fresh)) {
             list.add(fresh);
         }
         return list.getFirst();
     }
-    Listable *getNext(Listable *elem) {
+    T *getNext(T *elem) {
         return list.getNext(elem);
     }
-    Listable *pop() {
+    T *pop() {
         return list.pop();
     }
-    Listable *remove(Listable *elem) {
+    T *remove(T *elem) {
         return list.remove(elem);
     }
     void clear() {
-        Listable *fresh;
+        T *fresh;
         while(queue.pop(fresh)) {}
         list.clear();
-    }
-};
-
-template <class T> class QueueList : public QueueListImpl
-{
-public:
-    QueueList(std::size_t size) : QueueListImpl(size) {}
-    T *getFirst() {
-        return static_cast<T*>(QueueListImpl::getFirst());
-    }
-    T *getNext(T *elem) {
-        return static_cast<T*>(QueueListImpl::getNext(elem));
-    }
-    T *pop() {
-        return static_cast<T*>(QueueListImpl::pop());
-    }
-    T *remove(T *elem) {
-        return static_cast<T*>(QueueListImpl::remove(elem));
     }
 };
 

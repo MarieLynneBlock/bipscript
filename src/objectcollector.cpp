@@ -27,7 +27,7 @@ void ObjectCollector::recycle(Listable *evt) {
 }
 
 // called by process thread to recycle a list of events
-void ObjectCollector::recycleAll(EventList &list) {
+void ObjectCollector::recycleAll(List<Listable> &list) {
     // append rest to waiting list
     waitingList.addAll(list);
     // push to queue as many as we can

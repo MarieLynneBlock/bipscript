@@ -17,13 +17,13 @@
 #ifndef OBJECTCOLLECTOR_H
 #define OBJECTCOLLECTOR_H
 
-#include "eventlist.h"
+#include "listable.h"
 #include <boost/lockfree/queue.hpp>
 
 class ObjectCollector
 {
     boost::lockfree::queue<Listable*> objectQueue; // script thread -> collector thread
-    ListImpl waitingList;
+    List<Listable> waitingList;
     // singleton
     ObjectCollector() : objectQueue(4096) {}
     ObjectCollector(ObjectCollector const&);
@@ -38,7 +38,7 @@ public:
         return instance;
     }
     void recycle(Listable *collectable);
-    void recycleAll(EventList &list);
+    void recycleAll(List<Listable> &list);
     void update();
     void free();
 };
