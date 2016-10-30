@@ -318,7 +318,7 @@ void Mixer::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes
     }
 
     // grab first gain event
-    MixerGainEvent *event = static_cast<MixerGainEvent*>(gainEventBuffer.getNextEvent(rolling, pos, nframes));
+    MixerGainEvent *event = gainEventBuffer.getNextEvent(rolling, pos, nframes);
 
     // loop over frames
     for(jack_nframes_t frame = 0; frame < nframes; frame++) {
@@ -336,7 +336,7 @@ void Mixer::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes
             gain[event->getInput()][event->getOutput()] = event->getValue();
             // recycle and get next buffer event
             ObjectCollector::scriptCollector().recycle(event);
-            event = static_cast<MixerGainEvent*>(gainEventBuffer.getNextEvent(rolling, pos, nframes));
+            event = gainEventBuffer.getNextEvent(rolling, pos, nframes);
         }
 
         // loop over inputs

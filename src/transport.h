@@ -21,6 +21,7 @@
 #include "position.h"
 #include "scripttypes.h"
 #include "eventbuffer.h"
+#include "event.h"
 
 class AsyncClosure : public Event, public ScriptFunctionClosure {
     int nparams;
@@ -48,7 +49,7 @@ public:
 
 class Transport : public ObjectCache
 {
-    EventBuffer eventBuffer;
+    EventBuffer<AsyncClosure> eventBuffer;
 public:
     static Transport &instance() {
         static Transport instance;

@@ -105,7 +105,7 @@ class Lv2MidiInput : public Listable
     const u_int32_t CAPACITY = 1024;
     LV2_Atom_Sequence *atomSequence;
     MidiConnector eventConnector;
-    EventBuffer eventBuffer;
+    EventBuffer<MidiEvent> eventBuffer;
     bool localRolling;
 public:
     Lv2MidiInput() : localRolling(false) {
@@ -263,7 +263,7 @@ class Lv2Plugin : public AudioSource, public MidiSource, public MidiSink
     uint32_t *audioOutputIndex;
     AudioConnection **audioOutput;
     // control ports
-    EventBuffer controlBuffer;
+    EventBuffer<Lv2ControlEvent> controlBuffer;
     std::map<std::string, Lv2ControlPort *> controlMap;
     // worker
     Lv2Worker *worker;

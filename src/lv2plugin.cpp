@@ -159,7 +159,7 @@ void Lv2MidiInput::process(bool rolling, jack_position_t &pos, jack_nframes_t nf
     }
 
     // get top events from buffer + connection
-    MidiEvent* bufferEvent = static_cast<MidiEvent*>(eventBuffer.getNextEvent(rolling, pos, nframes));
+    MidiEvent* bufferEvent = eventBuffer.getNextEvent(rolling, pos, nframes);
     MidiEvent *connectionEvent = eventCount ? connection->getEvent(0) : 0;
     uint32_t eventIndex = 1;
 
@@ -180,7 +180,7 @@ void Lv2MidiInput::process(bool rolling, jack_position_t &pos, jack_nframes_t nf
         if(bufferNext) {
             // recycle and get next buffer event
             ObjectCollector::scriptCollector().recycle(bufferEvent);
-            bufferEvent = static_cast<MidiEvent*>(eventBuffer.getNextEvent(rolling, pos, nframes));
+            bufferEvent = eventBuffer.getNextEvent(rolling, pos, nframes);
         } else {
             connectionEvent = eventIndex < eventCount ? connection->getEvent(eventIndex++) : 0;
         }
@@ -657,12 +657,11 @@ void Lv2Plugin::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nfr
     }
 
     // update control port values from scheduled control events
-    Event* nextEvent = controlBuffer.getNextEvent(rolling, pos, nframes);
-    while(nextEvent) {
-        Lv2ControlEvent *evt = static_cast<Lv2ControlEvent*>(nextEvent);
+    Lv2ControlEvent* evt = controlBuffer.getNextEvent(rolling, pos, nframes);
+    while(evt) {
         evt->getPort()->value = evt->getValue();
-        ObjectCollector::scriptCollector().recycle(nextEvent);
-        nextEvent = controlBuffer.getNextEvent(rolling, pos, nframes);
+        ObjectCollector::scriptCollector().recycle(evt);
+        evt = controlBuffer.getNextEvent(rolling, pos, nframes);
     }
 
     // process control connections

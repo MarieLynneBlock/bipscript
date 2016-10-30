@@ -95,7 +95,7 @@ class Mixer : public AudioSource
     map<MidiConnection*,MixerControlConnection*> controlConnectionMap;
     spsc_queue<MixerControlMapping*> newControlMappingsQueue;
     QueueList<MixerControlConnection> controlConnections;
-    EventBuffer gainEventBuffer;
+    EventBuffer<MixerGainEvent> gainEventBuffer;
 public:
     Mixer(unsigned int inputs, const unsigned int outputs);
     ~Mixer();

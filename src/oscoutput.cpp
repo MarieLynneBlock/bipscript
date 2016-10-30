@@ -64,7 +64,7 @@ void OscOutput::run()
             // calculate window size
             jack_nframes_t nframes = 2048; // TODO: calculate from framerate
 
-            OscEvent *event = static_cast<OscEvent*>(eventBuffer.getNextEvent(rolling, jack_pos, nframes));
+            OscEvent *event = eventBuffer.getNextEvent(rolling, jack_pos, nframes);
             while(event) {
                 OscMessage &message = event->getMessage();
                 lo_message mesg = lo_message_new();
@@ -87,7 +87,7 @@ void OscOutput::run()
                 lo_send_message (loAddress, event->getMessage().getPath(), mesg);
                 lo_message_free (mesg);
                 ObjectCollector::scriptCollector().recycle(event);
-                event = static_cast<OscEvent*>(eventBuffer.getNextEvent(rolling, jack_pos, nframes));
+                event = eventBuffer.getNextEvent(rolling, jack_pos, nframes);
             }
         }
 

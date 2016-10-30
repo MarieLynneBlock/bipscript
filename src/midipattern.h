@@ -42,7 +42,7 @@ public:
 class Pattern
 {
     std::deque<PatternNote> noteList;
-    EventList eventList;
+    EventList<MidiEvent> eventList;
 public:
     // methods for notes
     void addNote(Note &note, int bar, int position, int division);
@@ -56,10 +56,10 @@ public:
     }
     // methods for events
     MidiEvent* getFirstEvent() {
-        return static_cast<MidiEvent*>(eventList.getFirst());
+        return eventList.getFirst();
     }
     MidiEvent* getNextEvent(MidiEvent *event) {
-        return static_cast<MidiEvent*>(eventList.getNext(event));
+        return eventList.getNext(event);
     }
     std::string print();
     //void schedule(MidiSink *sink, Position position);

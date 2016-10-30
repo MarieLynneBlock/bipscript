@@ -85,7 +85,7 @@ public:
 class MidiOutputPort : public Processor, public MidiSink
 {
     jack_port_t* jackPort;
-    EventBuffer buffer;
+    EventBuffer<MidiEvent> buffer;
     std::string connected;
 public:
     MidiOutputPort(jack_port_t *jackPort) : jackPort(jackPort) {}

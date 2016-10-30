@@ -31,7 +31,7 @@ class OscOutput : public Processor
     lo_address loAddress;
     std::atomic<bool> repositionNeeded;
     std::atomic<bool> cancelled;
-    EventBuffer eventBuffer;
+    EventBuffer<OscEvent> eventBuffer;
 public:
     OscOutput(const char *host, int port);
     void schedule(OscMessage &message, int bar, int position, int division);

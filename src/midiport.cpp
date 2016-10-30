@@ -61,14 +61,14 @@ void MidiOutputPort::doProcess(bool rolling, jack_position_t &pos, jack_nframes_
     void* port_buf = jack_port_get_buffer(jackPort, nframes);
     jack_midi_clear_buffer(port_buf);
     // schedule events that are waiting in the buffer
-    MidiEvent* nextEvent = static_cast<MidiEvent*>(buffer.getNextEvent(rolling, pos, nframes));
+    MidiEvent* nextEvent = buffer.getNextEvent(rolling, pos, nframes);
     while(nextEvent) {
         long frame = nextEvent->getFrameOffset();
         size_t size = nextEvent->dataSize() + 1;
         unsigned char* jackEvent = jack_midi_event_reserve(port_buf, frame >= 0 ? frame : 0, size);
         nextEvent->pack(jackEvent);
         ObjectCollector::scriptCollector().recycle(nextEvent);
-        nextEvent = static_cast<MidiEvent*>(buffer.getNextEvent(rolling, pos, nframes));
+        nextEvent = buffer.getNextEvent(rolling, pos, nframes);
     }
 }
 

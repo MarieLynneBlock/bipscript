@@ -17,26 +17,26 @@
 #ifndef EVENTLIST_H
 #define EVENTLIST_H
 
-#include "event.h"
+#include "listable.h"
 
-class EventList : public List<Listable>
+template <class T> class EventList : public List<Listable>
 {
 public:
-    void insert(Event *elem)
+    void insert(T *elem)
     {
         if(!first) {
             first = last = elem;
         }
-        else if(*(Event*)last <= *elem) {
+        else if(*(T*)last <= *elem) {
             last->next = elem;
             last = elem;
-        } else if(*elem < *(Event*)first) {
+        } else if(*elem < *(T*)first) {
             elem->next = first;
             first = elem;
         } else {
-            Event *e = (Event*)first;
-            while(*(Event*)(e->next) <= *elem) {
-                e = (Event*)e->next;
+            T *e = (T*)first;
+            while(*(T*)(e->next) <= *elem) {
+                e = (T*)e->next;
             }
             elem->next = e->next;
             e->next = elem;
@@ -45,11 +45,14 @@ public:
     void clear() {
         first = 0;
     }
-    Event *getFirst() {
-        return (Event*)List::getFirst();
+    T *getFirst() {
+        return (T*)List::getFirst();
     }
-    Event *pop() {
-        return (Event*)List::pop();
+    T *getNext(T *obj) {
+        return (T*)List::getNext(obj);
+    }
+    T *pop() {
+        return (T*)List::pop();
     }
 };
 

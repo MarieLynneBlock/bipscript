@@ -24,9 +24,9 @@ void Transport::schedule(ScriptFunction &function, unsigned int bar, unsigned in
 
 void Transport::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
 {
-    AsyncClosure *closure = static_cast<AsyncClosure*>(eventBuffer.getNextEvent(rolling, pos, nframes));
+    AsyncClosure *closure = eventBuffer.getNextEvent(rolling, pos, nframes);
     while(closure) {
         closure->dispatch();
-        closure = static_cast<AsyncClosure*>(eventBuffer.getNextEvent(rolling, pos, nframes));
+        closure = eventBuffer.getNextEvent(rolling, pos, nframes);
     }
 }
