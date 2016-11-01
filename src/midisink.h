@@ -18,6 +18,7 @@
 #define MIDISINK_H
 
 #include "module_midi.h"
+#include "midimessage.h"
 #include "midipattern.h"
 #include "midievent.h"
 
@@ -30,10 +31,6 @@ public:
     }
     unsigned char midiChannel(unsigned char channel) {
         return this->defaultChannel = channel;
-    }
-    void schedule(Control &cc, int bar, int position, int division, unsigned char channel);
-    void schedule(Control &cc, int bar, int position, int division) {
-        schedule(cc, bar, position, division, defaultChannel);
     }
     void schedule(Note &note, unsigned int bar, unsigned int position, unsigned int division, unsigned char channel) {
         Position pos(bar, position, division);
@@ -63,8 +60,21 @@ public:
         schedule(pattern, bar, 0);
     }
     void schedule(Pattern &pattern, Position &position, unsigned char channel);
-    void schedule(ProgramChange &programChange, uint32_t bar, uint32_t position, uint32_t division);
-    void schedule(PitchBend &pitchBend, uint32_t bar, uint32_t position, uint32_t division);
+    // Midi messages
+    void schedule(MidiMessage &mesg, unsigned int bar, unsigned int position, unsigned int division, unsigned char channel) {
+        Position pos(bar, position, division);
+        schedule(mesg, pos, channel);
+    }
+    void schedule(MidiMessage &mesg, unsigned int bar, unsigned int position, unsigned int division) {
+        schedule(mesg, bar, position, division, defaultChannel);
+    }
+    void schedule(MidiMessage &mesg, unsigned int bar, unsigned int position) {
+        schedule(mesg, bar, position, 4); // TODO: current time signature
+    }
+    void schedule(MidiMessage &mesg, unsigned int bar) {
+        schedule(mesg, bar, 0);
+    }
+    void schedule(MidiMessage &message, Position &position, unsigned char channel);
     virtual void addMidiEvent(MidiEvent* evt) = 0;
 };
 

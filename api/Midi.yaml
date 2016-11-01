@@ -19,6 +19,10 @@ name : Midi
 
 interfaces:
 
+    - name: Message
+      cppname: MidiMessage
+      include: midimessage
+
     - name: Source
       cppname: MidiSource
       include: midiconnection
@@ -46,22 +50,11 @@ interfaces:
             - {name: channel, type: integer, optional: true }
         - name: schedule
           parameters:
-            - {name: pitchbend, type: Midi.PitchBend}
+            - {name: message, type: Midi.Message}
             - {name: bar, type: integer}
-            - {name: position, type: integer}
-            - {name: division, type: integer}
-        - name: schedule
-          parameters:
-            - {name: control, type: Midi.Control}
-            - {name: bar, type: integer}
-            - {name: position, type: integer}
-            - {name: division, type: integer}
-        - name: schedule
-          parameters:
-            - {name: programchange, type: Midi.ProgramChange}
-            - {name: bar, type: integer}
-            - {name: position, type: integer}
-            - {name: division, type: integer}
+            - {name: position, type: integer, optional: true }
+            - {name: division, type: integer, optional: true }
+            - {name: channel, type: integer, optional: true }
 
 classes :
 
@@ -141,6 +134,7 @@ classes :
           returns: integer
 
     - name: Control
+      interface: Midi.Message
       ctor:
         parameters:
           - {name: control, type: integer}
@@ -224,11 +218,13 @@ classes :
         expression: MidiOutputPortCache::instance().getMidiOutputPort
 
     - name: PitchBend
+      interface: Midi.Message
       ctor:
         parameters:
           - {name: program, type: integer}
 
     - name: ProgramChange
+      interface: Midi.Message
       ctor:
         parameters:
           - {name: program, type: integer}

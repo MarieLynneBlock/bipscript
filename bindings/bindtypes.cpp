@@ -45,6 +45,20 @@ namespace binding
         return 0;
     }
     
+    MidiMessage *getMidiMessage(HSQUIRRELVM &vm) {
+        SQUserPointer sourcePtr;
+        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &MidiControlObject))) {
+            return static_cast<Control*>(sourcePtr);
+        }
+        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &MidiPitchBendObject))) {
+            return static_cast<PitchBend*>(sourcePtr);
+        }
+        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &MidiProgramChangeObject))) {
+            return static_cast<ProgramChange*>(sourcePtr);
+        }
+        return 0;
+    }
+    
     MidiSource *getMidiSource(HSQUIRRELVM &vm) {
         SQUserPointer sourcePtr;
         if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &Lv2PluginObject))) {

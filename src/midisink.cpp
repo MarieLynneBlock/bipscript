@@ -17,15 +17,6 @@
 
 #include "midisink.h"
 
-void MidiSink::schedule(Control &cc, int bar, int  position, int  division, unsigned char channel)
-{
-    //std::cout << "schedule cc: " << cc.controller << " @ " << bar << ":" << position << "/" << division << std::endl;
-    //if(bar >= AudioEngine::instance()->getCurrentBar()) { // move this check lower, into port?s
-    Position start(bar, position, division);
-    MidiEvent* evt = new MidiEvent(start, cc.controller, cc.value, 0xB0, channel);
-    addMidiEvent(evt);
-}
-
 void MidiSink::schedule(const Note &note, Position &position, unsigned char channel)
 {
     if(channel < 1 || channel > 16) {
@@ -62,21 +53,11 @@ void MidiSink::schedule(Pattern &pattern, Position &position, unsigned char chan
     }
 }
 
-void MidiSink::schedule(PitchBend &pitchBend, uint32_t bar, uint32_t position, uint32_t division)
+void MidiSink::schedule(MidiMessage &mesg, Position &position, unsigned char channel)
 {
-    uint8_t channel = 0;
-    uint32_t value = pitchBend.getValue();
-    uint32_t lsb = value & 0x7F;
-    uint32_t msb = value >> 7;
-    Position start(bar, position, division);
-    MidiEvent* evt = new MidiEvent(start, lsb, msb, MidiEvent::TYPE_PITCH_BEND, channel);
-    addMidiEvent(evt);
-}
-
-void MidiSink::schedule(ProgramChange &pc, uint32_t bar, uint32_t position, uint32_t division)
-{
-    int channel = 0;
-    Position start(bar, position, division);
-    MidiEvent* evt = new MidiEvent(start, pc.getProgram(), 0, 0xC0, channel);
+    if(channel < 1 || channel > 16) {
+        throw std::logic_error("MIDI channel must be between 1 and 16");
+    }
+    MidiEvent* evt = new MidiEvent(position, mesg.byte(0), mesg.byte(1), mesg.type(), channel);
     addMidiEvent(evt);
 }

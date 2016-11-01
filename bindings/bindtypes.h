@@ -21,12 +21,14 @@
 
 #include "audioconnection.h"
 #include "midiconnection.h"
+#include "midimessage.h"
 #include "midisink.h"
 
 namespace binding
 {
     // type conversion methods
     AudioSource *getAudioSource(HSQUIRRELVM &vm);
+    MidiMessage *getMidiMessage(HSQUIRRELVM &vm);
     MidiSource *getMidiSource(HSQUIRRELVM &vm);
     MidiSink *getMidiSink(HSQUIRRELVM &vm);
 }

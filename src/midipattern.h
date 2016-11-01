@@ -21,6 +21,8 @@
 #include "eventlist.h"
 #include "midievent.h"
 
+#include <deque>
+
 class PatternNote {
     friend class Pattern;
     Note note;
