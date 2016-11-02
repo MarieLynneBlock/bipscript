@@ -17,11 +17,11 @@
 #ifndef BTRANSPORT_H
 #define BTRANSPORT_H
 
-#include "objectcache.h"
 #include "position.h"
 #include "scripttypes.h"
 #include "eventbuffer.h"
 #include "event.h"
+#include "audioengine.h"
 
 class AsyncClosure : public Event, public ScriptFunctionClosure {
     int nparams;
@@ -47,10 +47,13 @@ public:
     void recycle() { delete this; }
 };
 
-class Transport : public ObjectCache
+class Transport : public Processor
 {
     EventBuffer<AsyncClosure> eventBuffer;
 public:
+    Transport() {
+        AudioEngine::instance().addProcessor(this);
+    }
     static Transport &instance() {
         static Transport instance;
         return instance;
@@ -63,8 +66,7 @@ public:
         schedule(function, bar, position, 4); // TODO: base it on time signature
     }
     void schedule(ScriptFunction &function, unsigned int bar, unsigned int position, unsigned int division);
-    void process(bool, jack_position_t&, jack_nframes_t, jack_nframes_t);
-    bool scriptComplete() { return false; }
+    void doProcess(bool, jack_position_t&, jack_nframes_t, jack_nframes_t);
     void reposition() { eventBuffer.recycleRemaining(); }
     bool repositionComplete() { return true; }
 };

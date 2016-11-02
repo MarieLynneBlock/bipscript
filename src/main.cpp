@@ -91,10 +91,9 @@ int main(int argc, char **argv)
                             &MidiBeatTrackerCache::instance(),
                             &OscInputFactory::instance(),
                             &OscOutputFactory::instance(),
-                            &OnsetDetectorCache::instance(),
-                            &Transport::instance()
+                            &OnsetDetectorCache::instance()
                             };
-    host.setObjectCaches(15, caches);
+    host.setObjectCaches(14, caches);
 
     // create and  start audioengine
     AudioEngine &audioEngine = AudioEngine::instance();

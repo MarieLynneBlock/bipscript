@@ -22,7 +22,7 @@ void Transport::schedule(ScriptFunction &function, unsigned int bar, unsigned in
     eventBuffer.addEvent(new AsyncClosure(function, bar, position, division));
 }
 
-void Transport::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
+void Transport::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
 {
     AsyncClosure *closure = eventBuffer.getNextEvent(rolling, pos, nframes);
     while(closure) {
