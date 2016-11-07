@@ -26,6 +26,12 @@ interfaces:
     - name: Source
       cppname: MidiSource
       include: midiconnection
+      methods:
+        - name: midiOutput
+          cppname: getMidiConnection
+          parameters: { name: index, type: integer }
+          returns: Midi.Output
+          release: none
 
     - name: Sink
       cppname: MidiSink
@@ -162,6 +168,9 @@ classes :
           release: delete
           parameters:
             - {name: mml, type: string}
+
+    - name: Output
+      cppname: MidiConnection
 
     - name: Pattern
       ctor:

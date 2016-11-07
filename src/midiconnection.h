@@ -28,7 +28,7 @@ class MidiSource : virtual public Source
 {
 public:
     virtual unsigned int getMidiOutputCount() = 0;
-    virtual MidiConnection &getMidiConnection(unsigned int index) = 0;
+    virtual MidiConnection *getMidiConnection(unsigned int index) = 0;
 };
 
 class MidiConnection {

@@ -30,6 +30,7 @@ namespace binding
     extern HSQOBJECT MidiControlObject;
     extern HSQOBJECT MidiInputBufferObject;
     extern HSQOBJECT MidiMMLReaderObject;
+    extern HSQOBJECT MidiOutputObject;
     extern HSQOBJECT MidiPatternObject;
     extern HSQOBJECT MidiTuneObject;
     extern HSQOBJECT MidiSystemOutObject;

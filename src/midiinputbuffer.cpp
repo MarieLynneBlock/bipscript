@@ -24,7 +24,7 @@ MidiInputBuffer::MidiInputBuffer(MidiSource &source) :
     //activeMutex(PTHREAD_MUTEX_INITIALIZER),
     //inactiveCondition(PTHREAD_COND_INITIALIZER)
 {
-    eventInput.store(&source.getMidiConnection(0));
+    eventInput.store(source.getMidiConnection(0));
     outputBuffer = (MidiEvent*)malloc(1000 * sizeof(MidiEvent));
     for(unsigned char i = 0; i < 128; i++) {
         controlValue[i] = 0;

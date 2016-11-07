@@ -372,7 +372,7 @@ void Lv2Plugin::connectMidi(MidiSource &source)
     }
     Lv2MidiInput *input = midiInputList.getFirst();
     if(input) {
-        input->connect(&source.getMidiConnection(0), this);
+        input->connect(source.getMidiConnection(0), this);
     }
     else {
         throw std::logic_error("cannot connect: this plugin has no MIDI inputs");
@@ -559,13 +559,13 @@ void Lv2Plugin::addController(MidiSource &source, unsigned int cc, const char *s
         throw std::logic_error("Minimum cannot be greater than maximum");
     }
     Lv2ControlPort *port = getPort(symbol);
-    MidiConnection &connection = source.getMidiConnection(0); // TODO: how to specify other connections
+    MidiConnection *connection = source.getMidiConnection(0); // TODO: how to specify other connections
     // check hash for existing connection
-    Lv2ControlConnection *controlConnection = controlConnectionMap[&connection];
+    Lv2ControlConnection *controlConnection = controlConnectionMap[connection];
     if(!controlConnection) {
         // push new connection
-        controlConnection = new Lv2ControlConnection(&connection);
-        controlConnectionMap[&connection] = controlConnection;
+        controlConnection = new Lv2ControlConnection(connection);
+        controlConnectionMap[connection] = controlConnection;
         controlConnections.add(controlConnection);
     }
     // push new mapping
@@ -620,14 +620,14 @@ bool Lv2Plugin::connectsTo(Source *source) {
     return false;
 }
 
-MidiConnection &Lv2Plugin::getMidiConnection(unsigned int index) {
+MidiConnection *Lv2Plugin::getMidiConnection(unsigned int index) {
     unsigned int count = 0;
     Lv2MidiOutput *output = midiOutputList.getFirst();
     while(output && count < index) {
         output = midiOutputList.getNext(output);
         count++;
     }
-    return *output;
+    return output;
 }
 
 void Lv2Plugin::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time) {

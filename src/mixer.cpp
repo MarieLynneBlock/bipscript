@@ -229,13 +229,13 @@ void Mixer::addGainController(MidiSource &source, unsigned int cc, unsigned int 
     }
     validateInputChannel(input);
     validateOutputChannel(output);
-    MidiConnection &connection = source.getMidiConnection(0); // TODO: how to specify other connections
+    MidiConnection *connection = source.getMidiConnection(0); // TODO: how to specify other connections
     // check hash for existing connection
-    MixerControlConnection *mixerConnection = controlConnectionMap[&connection];
+    MixerControlConnection *mixerConnection = controlConnectionMap[connection];
     if(!mixerConnection) {
         // push new connection
-        mixerConnection = new MixerControlConnection(&connection);
-        controlConnectionMap[&connection] = mixerConnection;
+        mixerConnection = new MixerControlConnection(connection);
+        controlConnectionMap[connection] = mixerConnection;
         controlConnections.add(mixerConnection);
     }
     // push new mapping

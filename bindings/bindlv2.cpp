@@ -399,6 +399,52 @@ SQInteger Lv2PluginmidiChannel(HSQUIRRELVM vm)
 }
 
 //
+// Lv2.Plugin midiOutput
+//
+SQInteger Lv2PluginmidiOutput(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "midiOutput method needs an instance of Plugin");
+    }
+    Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
+
+    // get parameter 1 "index" as integer
+    SQInteger index;
+    if (SQ_FAILED(sq_getinteger(vm, 2, &index))){
+        return sq_throwerror(vm, "argument 1 \"index\" is not of type integer");
+    }
+
+    // return value
+    MidiConnection* ret;
+    // call the implementation
+    try {
+        ret = obj->getMidiConnection(index);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushobject(vm, MidiOutputObject);
+    sq_createinstance(vm, -1);
+    sq_remove(vm, -2);
+    sq_setinstanceup(vm, -1, ret);
+    // no release hook, release ignored per binding
+
+    return 1;
+}
+
+//
 // Lv2.Plugin output
 //
 SQInteger Lv2Pluginoutput(HSQUIRRELVM vm)
@@ -1017,6 +1063,10 @@ void bindLv2(HSQUIRRELVM vm)
 
     sq_pushstring(vm, _SC("midiChannel"), -1);
     sq_newclosure(vm, &Lv2PluginmidiChannel, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("midiOutput"), -1);
+    sq_newclosure(vm, &Lv2PluginmidiOutput, 0);
     sq_newslot(vm, -3, false);
 
     sq_pushstring(vm, _SC("output"), -1);

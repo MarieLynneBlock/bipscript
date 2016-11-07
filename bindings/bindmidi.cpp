@@ -40,6 +40,7 @@ HSQOBJECT MidiNoteObject;
 HSQOBJECT MidiControlObject;
 HSQOBJECT MidiInputBufferObject;
 HSQOBJECT MidiMMLReaderObject;
+HSQOBJECT MidiOutputObject;
 HSQOBJECT MidiPatternObject;
 HSQOBJECT MidiTuneObject;
 HSQOBJECT MidiSystemOutObject;
@@ -547,6 +548,52 @@ SQInteger MidiSystemInCtor(HSQUIRRELVM vm)
 }
 
 //
+// Midi.SystemIn midiOutput
+//
+SQInteger MidiSystemInmidiOutput(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "midiOutput method needs an instance of SystemIn");
+    }
+    MidiInputPort *obj = static_cast<MidiInputPort*>(userPtr);
+
+    // get parameter 1 "index" as integer
+    SQInteger index;
+    if (SQ_FAILED(sq_getinteger(vm, 2, &index))){
+        return sq_throwerror(vm, "argument 1 \"index\" is not of type integer");
+    }
+
+    // return value
+    MidiConnection* ret;
+    // call the implementation
+    try {
+        ret = obj->getMidiConnection(index);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushobject(vm, MidiOutputObject);
+    sq_createinstance(vm, -1);
+    sq_remove(vm, -2);
+    sq_setinstanceup(vm, -1, ret);
+    // no release hook, release ignored per binding
+
+    return 1;
+}
+
+//
 // Midi.Note class
 //
 SQInteger MidiNoteRelease(SQUserPointer p, SQInteger size)
@@ -918,6 +965,14 @@ SQInteger MidiMMLReaderread(HSQUIRRELVM vm)
     sq_setreleasehook(vm, -1, &MidiPatternRelease);
 
     return 1;
+}
+
+//
+// Midi.Output class
+//
+SQInteger MidiOutputCtor(HSQUIRRELVM vm)
+{
+    return sq_throwerror(vm, "cannot directly instantiate Midi.Output");
 }
 
 //
@@ -2312,6 +2367,10 @@ void bindMidi(HSQUIRRELVM vm)
     sq_newslot(vm, -3, false);
 
     // methods for class SystemIn
+    sq_pushstring(vm, _SC("midiOutput"), -1);
+    sq_newclosure(vm, &MidiSystemInmidiOutput, 0);
+    sq_newslot(vm, -3, false);
+
     // push SystemIn to Midi package table
     sq_newslot(vm, -3, false);
 
@@ -2393,6 +2452,21 @@ void bindMidi(HSQUIRRELVM vm)
     sq_newslot(vm, -3, false);
 
     // push MMLReader to Midi package table
+    sq_newslot(vm, -3, false);
+
+    // create class Midi.Output
+    sq_pushstring(vm, "Output", -1);
+    sq_newclass(vm, false);
+    sq_getstackobj(vm, -1, &MidiOutputObject);
+    sq_settypetag(vm, -1, &MidiOutputObject);
+
+    // ctor for class Output
+    sq_pushstring(vm, _SC("constructor"), -1);
+    sq_newclosure(vm, &MidiOutputCtor, 0);
+    sq_newslot(vm, -3, false);
+
+    // methods for class Output
+    // push Output to Midi package table
     sq_newslot(vm, -3, false);
 
     // create class Midi.Pattern

@@ -57,8 +57,8 @@ public:
     void systemConnect(const char *name) {
         connection.systemConnect(name);
     }
-    MidiConnection &getMidiConnection(unsigned int) {
-        return connection;
+    MidiConnection *getMidiConnection(unsigned int) {
+        return &connection;
     }
     unsigned int getMidiOutputCount() { return 1; }
     // Source interface

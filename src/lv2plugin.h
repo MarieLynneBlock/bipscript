@@ -300,7 +300,7 @@ public:
     }
     // MidiSource interface
     unsigned int getMidiOutputCount() { return midiOutputCount; }
-    MidiConnection &getMidiConnection(unsigned int index);
+    MidiConnection *getMidiConnection(unsigned int index);
 private:
     Lv2ControlPort *getPort(const char *symbol);
     void connectPort(int index, Lv2Plugin *other, int otherIndex);

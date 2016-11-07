@@ -110,7 +110,7 @@ public:
         reset(bpm, beatsPerBar, beatUnit);
     }
     void connectMidi(MidiSource &source) {
-        this->midiInput.store(&source.getMidiConnection(0));
+        this->midiInput.store(source.getMidiConnection(0));
     }
     void setNoteWeight(uint32_t note, float weight);
     void countIn(uint8_t note) { countInNote.store(note); }
