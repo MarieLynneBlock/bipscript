@@ -154,7 +154,7 @@ void Lv2MidiInput::process(bool rolling, jack_position_t &pos, jack_nframes_t nf
     MidiConnection *connection = eventConnector.getConnection();
     uint32_t eventCount = 0;
     if(connection) {
-        connection->process(rolling, pos, nframes, time);
+        connection->getSource()->process(rolling, pos, nframes, time);
         eventCount = connection->getEventCount();
     }
 
@@ -219,7 +219,7 @@ MidiEvent *Lv2MidiOutput::getEvent(uint32_t i)
 
 void Lv2ControlConnection::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
 {
-    connection->process(rolling, pos, nframes, time);
+    connection->getSource()->process(rolling, pos, nframes, time);
     u_int32_t eventIndex = 0;
     u_int32_t eventCount = connection->getEventCount();
     while(eventIndex < eventCount) {
@@ -613,7 +613,7 @@ bool Lv2Plugin::connectsTo(Source *source) {
     // audio inputs
     for(uint32_t i = 0; i < audioInputCount; i++) {
         AudioConnection *connection = audioInput[i].getConnection();
-        if(connection && connection->connectsTo(source)) {
+        if(connection && connection->getSource()->connectsTo(source)) {
             return true;
         }
     }
@@ -649,8 +649,8 @@ void Lv2Plugin::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nfr
     for(uint32_t i = 0; i < audioInputCount; i++) {
         AudioConnection *connection = audioInput[i].getConnection();
         if(connection) {
-            float *audio = connection->getAudio(rolling, pos, nframes, time);
-            lilv_instance_connect_port(instance, audioInputIndex[i], audio);
+            connection->getSource()->process(rolling, pos, nframes, time);
+            lilv_instance_connect_port(instance, audioInputIndex[i], connection->getAudio());
         } else {
             lilv_instance_connect_port(instance, audioInputIndex[i], AudioConnection::getDummyBuffer());
         }
@@ -680,7 +680,7 @@ void Lv2Plugin::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nfr
 
     // set up audio output buffers
     for(uint32_t i = 0; i < audioOutputCount; i++) {
-        lilv_instance_connect_port(instance, audioOutputIndex[i], audioOutput[i]->getBuffer());
+        lilv_instance_connect_port(instance, audioOutputIndex[i], audioOutput[i]->getAudio());
     }
 
     // run the plugin

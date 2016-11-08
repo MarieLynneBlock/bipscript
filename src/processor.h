@@ -37,7 +37,6 @@ public:
         doProcess(rolling, pos, nframes, time);
         processedUntil = time;
     }
-    virtual void doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time) = 0;
     /**
      * Called when a reposition has been requested so objects can flush/recycle queued events.
      *
@@ -52,6 +51,8 @@ public:
      * Runs in the process thread.
      */
     virtual bool repositionComplete() { return true; }
+protected:
+    virtual void doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time) = 0;
 };
 
 #endif // PROCESSOR_H

@@ -56,7 +56,8 @@ void OnsetDetector::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t
     AudioConnection *connection = audioInput.load();
     float *audio;
     if(connection) {
-        audio = connection->getAudio(rolling, pos, nframes, time);
+	connection->getSource()->process(rolling, pos, nframes, time);
+        audio = connection->getAudio();
     } else {
         audio = AudioConnection::getDummyBuffer();
     }

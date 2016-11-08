@@ -30,7 +30,7 @@
  */
 void MixerControlConnection::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
 {
-    connection->process(rolling, pos, nframes, time);
+    connection->getSource()->process(rolling, pos, nframes, time);
     eventCount = connection->getEventCount();
     eventIndex = 0;
 }
@@ -277,7 +277,7 @@ bool Mixer::connectsTo(Source *source) {
     // TODO: event inputs
     // audio inputs
     for(uint32_t i = 0; i < connectedInputs; i++) {
-        if(audioInput[i].getConnection()->connectsTo(source)) {
+        if(audioInput[i].getConnection()->getSource()->connectsTo(source)) {
             return true;
         }
     }
@@ -302,12 +302,14 @@ void Mixer::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes
     // get audio from input connections
     float *audio[connectedInputs];
     for(unsigned int i = 0; i < connectedInputs; i++) {
-        audio[i] = audioInput[i].getConnection()->getAudio(rolling, pos, nframes, time);
+        AudioConnection *conn = audioInput[i].getConnection();
+        conn->getSource()->process(rolling, pos, nframes, time);
+        audio[i] = conn->getAudio();
     }
 
     // zero out all output channels
     for(unsigned int i = 0; i < audioOutputCount; i++) {
-        memset(audioOutput[i]->getBuffer(), 0, nframes * sizeof(float));
+        memset(audioOutput[i]->getAudio(), 0, nframes * sizeof(float));
     }
 
     // process control connections
@@ -344,7 +346,7 @@ void Mixer::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes
             // loop over outputs
             for(unsigned int o = 0; o < audioOutputCount; o++) {
                 if(gain[i][o]) {
-                    float *buffer = audioOutput[o]->getBuffer();
+                    float *buffer = audioOutput[o]->getAudio();
                     buffer[frame] += audio[i][frame] * gain[i][o];
                 }
             }

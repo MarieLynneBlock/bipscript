@@ -30,7 +30,8 @@ void BeatTracker::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t n
     AudioConnection *connection = audioInput.load();
     float *audio;
     if(connection) {
-        audio = connection->getAudio(rolling, pos, nframes, time);
+        connection->getSource()->process(rolling, pos, nframes, time);
+        audio = connection->getAudio();
     } else {
         audio = AudioConnection::getDummyBuffer();
     }
@@ -183,7 +184,7 @@ void MidiBeatTracker::doProcess(bool rolling, jack_position_t &pos, jack_nframes
     MidiConnection *connection = midiInput.load();
     uint32_t eventCount = 0;
     if(connection) {
-        connection->process(rolling, pos, nframes, time);
+        connection->getSource()->process(rolling, pos, nframes, time);
         eventCount = connection->getEventCount();
     }        
 

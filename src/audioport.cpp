@@ -51,8 +51,8 @@ void AudioOutputPort::doProcess(bool rolling, jack_position_t &pos, jack_nframes
     float *buffer = (float*)jack_port_get_buffer(port, nframes);
     AudioConnection *connection = audioInput.load();
     if(connection) {
-        float *audio = connection->getAudio(rolling, pos, nframes, time);
-        memcpy(buffer, audio, nframes * sizeof(float)); // TODO: std::copy?
+        connection->getSource()->process(rolling, pos, nframes, time);
+        memcpy(buffer, connection->getAudio(), nframes * sizeof(float)); // TODO: std::copy?
     } else {
         memset(buffer, 0, nframes * sizeof(float));
     }

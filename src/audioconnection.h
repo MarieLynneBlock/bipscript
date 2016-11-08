@@ -22,16 +22,7 @@
 #include <stdexcept>
 #include <cstring>
 
-class AudioConnection;
-
-/**
- * Base for all classes that produce audio
- */
-class AudioSource : virtual public Source {
-public:
-    virtual unsigned int getAudioOutputCount() = 0;
-    virtual AudioConnection *getAudioConnection(unsigned int index) = 0;
-};
+class AudioSource;
 
 /**
  * Represents a mono audio connection
@@ -60,19 +51,23 @@ public:
             buffer = new float[bufferSize];
         }
     }
-    bool connectsTo(Source *src) {
-        return source == src || source->connectsTo(src);
-    }
     void setBuffer(float *buffer) { this->buffer = buffer; }
-    float *getBuffer() { return buffer; }
-    float *getAudio(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time) {
-        source->process(rolling, pos, nframes, time);
-        return buffer;
-    }
+    AudioSource *getSource() { return source; }
+    float *getAudio() { return buffer; }
     void clear() {
         std::memset(buffer, 0, sizeof(float) * bufferSize);
     }
 };
+
+/**
+ * Base for all classes that produce audio
+ */
+class AudioSource : virtual public Source {
+public:
+    virtual unsigned int getAudioOutputCount() = 0;
+    virtual AudioConnection *getAudioConnection(unsigned int index) = 0;
+};
+
 
 /**
  * Represents an input for a mono audio connection
@@ -82,7 +77,8 @@ class AudioConnector {
 public:
     AudioConnector() : connection(0) {}
     void setConnection(AudioConnection *conn, Source *source) {
-        if(conn->connectsTo(source)) {
+        Source *connSource = conn->getSource();
+        if(connSource == source || connSource->connectsTo(source)) {
             throw std::logic_error("Cannot connect infinite loop");
         }
         connection.store(conn);

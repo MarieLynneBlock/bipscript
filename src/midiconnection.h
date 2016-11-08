@@ -22,7 +22,16 @@
 #include "source.h"
 #include "midievent.h"
 
-class MidiConnection;
+class MidiSource;
+
+class MidiConnection {
+    MidiSource *source;
+public:
+    MidiConnection(MidiSource *source) : source(source) {}
+    MidiSource *getSource() { return source; }
+    virtual uint32_t getEventCount() = 0;
+    virtual MidiEvent *getEvent(uint32_t i) = 0;
+};
 
 class MidiSource : virtual public Source
 {
@@ -31,26 +40,13 @@ public:
     virtual MidiConnection *getMidiConnection(unsigned int index) = 0;
 };
 
-class MidiConnection {
-    MidiSource *source;
-public:
-    MidiConnection(MidiSource *source) : source(source) {}
-    void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time) {
-        source->process(rolling, pos, nframes, time);
-    }
-    virtual uint32_t getEventCount() = 0;
-    virtual MidiEvent *getEvent(uint32_t i) = 0;
-    bool connectsTo(Source *src) {
-        return source == src || source->connectsTo(src);
-    }
-};
-
 class MidiConnector {
     std::atomic<MidiConnection *> connection;
 public:
     MidiConnector() : connection(0) {}
     void setConnection(MidiConnection *conn, Source *source) {
-        if(conn->connectsTo(source)) {
+        Source *connSource = conn->getSource();
+        if(connSource == source || connSource->connectsTo(source)) {
             throw std::logic_error("Cannot connect infinite loop");
         }
         connection.store(conn);

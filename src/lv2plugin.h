@@ -119,7 +119,7 @@ public:
     }
     bool connectsTo(Source *source) {
         MidiConnection *connection = eventConnector.getConnection();
-        return connection && connection->connectsTo(source);
+        return connection && connection->getSource()->connectsTo(source);
     }
     void addEvent(MidiEvent *evt) {
         eventBuffer.addEvent(evt);

@@ -139,7 +139,7 @@ void MidiInputBuffer::doProcess(bool rolling, jack_position_t &pos, jack_nframes
 
     // roll new events into ring buffer
     MidiConnection *connection = eventInput.load();
-    connection->process(rolling, pos, nframes, time);
+    connection->getSource()->process(rolling, pos, nframes, time);
     uint32_t numEvents = connection->getEventCount();
     for(uint32_t i = 0; i < numEvents; i++) {
         MidiEvent *evt = connection->getEvent(i);
