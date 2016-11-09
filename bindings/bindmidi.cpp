@@ -24,7 +24,6 @@
 #include "drumtabreader.h"
 #include "midiport.h"
 #include "module_midi.h"
-#include "midiinputbuffer.h"
 #include "mmlreader.h"
 #include "miditune.h"
 #include "beattracker.h"
@@ -38,7 +37,6 @@ HSQOBJECT MidiDrumTabReaderObject;
 HSQOBJECT MidiSystemInObject;
 HSQOBJECT MidiNoteObject;
 HSQOBJECT MidiControlObject;
-HSQOBJECT MidiInputBufferObject;
 HSQOBJECT MidiMMLReaderObject;
 HSQOBJECT MidiOutputObject;
 HSQOBJECT MidiPatternObject;
@@ -925,80 +923,6 @@ SQInteger MidiControlvalue(HSQUIRRELVM vm)
     // call the implementation
     try {
         ret = obj->getValue();
-    }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
-    }
-
-    // push return value
-    sq_pushinteger(vm, ret);
-    return 1;
-}
-
-//
-// Midi.InputBuffer class
-//
-SQInteger MidiInputBufferCtor(HSQUIRRELVM vm)
-{
-    SQInteger numargs = sq_gettop(vm);
-    // check parameter count
-    if(numargs > 2) {
-        return sq_throwerror(vm, "too many parameters, expected at most 1");
-    }
-    if(numargs < 2) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
-    }
-    // get parameter 1 "source" as Midi.Source
-    MidiSource *source = getMidiSource(vm);
-    if(source == 0) {
-        return sq_throwerror(vm, "argument 1 \"source\" is not of type Midi.Source");
-    }
-
-    MidiInputBuffer *obj;
-    // call the implementation
-    try {
-        obj = MidiInputBufferCache::instance().getMidiInputBuffer(*source);
-    }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
-    }
-
-    // return pointer to new object
-    sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
-    return 1;
-}
-
-//
-// Midi.InputBuffer lastControlValue
-//
-SQInteger MidiInputBufferlastControlValue(HSQUIRRELVM vm)
-{
-    SQInteger numargs = sq_gettop(vm);
-    // check parameter count
-    if(numargs > 2) {
-        return sq_throwerror(vm, "too many parameters, expected at most 1");
-    }
-    if(numargs < 2) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
-    }
-    // get "this" pointer
-    SQUserPointer userPtr = 0;
-    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
-        return sq_throwerror(vm, "lastControlValue method needs an instance of InputBuffer");
-    }
-    MidiInputBuffer *obj = static_cast<MidiInputBuffer*>(userPtr);
-
-    // get parameter 1 "control" as integer
-    SQInteger control;
-    if (SQ_FAILED(sq_getinteger(vm, 2, &control))){
-        return sq_throwerror(vm, "argument 1 \"control\" is not of type integer");
-    }
-
-    // return value
-    SQInteger ret;
-    // call the implementation
-    try {
-        ret = obj->lastControlValue(control);
     }
     catch(std::exception const& e) {
         return sq_throwerror(vm, e.what());
@@ -2589,25 +2513,6 @@ void bindMidi(HSQUIRRELVM vm)
     sq_newslot(vm, -3, false);
 
     // push Control to Midi package table
-    sq_newslot(vm, -3, false);
-
-    // create class Midi.InputBuffer
-    sq_pushstring(vm, "InputBuffer", -1);
-    sq_newclass(vm, false);
-    sq_getstackobj(vm, -1, &MidiInputBufferObject);
-    sq_settypetag(vm, -1, &MidiInputBufferObject);
-
-    // ctor for class InputBuffer
-    sq_pushstring(vm, _SC("constructor"), -1);
-    sq_newclosure(vm, &MidiInputBufferCtor, 0);
-    sq_newslot(vm, -3, false);
-
-    // methods for class InputBuffer
-    sq_pushstring(vm, _SC("lastControlValue"), -1);
-    sq_newclosure(vm, &MidiInputBufferlastControlValue, 0);
-    sq_newslot(vm, -3, false);
-
-    // push InputBuffer to Midi package table
     sq_newslot(vm, -3, false);
 
     // create class Midi.MMLReader

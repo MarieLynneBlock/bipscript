@@ -155,19 +155,6 @@ classes :
           cppname: getValue
           returns: integer
 
-    - name: InputBuffer
-      cppname: MidiInputBuffer
-      include: midiinputbuffer
-      ctor:
-        parameters: {name: source, type: Midi.Source}
-        expression: MidiInputBufferCache::instance().getMidiInputBuffer
-
-      methods:
-        - name: lastControlValue
-          returns: integer
-          parameters:
-            - {name: control, type: integer}
-
     - name: MMLReader
       include: mmlreader
       ctor: {}

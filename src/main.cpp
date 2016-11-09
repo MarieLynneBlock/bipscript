@@ -30,7 +30,7 @@
 
 #include "lv2plugin.h"
 #include "mixer.h"
-#include "midiinputbuffer.h"
+#include "midiport.h"
 #include "audioport.h"
 #include "beattracker.h"
 #include "onsetdetector.h"
@@ -85,7 +85,6 @@ int main(int argc, char **argv)
                             &Lv2PluginCache::instance(),
                             &MidiInputPortCache::instance(),
                             &MidiOutputPortCache::instance(),
-                            &MidiInputBufferCache::instance(),
                             &TransportMasterCache::instance(),
                             &BeatTrackerCache::instance(),
                             &MidiBeatTrackerCache::instance(),
@@ -93,7 +92,7 @@ int main(int argc, char **argv)
                             &OscOutputFactory::instance(),
                             &OnsetDetectorCache::instance()
                             };
-    host.setObjectCaches(14, caches);
+    host.setObjectCaches(13, caches);
 
     // create and  start audioengine
     AudioEngine &audioEngine = AudioEngine::instance();
