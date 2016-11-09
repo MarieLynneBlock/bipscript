@@ -23,19 +23,21 @@
 #include "midievent.h"
 #include "eventclosure.h"
 #include "midimessage.h"
+#include "bindmidi.h"
+#include "bindtransport.h"
 
 class MidiControlEventClosure : public EventClosure {
     Control control;
     Position position;
 protected:
     void addParameters() {
-      // TODO: add control + position objects
-      addInteger(control.getController());
-      addInteger(control.getValue());
+        binding::MidiControlPush(vm, &control);
+        binding::TransportPositionPush(vm, &position);
     }
 public:
-    MidiControlEventClosure(ScriptFunction function, Control &control)
-      : EventClosure(function), control(control) {}
+    MidiControlEventClosure(ScriptFunction function,
+                            Control &control, Position &position)
+      : EventClosure(function), control(control), position(position) {}
 };
 
 class MidiSource;
@@ -64,7 +66,8 @@ public:
                 MidiEvent *evt = getEvent(j);
                 if(evt->getType() == MidiEvent::TYPE_CONTROL && ccHandler) {
                   Control control(evt->getDatabyte1(), evt->getDatabyte2());
-                  (new MidiControlEventClosure(*ccHandler, control))->dispatch();
+                  Position pos;
+                  (new MidiControlEventClosure(*ccHandler, control, pos))->dispatch();
                 }
             }
         }

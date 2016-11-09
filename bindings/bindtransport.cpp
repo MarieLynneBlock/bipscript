@@ -27,6 +27,7 @@ namespace binding {
 
 // object references to types in this package
 HSQOBJECT TransportMasterObject;
+HSQOBJECT TransportPositionObject;
 HSQOBJECT TransportTimeSignatureObject;
 
 //
@@ -328,6 +329,98 @@ SQInteger TransportMastertimeSignature(HSQUIRRELVM vm)
 }
 
 //
+// Transport.Position class
+//
+SQInteger TransportPositionPush(HSQUIRRELVM vm, Position *obj)
+{
+    sq_pushobject(vm, TransportPositionObject);
+    sq_createinstance(vm, -1);
+    sq_remove(vm, -2);
+    sq_setinstanceup(vm, -1, new Position(*obj));
+    sq_setreleasehook(vm, -1, &TransportPositionRelease);
+}
+
+SQInteger TransportPositionRelease(SQUserPointer p, SQInteger size)
+{
+    delete static_cast<Position*>(p);
+}
+
+SQInteger TransportPositionCtor(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 4) {
+        return sq_throwerror(vm, "too many parameters, expected at most 3");
+    }
+    if(numargs < 4) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 3");
+    }
+    // get parameter 1 "bar" as integer
+    SQInteger bar;
+    if (SQ_FAILED(sq_getinteger(vm, 2, &bar))){
+        return sq_throwerror(vm, "argument 1 \"bar\" is not of type integer");
+    }
+
+    // get parameter 2 "position" as integer
+    SQInteger position;
+    if (SQ_FAILED(sq_getinteger(vm, 3, &position))){
+        return sq_throwerror(vm, "argument 2 \"position\" is not of type integer");
+    }
+
+    // get parameter 3 "division" as integer
+    SQInteger division;
+    if (SQ_FAILED(sq_getinteger(vm, 4, &division))){
+        return sq_throwerror(vm, "argument 3 \"division\" is not of type integer");
+    }
+
+    Position *obj;
+    // call the implementation
+    try {
+        obj = new Position(bar, position, division);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // return pointer to new object
+    sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
+    sq_setreleasehook(vm, 1, TransportPositionRelease);
+    return 1;
+}
+
+//
+// Transport.Position bar
+//
+SQInteger TransportPositionbar(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 1) {
+        return sq_throwerror(vm, "too many parameters, expected at most 0");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "bar method needs an instance of Position");
+    }
+    Position *obj = static_cast<Position*>(userPtr);
+
+    // return value
+    SQInteger ret;
+    // call the implementation
+    try {
+        ret = obj->getBar();
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushinteger(vm, ret);
+    return 1;
+}
+
+//
 // Transport.TimeSignature class
 //
 SQInteger TransportTimeSignatureRelease(SQUserPointer p, SQInteger size)
@@ -475,6 +568,25 @@ void bindTransport(HSQUIRRELVM vm)
     sq_newslot(vm, -3, false);
 
     // push Master to Transport package table
+    sq_newslot(vm, -3, false);
+
+    // create class Transport.Position
+    sq_pushstring(vm, "Position", -1);
+    sq_newclass(vm, false);
+    sq_getstackobj(vm, -1, &TransportPositionObject);
+    sq_settypetag(vm, -1, &TransportPositionObject);
+
+    // ctor for class Position
+    sq_pushstring(vm, _SC("constructor"), -1);
+    sq_newclosure(vm, &TransportPositionCtor, 0);
+    sq_newslot(vm, -3, false);
+
+    // methods for class Position
+    sq_pushstring(vm, _SC("bar"), -1);
+    sq_newclosure(vm, &TransportPositionbar, 0);
+    sq_newslot(vm, -3, false);
+
+    // push Position to Transport package table
     sq_newslot(vm, -3, false);
 
     // create class Transport.TimeSignature

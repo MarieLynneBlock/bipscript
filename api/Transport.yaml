@@ -57,6 +57,17 @@ classes:
             - {name: numerator, type: integer }
             - {name: denominator, type: integer }
 
+    - name: Position
+      ctor:
+        parameters:
+        - {name: bar, type: integer }
+        - {name: position, type: integer }
+        - {name: division, type: integer }
+      methods:
+        - name: bar
+          cppname: getBar
+          returns: integer
+
     - name: TimeSignature
       include: timesignature
       ctor:

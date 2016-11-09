@@ -33,7 +33,7 @@ interfaces:
           returns: Midi.Output
           release: none
         - name: onControl
-          parameters: { name: handler, type: function }
+          parameters: { name: handler, type: function, args: [Midi.Control, Transport.Position] }
 
     - name: Sink
       cppname: MidiSink

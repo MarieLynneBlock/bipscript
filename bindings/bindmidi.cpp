@@ -820,6 +820,15 @@ SQInteger MidiNotevelocity(HSQUIRRELVM vm)
 //
 // Midi.Control class
 //
+SQInteger MidiControlPush(HSQUIRRELVM vm, Control *obj)
+{
+    sq_pushobject(vm, MidiControlObject);
+    sq_createinstance(vm, -1);
+    sq_remove(vm, -2);
+    sq_setinstanceup(vm, -1, new Control(*obj));
+    sq_setreleasehook(vm, -1, &MidiControlRelease);
+}
+
 SQInteger MidiControlRelease(SQUserPointer p, SQInteger size)
 {
     delete static_cast<Control*>(p);
