@@ -26,8 +26,8 @@ public:
 
 class Control : public MidiMessage
 {
-    int controller;
-    int value;
+    uint8_t controller;
+    uint8_t value;
 public:
     Control(int controller, int value) :
         controller(controller), value(value) {}
@@ -36,6 +36,8 @@ public:
       if(index == 0) { return controller; }
       return value;
     }
+    uint8_t getController() { return controller; }
+    uint8_t getValue() { return value; }
 };
 
 class PitchBend : public MidiMessage

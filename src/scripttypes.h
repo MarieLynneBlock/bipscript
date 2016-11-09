@@ -116,7 +116,7 @@ protected:
         sq_remove(vm, -2);
         sq_setinstanceup(vm, -1, obj);
     }
-    virtual bool addParameters() = 0;
+    virtual void addParameters() = 0;
 };
 
 #endif // SCRIPTTYPES_H

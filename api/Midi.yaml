@@ -32,6 +32,8 @@ interfaces:
           parameters: { name: index, type: integer }
           returns: Midi.Output
           release: none
+        - name: onControl
+          parameters: { name: handler, type: function }
 
     - name: Sink
       cppname: MidiSink
@@ -145,6 +147,13 @@ classes :
         parameters:
           - {name: control, type: integer}
           - {name: value, type: integer}
+      methods:
+        - name: controller
+          cppname: getController
+          returns: integer
+        - name: value
+          cppname: getValue
+          returns: integer
 
     - name: InputBuffer
       cppname: MidiInputBuffer
@@ -171,6 +180,9 @@ classes :
 
     - name: Output
       cppname: MidiConnection
+      methods:
+        - name: onControl
+          parameters: { name: handler, type: function }
 
     - name: Pattern
       ctor:

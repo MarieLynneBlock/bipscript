@@ -66,7 +66,7 @@ public:
 class OnOnsetClosure : public EventClosure {
     int count;
 protected:
-     bool addParameters() { addInteger(count); }
+     void addParameters() { addInteger(count); }
 public:
     OnOnsetClosure(ScriptFunction function, int count) :
         EventClosure(function), count(count) {}

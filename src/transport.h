@@ -26,7 +26,7 @@
 class AsyncClosure : public Event, public ScriptFunctionClosure {
     int nparams;
 protected:
-    bool addParameters() {
+    void addParameters() {
         if(nparams > 1) {
          addInteger(getBar());
         }

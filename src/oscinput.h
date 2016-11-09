@@ -29,7 +29,7 @@ public:
 class OnReceiveClosure : public ScriptFunctionClosure {
     OscMessage *message;
 protected:
-    bool addParameters() {
+    void addParameters() {
         addObject(message, binding::OscMessageObject);
     }
 public:

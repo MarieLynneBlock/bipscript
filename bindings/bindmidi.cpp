@@ -594,6 +594,51 @@ SQInteger MidiSystemInmidiOutput(HSQUIRRELVM vm)
 }
 
 //
+// Midi.SystemIn onControl
+//
+SQInteger MidiSystemInonControl(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "onControl method needs an instance of SystemIn");
+    }
+    MidiInputPort *obj = static_cast<MidiInputPort*>(userPtr);
+
+    // get parameter 1 "handler" as function
+    HSQOBJECT handlerObj;
+    if (SQ_FAILED(sq_getstackobj(vm, 2, &handlerObj))) {
+        return sq_throwerror(vm, "argument 1 \"handler\" is not of type function");
+    }
+    if (sq_gettype(vm, 2) != OT_CLOSURE) {
+        return sq_throwerror(vm, "argument 1 \"handler\" is not of type function");
+    }
+    SQUnsignedInteger nparams, nfreevars;
+    sq_getclosureinfo(vm, 2, &nparams, &nfreevars);
+    sq_addref(vm, &handlerObj);
+    ScriptFunction handler(vm, handlerObj, nparams);
+
+    // call the implementation
+    try {
+        obj->onControl(handler);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // void method, returns no value
+    return 0;
+}
+
+//
 // Midi.Note class
 //
 SQInteger MidiNoteRelease(SQUserPointer p, SQInteger size)
@@ -818,6 +863,70 @@ SQInteger MidiControlCtor(HSQUIRRELVM vm)
 }
 
 //
+// Midi.Control controller
+//
+SQInteger MidiControlcontroller(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 1) {
+        return sq_throwerror(vm, "too many parameters, expected at most 0");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "controller method needs an instance of Control");
+    }
+    Control *obj = static_cast<Control*>(userPtr);
+
+    // return value
+    SQInteger ret;
+    // call the implementation
+    try {
+        ret = obj->getController();
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushinteger(vm, ret);
+    return 1;
+}
+
+//
+// Midi.Control value
+//
+SQInteger MidiControlvalue(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 1) {
+        return sq_throwerror(vm, "too many parameters, expected at most 0");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "value method needs an instance of Control");
+    }
+    Control *obj = static_cast<Control*>(userPtr);
+
+    // return value
+    SQInteger ret;
+    // call the implementation
+    try {
+        ret = obj->getValue();
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushinteger(vm, ret);
+    return 1;
+}
+
+//
 // Midi.InputBuffer class
 //
 SQInteger MidiInputBufferCtor(HSQUIRRELVM vm)
@@ -973,6 +1082,51 @@ SQInteger MidiMMLReaderread(HSQUIRRELVM vm)
 SQInteger MidiOutputCtor(HSQUIRRELVM vm)
 {
     return sq_throwerror(vm, "cannot directly instantiate Midi.Output");
+}
+
+//
+// Midi.Output onControl
+//
+SQInteger MidiOutputonControl(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "onControl method needs an instance of Output");
+    }
+    MidiConnection *obj = static_cast<MidiConnection*>(userPtr);
+
+    // get parameter 1 "handler" as function
+    HSQOBJECT handlerObj;
+    if (SQ_FAILED(sq_getstackobj(vm, 2, &handlerObj))) {
+        return sq_throwerror(vm, "argument 1 \"handler\" is not of type function");
+    }
+    if (sq_gettype(vm, 2) != OT_CLOSURE) {
+        return sq_throwerror(vm, "argument 1 \"handler\" is not of type function");
+    }
+    SQUnsignedInteger nparams, nfreevars;
+    sq_getclosureinfo(vm, 2, &nparams, &nfreevars);
+    sq_addref(vm, &handlerObj);
+    ScriptFunction handler(vm, handlerObj, nparams);
+
+    // call the implementation
+    try {
+        obj->onControl(handler);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // void method, returns no value
+    return 0;
 }
 
 //
@@ -2371,6 +2525,10 @@ void bindMidi(HSQUIRRELVM vm)
     sq_newclosure(vm, &MidiSystemInmidiOutput, 0);
     sq_newslot(vm, -3, false);
 
+    sq_pushstring(vm, _SC("onControl"), -1);
+    sq_newclosure(vm, &MidiSystemInonControl, 0);
+    sq_newslot(vm, -3, false);
+
     // push SystemIn to Midi package table
     sq_newslot(vm, -3, false);
 
@@ -2413,6 +2571,14 @@ void bindMidi(HSQUIRRELVM vm)
     sq_newslot(vm, -3, false);
 
     // methods for class Control
+    sq_pushstring(vm, _SC("controller"), -1);
+    sq_newclosure(vm, &MidiControlcontroller, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("value"), -1);
+    sq_newclosure(vm, &MidiControlvalue, 0);
+    sq_newslot(vm, -3, false);
+
     // push Control to Midi package table
     sq_newslot(vm, -3, false);
 
@@ -2466,6 +2632,10 @@ void bindMidi(HSQUIRRELVM vm)
     sq_newslot(vm, -3, false);
 
     // methods for class Output
+    sq_pushstring(vm, _SC("onControl"), -1);
+    sq_newclosure(vm, &MidiOutputonControl, 0);
+    sq_newslot(vm, -3, false);
+
     // push Output to Midi package table
     sq_newslot(vm, -3, false);
 

@@ -65,6 +65,7 @@ public:
     bool connectsTo(Source *) { return false; }
     void doProcess(bool, jack_position_t&, jack_nframes_t nframes, jack_nframes_t) {
         connection.process(nframes);
+        fireMidiEvents();
     }
     void reposition() {}
 };

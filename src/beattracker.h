@@ -71,7 +71,7 @@ public:
 class OnCountClosure : public EventClosure {
     int count;
 protected:
-    bool addParameters() { addInteger(count); }
+    void addParameters() { addInteger(count); }
 public:
     OnCountClosure(ScriptFunction function, int count) :
         EventClosure(function), count(count) {}
@@ -80,7 +80,7 @@ public:
 class OnBeatClosure : public EventClosure {
     double bpm;
 protected:
-    bool addParameters() { addFloat(bpm); }
+    void addParameters() { addFloat(bpm); }
 public:
     OnBeatClosure(ScriptFunction function, double bpm) :
         EventClosure(function), bpm(bpm) {}

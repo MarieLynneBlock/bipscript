@@ -21,16 +21,54 @@
 #include <jack/types.h>
 #include "source.h"
 #include "midievent.h"
+#include "eventclosure.h"
+#include "midimessage.h"
+
+class MidiControlEventClosure : public EventClosure {
+    Control control;
+    Position position;
+protected:
+    void addParameters() {
+      // TODO: add control + position objects
+      addInteger(control.getController());
+      addInteger(control.getValue());
+    }
+public:
+    MidiControlEventClosure(ScriptFunction function, Control &control)
+      : EventClosure(function), control(control) {}
+};
 
 class MidiSource;
 
 class MidiConnection {
     MidiSource *source;
+    std::atomic<bool> handlerDefined;
+    std::atomic<ScriptFunction*> onControlHandler;
 public:
-    MidiConnection(MidiSource *source) : source(source) {}
+    MidiConnection(MidiSource *source) :
+      source(source), handlerDefined(false), onControlHandler(0) {}
     MidiSource *getSource() { return source; }
     virtual uint32_t getEventCount() = 0;
     virtual MidiEvent *getEvent(uint32_t i) = 0;
+    void onControl(ScriptFunction &handler) {
+        if(handler.getNumargs() != 3) {
+            throw std::logic_error("onControl handler should take two arguments");
+        }
+        onControlHandler.store(new ScriptFunction(handler));
+        handlerDefined.store(true);
+    }
+    void fireEvents() {
+        if(handlerDefined.load()) {
+            ScriptFunction *ccHandler = onControlHandler.load();
+            for(int j = 0; j < getEventCount(); j++) {
+                MidiEvent *evt = getEvent(j);
+                if(evt->getType() == MidiEvent::TYPE_CONTROL && ccHandler) {
+                  Control control(evt->getDatabyte1(), evt->getDatabyte2());
+                  (new MidiControlEventClosure(*ccHandler, control))->dispatch();
+                }
+            }
+        }
+    }
 };
 
 class MidiSource : virtual public Source
@@ -38,6 +76,17 @@ class MidiSource : virtual public Source
 public:
     virtual unsigned int getMidiOutputCount() = 0;
     virtual MidiConnection *getMidiConnection(unsigned int index) = 0;
+    void onControl(ScriptFunction &handler) {
+        for(int i = 0; i < getMidiOutputCount(); i++) {
+            getMidiConnection(i)->onControl(handler);
+        }
+    }
+protected:
+    void fireMidiEvents() {
+        for(int i = 0; i < getMidiOutputCount(); i++) {
+            getMidiConnection(i)->fireEvents();
+        }
+    }
 };
 
 class MidiConnector {
