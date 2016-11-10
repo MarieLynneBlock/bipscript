@@ -40,6 +40,38 @@ public:
     uint8_t getValue() { return value; }
 };
 
+class NoteOn : public MidiMessage
+{
+    uint8_t pitch;
+    uint8_t velocity;
+public:
+    NoteOn(int pitch, int velocity) :
+        pitch(pitch), velocity(velocity) {}
+    char type() { return 0x90; }
+    char byte(char index) {
+      if(index == 0) { return pitch; }
+      return velocity;
+    }
+    uint8_t getPitch() { return pitch; }
+    uint8_t getVelocity() { return velocity; }
+};
+
+class NoteOff : public MidiMessage
+{
+    uint8_t pitch;
+    uint8_t velocity;
+public:
+    NoteOff(int pitch, int velocity = 0) :
+        pitch(pitch), velocity(velocity) {}
+    char type() { return 0x80; }
+    char byte(char index) {
+      if(index == 0) { return pitch; }
+      return velocity;
+    }
+    uint8_t getPitch() { return pitch; }
+    uint8_t getVelocity() { return velocity; }
+};
+
 class PitchBend : public MidiMessage
 {
     uint32_t value;

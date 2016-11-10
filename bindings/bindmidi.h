@@ -28,6 +28,8 @@ namespace binding
     extern HSQOBJECT MidiDrumTabReaderObject;
     extern HSQOBJECT MidiSystemInObject;
     extern HSQOBJECT MidiNoteObject;
+    extern HSQOBJECT MidiNoteOnObject;
+    extern HSQOBJECT MidiNoteOffObject;
     extern HSQOBJECT MidiControlObject;
     extern HSQOBJECT MidiMMLReaderObject;
     extern HSQOBJECT MidiOutputObject;
@@ -43,6 +45,8 @@ namespace binding
     SQInteger MidiChordReaderRelease(SQUserPointer p, SQInteger size);
     SQInteger MidiDrumTabReaderRelease(SQUserPointer p, SQInteger size);
     SQInteger MidiNoteRelease(SQUserPointer p, SQInteger size);
+    SQInteger MidiNoteOnRelease(SQUserPointer p, SQInteger size);
+    SQInteger MidiNoteOffRelease(SQUserPointer p, SQInteger size);
     SQInteger MidiControlRelease(SQUserPointer p, SQInteger size);
     SQInteger MidiMMLReaderRelease(SQUserPointer p, SQInteger size);
     SQInteger MidiPatternRelease(SQUserPointer p, SQInteger size);

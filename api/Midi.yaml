@@ -141,6 +141,34 @@ classes :
         - name: pitch
           returns: integer
 
+    - name: NoteOn
+      interface: Midi.Message
+      ctor:
+        parameters:
+          - {name: pitch, type: integer}
+          - {name: velocity, type: integer}
+      methods:
+        - name: pitch
+          cppname: getPitch
+          returns: integer
+        - name: velocity
+          cppname: getVelocity
+          returns: integer
+
+    - name: NoteOff
+      interface: Midi.Message
+      ctor:
+        parameters:
+          - {name: pitch, type: integer}
+          - {name: velocity, type: integer, optional: true }
+      methods:
+        - name: pitch
+          cppname: getPitch
+          returns: integer
+        - name: velocity
+          cppname: getVelocity
+          returns: integer
+
     - name: Control
       interface: Midi.Message
       ctor:

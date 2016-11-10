@@ -36,6 +36,8 @@ HSQOBJECT MidiChordReaderObject;
 HSQOBJECT MidiDrumTabReaderObject;
 HSQOBJECT MidiSystemInObject;
 HSQOBJECT MidiNoteObject;
+HSQOBJECT MidiNoteOnObject;
+HSQOBJECT MidiNoteOffObject;
 HSQOBJECT MidiControlObject;
 HSQOBJECT MidiMMLReaderObject;
 HSQOBJECT MidiOutputObject;
@@ -808,6 +810,238 @@ SQInteger MidiNotevelocity(HSQUIRRELVM vm)
         catch(std::exception const& e) {
             return sq_throwerror(vm, e.what());
         }
+    }
+
+    // push return value
+    sq_pushinteger(vm, ret);
+    return 1;
+}
+
+//
+// Midi.NoteOn class
+//
+SQInteger MidiNoteOnRelease(SQUserPointer p, SQInteger size)
+{
+    delete static_cast<NoteOn*>(p);
+}
+
+SQInteger MidiNoteOnCtor(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 3) {
+        return sq_throwerror(vm, "too many parameters, expected at most 2");
+    }
+    if(numargs < 3) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 2");
+    }
+    // get parameter 1 "pitch" as integer
+    SQInteger pitch;
+    if (SQ_FAILED(sq_getinteger(vm, 2, &pitch))){
+        return sq_throwerror(vm, "argument 1 \"pitch\" is not of type integer");
+    }
+
+    // get parameter 2 "velocity" as integer
+    SQInteger velocity;
+    if (SQ_FAILED(sq_getinteger(vm, 3, &velocity))){
+        return sq_throwerror(vm, "argument 2 \"velocity\" is not of type integer");
+    }
+
+    NoteOn *obj;
+    // call the implementation
+    try {
+        obj = new NoteOn(pitch, velocity);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // return pointer to new object
+    sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
+    sq_setreleasehook(vm, 1, MidiNoteOnRelease);
+    return 1;
+}
+
+//
+// Midi.NoteOn pitch
+//
+SQInteger MidiNoteOnpitch(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 1) {
+        return sq_throwerror(vm, "too many parameters, expected at most 0");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "pitch method needs an instance of NoteOn");
+    }
+    NoteOn *obj = static_cast<NoteOn*>(userPtr);
+
+    // return value
+    SQInteger ret;
+    // call the implementation
+    try {
+        ret = obj->getPitch();
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushinteger(vm, ret);
+    return 1;
+}
+
+//
+// Midi.NoteOn velocity
+//
+SQInteger MidiNoteOnvelocity(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 1) {
+        return sq_throwerror(vm, "too many parameters, expected at most 0");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "velocity method needs an instance of NoteOn");
+    }
+    NoteOn *obj = static_cast<NoteOn*>(userPtr);
+
+    // return value
+    SQInteger ret;
+    // call the implementation
+    try {
+        ret = obj->getVelocity();
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushinteger(vm, ret);
+    return 1;
+}
+
+//
+// Midi.NoteOff class
+//
+SQInteger MidiNoteOffRelease(SQUserPointer p, SQInteger size)
+{
+    delete static_cast<NoteOff*>(p);
+}
+
+SQInteger MidiNoteOffCtor(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 3) {
+        return sq_throwerror(vm, "too many parameters, expected at most 2");
+    }
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get parameter 1 "pitch" as integer
+    SQInteger pitch;
+    if (SQ_FAILED(sq_getinteger(vm, 2, &pitch))){
+        return sq_throwerror(vm, "argument 1 \"pitch\" is not of type integer");
+    }
+
+    NoteOff *obj;
+    // 2 parameters passed in
+    if(numargs == 3) {
+
+        // get parameter 2 "velocity" as integer
+        SQInteger velocity;
+        if (SQ_FAILED(sq_getinteger(vm, 3, &velocity))){
+            return sq_throwerror(vm, "argument 2 \"velocity\" is not of type integer");
+        }
+
+        // call the implementation
+        try {
+            obj = new NoteOff(pitch, velocity);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
+    }
+
+    else {
+        // call the implementation
+        try {
+            obj = new NoteOff(pitch);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
+    }
+
+    // return pointer to new object
+    sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
+    sq_setreleasehook(vm, 1, MidiNoteOffRelease);
+    return 1;
+}
+
+//
+// Midi.NoteOff pitch
+//
+SQInteger MidiNoteOffpitch(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 1) {
+        return sq_throwerror(vm, "too many parameters, expected at most 0");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "pitch method needs an instance of NoteOff");
+    }
+    NoteOff *obj = static_cast<NoteOff*>(userPtr);
+
+    // return value
+    SQInteger ret;
+    // call the implementation
+    try {
+        ret = obj->getPitch();
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushinteger(vm, ret);
+    return 1;
+}
+
+//
+// Midi.NoteOff velocity
+//
+SQInteger MidiNoteOffvelocity(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 1) {
+        return sq_throwerror(vm, "too many parameters, expected at most 0");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "velocity method needs an instance of NoteOff");
+    }
+    NoteOff *obj = static_cast<NoteOff*>(userPtr);
+
+    // return value
+    SQInteger ret;
+    // call the implementation
+    try {
+        ret = obj->getVelocity();
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
     }
 
     // push return value
@@ -2490,6 +2724,52 @@ void bindMidi(HSQUIRRELVM vm)
     sq_newslot(vm, -3, false);
 
     // push Note to Midi package table
+    sq_newslot(vm, -3, false);
+
+    // create class Midi.NoteOn
+    sq_pushstring(vm, "NoteOn", -1);
+    sq_newclass(vm, false);
+    sq_getstackobj(vm, -1, &MidiNoteOnObject);
+    sq_settypetag(vm, -1, &MidiNoteOnObject);
+
+    // ctor for class NoteOn
+    sq_pushstring(vm, _SC("constructor"), -1);
+    sq_newclosure(vm, &MidiNoteOnCtor, 0);
+    sq_newslot(vm, -3, false);
+
+    // methods for class NoteOn
+    sq_pushstring(vm, _SC("pitch"), -1);
+    sq_newclosure(vm, &MidiNoteOnpitch, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("velocity"), -1);
+    sq_newclosure(vm, &MidiNoteOnvelocity, 0);
+    sq_newslot(vm, -3, false);
+
+    // push NoteOn to Midi package table
+    sq_newslot(vm, -3, false);
+
+    // create class Midi.NoteOff
+    sq_pushstring(vm, "NoteOff", -1);
+    sq_newclass(vm, false);
+    sq_getstackobj(vm, -1, &MidiNoteOffObject);
+    sq_settypetag(vm, -1, &MidiNoteOffObject);
+
+    // ctor for class NoteOff
+    sq_pushstring(vm, _SC("constructor"), -1);
+    sq_newclosure(vm, &MidiNoteOffCtor, 0);
+    sq_newslot(vm, -3, false);
+
+    // methods for class NoteOff
+    sq_pushstring(vm, _SC("pitch"), -1);
+    sq_newclosure(vm, &MidiNoteOffpitch, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("velocity"), -1);
+    sq_newclosure(vm, &MidiNoteOffvelocity, 0);
+    sq_newslot(vm, -3, false);
+
+    // push NoteOff to Midi package table
     sq_newslot(vm, -3, false);
 
     // create class Midi.Control

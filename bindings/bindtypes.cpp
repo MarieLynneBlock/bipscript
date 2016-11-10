@@ -47,6 +47,12 @@ namespace binding
     
     MidiMessage *getMidiMessage(HSQUIRRELVM &vm) {
         SQUserPointer sourcePtr;
+        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &MidiNoteOnObject))) {
+            return static_cast<NoteOn*>(sourcePtr);
+        }
+        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &MidiNoteOffObject))) {
+            return static_cast<NoteOff*>(sourcePtr);
+        }
         if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &MidiControlObject))) {
             return static_cast<Control*>(sourcePtr);
         }
