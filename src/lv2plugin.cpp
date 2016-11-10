@@ -252,7 +252,7 @@ void Lv2ControlConnection::reset()
 
 Lv2Plugin::Lv2Plugin(const LilvPlugin *plugin, LilvInstance *instance,
                      const Lv2Constants &uris, Lv2Worker *worker) :
-    plugin(plugin), instance(instance),
+    plugin(plugin), instance(instance), midiOutputCount(0),
     controlConnections(4), newControlMappingsQueue(16), worker(worker)
 {
     // audio inputs
