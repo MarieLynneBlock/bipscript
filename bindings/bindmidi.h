@@ -18,6 +18,8 @@
 #define BINDMIDI_H
 
 #include "squirrel.h"
+class NoteOn;
+class NoteOff;
 class Control;
 
 namespace binding
@@ -39,6 +41,8 @@ namespace binding
     extern HSQOBJECT MidiPitchBendObject;
     extern HSQOBJECT MidiProgramChangeObject;
     extern HSQOBJECT MidiBeatTrackerObject;
+    SQInteger MidiNoteOnPush(HSQUIRRELVM vm, NoteOn *);
+    SQInteger MidiNoteOffPush(HSQUIRRELVM vm, NoteOff *);
     SQInteger MidiControlPush(HSQUIRRELVM vm, Control *);
     // release hooks for types in this package
     SQInteger MidiABCReaderRelease(SQUserPointer p, SQInteger size);

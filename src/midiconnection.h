@@ -40,15 +40,46 @@ public:
       : EventClosure(function), control(control), position(position) {}
 };
 
+class MidiNoteOnEventClosure : public EventClosure {
+    NoteOn noteOn;
+    Position position;
+protected:
+    void addParameters() {
+        binding::MidiNoteOnPush(vm, &noteOn);
+        binding::TransportPositionPush(vm, &position);
+    }
+public:
+    MidiNoteOnEventClosure(ScriptFunction function,
+                            NoteOn &noteOn, Position &position)
+      : EventClosure(function), noteOn(noteOn), position(position) {}
+};
+
+class MidiNoteOffEventClosure : public EventClosure {
+    NoteOff noteOff;
+    Position position;
+protected:
+    void addParameters() {
+        binding::MidiNoteOffPush(vm, &noteOff);
+        binding::TransportPositionPush(vm, &position);
+    }
+public:
+    MidiNoteOffEventClosure(ScriptFunction function,
+                            NoteOff &noteOff, Position &position)
+      : EventClosure(function), noteOff(noteOff), position(position) {}
+};
+
 class MidiSource;
 
 class MidiConnection {
     MidiSource *source;
     std::atomic<bool> handlerDefined;
     std::atomic<ScriptFunction*> onControlHandler;
+    std::atomic<ScriptFunction*> onNoteOnHandler;
+    std::atomic<ScriptFunction*> onNoteOffHandler;
 public:
     MidiConnection(MidiSource *source) :
-      source(source), handlerDefined(false), onControlHandler(0) {}
+      source(source), handlerDefined(false), onControlHandler(0),
+      onNoteOnHandler(0), onNoteOffHandler(0) {}
     MidiSource *getSource() { return source; }
     virtual uint32_t getEventCount() = 0;
     virtual MidiEvent *getEvent(uint32_t i) = 0;
@@ -59,15 +90,39 @@ public:
         onControlHandler.store(new ScriptFunction(handler));
         handlerDefined.store(true);
     }
+    void onNoteOn(ScriptFunction &handler) {
+        if(handler.getNumargs() != 3) {
+            throw std::logic_error("onNoteOn handler should take two arguments");
+        }
+        onNoteOnHandler.store(new ScriptFunction(handler));
+        handlerDefined.store(true);
+    }
+    void onNoteOff(ScriptFunction &handler) {
+        if(handler.getNumargs() != 3) {
+            throw std::logic_error("onNoteOff handler should take two arguments");
+        }
+        onNoteOffHandler.store(new ScriptFunction(handler));
+        handlerDefined.store(true);
+    }
     void fireEvents() {
         if(handlerDefined.load()) {
             ScriptFunction *ccHandler = onControlHandler.load();
+            ScriptFunction *onHandler = onNoteOnHandler.load();
+            ScriptFunction *offHandler = onNoteOffHandler.load();
+            Position pos;
             for(int j = 0; j < getEventCount(); j++) {
                 MidiEvent *evt = getEvent(j);
                 if(evt->getType() == MidiEvent::TYPE_CONTROL && ccHandler) {
-                  Control control(evt->getDatabyte1(), evt->getDatabyte2());
-                  Position pos;
-                  (new MidiControlEventClosure(*ccHandler, control, pos))->dispatch();
+                    Control control(evt->getDatabyte1(), evt->getDatabyte2());
+                    (new MidiControlEventClosure(*ccHandler, control, pos))->dispatch();
+                }
+                else if(evt->getType() == MidiEvent::TYPE_NOTE_ON && onHandler) {
+                    NoteOn noteOn(evt->getDatabyte1(), evt->getDatabyte2());
+                    (new MidiNoteOnEventClosure(*onHandler, noteOn, pos))->dispatch();
+                }
+                else if(evt->getType() == MidiEvent::TYPE_NOTE_OFF && offHandler) {
+                    NoteOff noteOff(evt->getDatabyte1(), evt->getDatabyte2());
+                    (new MidiNoteOffEventClosure(*offHandler, noteOff, pos))->dispatch();
                 }
             }
         }
@@ -82,6 +137,16 @@ public:
     void onControl(ScriptFunction &handler) {
         for(int i = 0; i < getMidiOutputCount(); i++) {
             getMidiConnection(i)->onControl(handler);
+        }
+    }
+    void onNoteOn(ScriptFunction &handler) {
+        for(int i = 0; i < getMidiOutputCount(); i++) {
+            getMidiConnection(i)->onNoteOn(handler);
+        }
+    }
+    void onNoteOff(ScriptFunction &handler) {
+        for(int i = 0; i < getMidiOutputCount(); i++) {
+            getMidiConnection(i)->onNoteOff(handler);
         }
     }
 protected:

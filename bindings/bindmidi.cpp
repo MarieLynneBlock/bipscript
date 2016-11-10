@@ -639,6 +639,96 @@ SQInteger MidiSystemInonControl(HSQUIRRELVM vm)
 }
 
 //
+// Midi.SystemIn onNoteOff
+//
+SQInteger MidiSystemInonNoteOff(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "onNoteOff method needs an instance of SystemIn");
+    }
+    MidiInputPort *obj = static_cast<MidiInputPort*>(userPtr);
+
+    // get parameter 1 "handler" as function
+    HSQOBJECT handlerObj;
+    if (SQ_FAILED(sq_getstackobj(vm, 2, &handlerObj))) {
+        return sq_throwerror(vm, "argument 1 \"handler\" is not of type function");
+    }
+    if (sq_gettype(vm, 2) != OT_CLOSURE) {
+        return sq_throwerror(vm, "argument 1 \"handler\" is not of type function");
+    }
+    SQUnsignedInteger nparams, nfreevars;
+    sq_getclosureinfo(vm, 2, &nparams, &nfreevars);
+    sq_addref(vm, &handlerObj);
+    ScriptFunction handler(vm, handlerObj, nparams);
+
+    // call the implementation
+    try {
+        obj->onNoteOff(handler);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // void method, returns no value
+    return 0;
+}
+
+//
+// Midi.SystemIn onNoteOn
+//
+SQInteger MidiSystemInonNoteOn(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "onNoteOn method needs an instance of SystemIn");
+    }
+    MidiInputPort *obj = static_cast<MidiInputPort*>(userPtr);
+
+    // get parameter 1 "handler" as function
+    HSQOBJECT handlerObj;
+    if (SQ_FAILED(sq_getstackobj(vm, 2, &handlerObj))) {
+        return sq_throwerror(vm, "argument 1 \"handler\" is not of type function");
+    }
+    if (sq_gettype(vm, 2) != OT_CLOSURE) {
+        return sq_throwerror(vm, "argument 1 \"handler\" is not of type function");
+    }
+    SQUnsignedInteger nparams, nfreevars;
+    sq_getclosureinfo(vm, 2, &nparams, &nfreevars);
+    sq_addref(vm, &handlerObj);
+    ScriptFunction handler(vm, handlerObj, nparams);
+
+    // call the implementation
+    try {
+        obj->onNoteOn(handler);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // void method, returns no value
+    return 0;
+}
+
+//
 // Midi.Note class
 //
 SQInteger MidiNoteRelease(SQUserPointer p, SQInteger size)
@@ -820,6 +910,15 @@ SQInteger MidiNotevelocity(HSQUIRRELVM vm)
 //
 // Midi.NoteOn class
 //
+SQInteger MidiNoteOnPush(HSQUIRRELVM vm, NoteOn *obj)
+{
+    sq_pushobject(vm, MidiNoteOnObject);
+    sq_createinstance(vm, -1);
+    sq_remove(vm, -2);
+    sq_setinstanceup(vm, -1, new NoteOn(*obj));
+    sq_setreleasehook(vm, -1, &MidiNoteOnRelease);
+}
+
 SQInteger MidiNoteOnRelease(SQUserPointer p, SQInteger size)
 {
     delete static_cast<NoteOn*>(p);
@@ -929,6 +1028,15 @@ SQInteger MidiNoteOnvelocity(HSQUIRRELVM vm)
 //
 // Midi.NoteOff class
 //
+SQInteger MidiNoteOffPush(HSQUIRRELVM vm, NoteOff *obj)
+{
+    sq_pushobject(vm, MidiNoteOffObject);
+    sq_createinstance(vm, -1);
+    sq_remove(vm, -2);
+    sq_setinstanceup(vm, -1, new NoteOff(*obj));
+    sq_setreleasehook(vm, -1, &MidiNoteOffRelease);
+}
+
 SQInteger MidiNoteOffRelease(SQUserPointer p, SQInteger size)
 {
     delete static_cast<NoteOff*>(p);
@@ -1287,6 +1395,96 @@ SQInteger MidiOutputonControl(HSQUIRRELVM vm)
     // call the implementation
     try {
         obj->onControl(handler);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // void method, returns no value
+    return 0;
+}
+
+//
+// Midi.Output onNoteOff
+//
+SQInteger MidiOutputonNoteOff(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "onNoteOff method needs an instance of Output");
+    }
+    MidiConnection *obj = static_cast<MidiConnection*>(userPtr);
+
+    // get parameter 1 "handler" as function
+    HSQOBJECT handlerObj;
+    if (SQ_FAILED(sq_getstackobj(vm, 2, &handlerObj))) {
+        return sq_throwerror(vm, "argument 1 \"handler\" is not of type function");
+    }
+    if (sq_gettype(vm, 2) != OT_CLOSURE) {
+        return sq_throwerror(vm, "argument 1 \"handler\" is not of type function");
+    }
+    SQUnsignedInteger nparams, nfreevars;
+    sq_getclosureinfo(vm, 2, &nparams, &nfreevars);
+    sq_addref(vm, &handlerObj);
+    ScriptFunction handler(vm, handlerObj, nparams);
+
+    // call the implementation
+    try {
+        obj->onNoteOff(handler);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // void method, returns no value
+    return 0;
+}
+
+//
+// Midi.Output onNoteOn
+//
+SQInteger MidiOutputonNoteOn(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "onNoteOn method needs an instance of Output");
+    }
+    MidiConnection *obj = static_cast<MidiConnection*>(userPtr);
+
+    // get parameter 1 "handler" as function
+    HSQOBJECT handlerObj;
+    if (SQ_FAILED(sq_getstackobj(vm, 2, &handlerObj))) {
+        return sq_throwerror(vm, "argument 1 \"handler\" is not of type function");
+    }
+    if (sq_gettype(vm, 2) != OT_CLOSURE) {
+        return sq_throwerror(vm, "argument 1 \"handler\" is not of type function");
+    }
+    SQUnsignedInteger nparams, nfreevars;
+    sq_getclosureinfo(vm, 2, &nparams, &nfreevars);
+    sq_addref(vm, &handlerObj);
+    ScriptFunction handler(vm, handlerObj, nparams);
+
+    // call the implementation
+    try {
+        obj->onNoteOn(handler);
     }
     catch(std::exception const& e) {
         return sq_throwerror(vm, e.what());
@@ -2696,6 +2894,14 @@ void bindMidi(HSQUIRRELVM vm)
     sq_newclosure(vm, &MidiSystemInonControl, 0);
     sq_newslot(vm, -3, false);
 
+    sq_pushstring(vm, _SC("onNoteOff"), -1);
+    sq_newclosure(vm, &MidiSystemInonNoteOff, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("onNoteOn"), -1);
+    sq_newclosure(vm, &MidiSystemInonNoteOn, 0);
+    sq_newslot(vm, -3, false);
+
     // push SystemIn to Midi package table
     sq_newslot(vm, -3, false);
 
@@ -2828,6 +3034,14 @@ void bindMidi(HSQUIRRELVM vm)
     // methods for class Output
     sq_pushstring(vm, _SC("onControl"), -1);
     sq_newclosure(vm, &MidiOutputonControl, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("onNoteOff"), -1);
+    sq_newclosure(vm, &MidiOutputonNoteOff, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("onNoteOn"), -1);
+    sq_newclosure(vm, &MidiOutputonNoteOn, 0);
     sq_newslot(vm, -3, false);
 
     // push Output to Midi package table

@@ -34,6 +34,10 @@ interfaces:
           release: none
         - name: onControl
           parameters: { name: handler, type: function, args: [Midi.Control, Transport.Position] }
+        - name: onNoteOn
+          parameters: { name: handler, type: function, args: [Midi.NoteOn, Transport.Position] }
+        - name: onNoteOff
+          parameters: { name: handler, type: function, args: [Midi.NoteOff, Transport.Position] }
 
     - name: Sink
       cppname: MidiSink
@@ -198,6 +202,10 @@ classes :
       methods:
         - name: onControl
           parameters: { name: handler, type: function }
+        - name: onNoteOn
+          parameters: { name: handler, type: function, args: [Midi.NoteOn, Transport.Position] }
+        - name: onNoteOff
+          parameters: { name: handler, type: function, args: [Midi.NoteOff, Transport.Position] }
 
     - name: Pattern
       ctor:
