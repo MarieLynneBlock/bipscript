@@ -27,6 +27,9 @@ public:
         srand(time(NULL));
     }
     int integer(unsigned int max) {
+        if(max < 1) {
+            throw std::logic_error("max cannot be less than one");
+        }
         return rand() % max;
     }
 };
