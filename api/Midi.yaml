@@ -89,18 +89,6 @@ classes :
           parameters:
             - {name: abc, type: string}
 
-    - name: ChordReader
-      include: chordreader
-      ctor: {}
-      methods:
-        - name: read
-          returns: Midi.Pattern
-          release: delete
-          parameters:
-            - { name: chord, type: string }
-            - {name: duration, type: integer}
-            - {name: division, type: integer}
-
     - name: DrumTabReader
       include: drumtabreader
       ctor: {}

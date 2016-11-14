@@ -26,7 +26,6 @@ namespace binding
 {
     // object references to types in this package
     extern HSQOBJECT MidiABCReaderObject;
-    extern HSQOBJECT MidiChordReaderObject;
     extern HSQOBJECT MidiDrumTabReaderObject;
     extern HSQOBJECT MidiSystemInObject;
     extern HSQOBJECT MidiNoteObject;
@@ -46,7 +45,6 @@ namespace binding
     SQInteger MidiControlPush(HSQUIRRELVM vm, Control *);
     // release hooks for types in this package
     SQInteger MidiABCReaderRelease(SQUserPointer p, SQInteger size);
-    SQInteger MidiChordReaderRelease(SQUserPointer p, SQInteger size);
     SQInteger MidiDrumTabReaderRelease(SQUserPointer p, SQInteger size);
     SQInteger MidiNoteRelease(SQUserPointer p, SQInteger size);
     SQInteger MidiNoteOnRelease(SQUserPointer p, SQInteger size);
