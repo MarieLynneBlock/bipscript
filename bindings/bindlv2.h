@@ -18,12 +18,14 @@
 #define BINDLV2_H
 
 #include "squirrel.h"
+class Lv2State;
 
 namespace binding
 {
     // object references to types in this package
     extern HSQOBJECT Lv2PluginObject;
     extern HSQOBJECT Lv2StateObject;
+    Lv2State *getLv2State(HSQUIRRELVM &vm, int index);
     // release hooks for types in this package
     SQInteger Lv2StateRelease(SQUserPointer p, SQInteger size);
     // method to bind this package

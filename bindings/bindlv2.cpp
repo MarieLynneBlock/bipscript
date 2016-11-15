@@ -64,11 +64,6 @@ SQInteger Lv2PluginCtor(HSQUIRRELVM vm)
         return 1;
     }
     SQObjectType overrideType = sq_gettype(vm, 3);
-    SQUserPointer overrideTypeTag;
-    if(overrideType == OT_INSTANCE) {
-        sq_gettypetag(vm, 3, &overrideTypeTag);
-    }
-
     if(overrideType == OT_STRING) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
@@ -117,7 +112,7 @@ SQInteger Lv2PluginCtor(HSQUIRRELVM vm)
         sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
         return 1;
     }
-    else if(overrideType == OT_INSTANCE && overrideTypeTag == &Lv2StateObject) {
+    else if(Lv2State *state = getLv2State(vm, 3)) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
         if(numargs > 3) {
@@ -137,14 +132,8 @@ SQInteger Lv2PluginCtor(HSQUIRRELVM vm)
         if(numargs == 3) {
 
             // get parameter 2 "state" as Lv2.State
-            Lv2State *state = 0;
-            sq_getinstanceup(vm, 3, (SQUserPointer*)&state, 0);
+            Lv2State *state = getLv2State(vm, 3);
             if(state == 0) {
-                return sq_throwerror(vm, "argument 2 \"state\" is not of type Lv2.State");
-            }
-            SQUserPointer stateTypeTag;
-            sq_gettypetag(vm, 3, &stateTypeTag);
-            if(stateTypeTag != &Lv2StateObject) {
                 return sq_throwerror(vm, "argument 2 \"state\" is not of type Lv2.State");
             }
 
@@ -631,12 +620,7 @@ SQInteger Lv2Pluginoutput(HSQUIRRELVM vm)
 SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
 {
     SQObjectType overrideType = sq_gettype(vm, 2);
-    SQUserPointer overrideTypeTag;
-    if(overrideType == OT_INSTANCE) {
-        sq_gettypetag(vm, 2, &overrideTypeTag);
-    }
-
-    if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiNoteObject) {
+    if(Note *note = getMidiNote(vm, 2)) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
         if(numargs > 6) {
@@ -651,13 +635,6 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
             return sq_throwerror(vm, "schedule method needs an instance of Plugin");
         }
         Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
-
-        // get parameter 1 "note" as Midi.Note
-        Note *note = 0;
-        sq_getinstanceup(vm, 2, (SQUserPointer*)&note, 0);
-        if(note == 0) {
-            return sq_throwerror(vm, "argument 1 \"note\" is not of type Midi.Note");
-        }
 
         // get parameter 2 "bar" as integer
         SQInteger bar;
@@ -750,7 +727,7 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
         // void method, returns no value
         return 0;
     }
-    else if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiPatternObject) {
+    else if(Pattern *pattern = getMidiPattern(vm, 2)) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
         if(numargs > 6) {
@@ -765,13 +742,6 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
             return sq_throwerror(vm, "schedule method needs an instance of Plugin");
         }
         Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
-
-        // get parameter 1 "pattern" as Midi.Pattern
-        Pattern *pattern = 0;
-        sq_getinstanceup(vm, 2, (SQUserPointer*)&pattern, 0);
-        if(pattern == 0) {
-            return sq_throwerror(vm, "argument 1 \"pattern\" is not of type Midi.Pattern");
-        }
 
         // get parameter 2 "bar" as integer
         SQInteger bar;
@@ -1085,6 +1055,13 @@ SQInteger Lv2PluginsetControl(HSQUIRRELVM vm)
 //
 // Lv2.State class
 //
+Lv2State *getLv2State(HSQUIRRELVM &vm, int index) {
+    SQUserPointer objPtr;
+    if (!SQ_FAILED(sq_getinstanceup(vm, index, (SQUserPointer*)&objPtr, &Lv2StateObject))) {
+        return static_cast<Lv2State*>(objPtr);
+    }
+}
+
 SQInteger Lv2StateRelease(SQUserPointer p, SQInteger size)
 {
     delete static_cast<Lv2State*>(p);
@@ -1093,11 +1070,6 @@ SQInteger Lv2StateRelease(SQUserPointer p, SQInteger size)
 SQInteger Lv2StateCtor(HSQUIRRELVM vm)
 {
     SQObjectType overrideType = sq_gettype(vm, 2);
-    SQUserPointer overrideTypeTag;
-    if(overrideType == OT_INSTANCE) {
-        sq_gettypetag(vm, 2, &overrideTypeTag);
-    }
-
     if(overrideType == OT_TABLE) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count

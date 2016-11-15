@@ -245,12 +245,7 @@ SQInteger TransportMasterCtor(HSQUIRRELVM vm)
 SQInteger TransportMastertimeSignature(HSQUIRRELVM vm)
 {
     SQObjectType overrideType = sq_gettype(vm, 2);
-    SQUserPointer overrideTypeTag;
-    if(overrideType == OT_INSTANCE) {
-        sq_gettypetag(vm, 2, &overrideTypeTag);
-    }
-
-    if(overrideType == OT_INSTANCE && overrideTypeTag == &TransportTimeSignatureObject) {
+    if(TimeSignature *signature = getTransportTimeSignature(vm, 2)) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
         if(numargs > 2) {
@@ -265,13 +260,6 @@ SQInteger TransportMastertimeSignature(HSQUIRRELVM vm)
             return sq_throwerror(vm, "timeSignature method needs an instance of Master");
         }
         TransportMaster *obj = static_cast<TransportMaster*>(userPtr);
-
-        // get parameter 1 "signature" as Transport.TimeSignature
-        TimeSignature *signature = 0;
-        sq_getinstanceup(vm, 2, (SQUserPointer*)&signature, 0);
-        if(signature == 0) {
-            return sq_throwerror(vm, "argument 1 \"signature\" is not of type Transport.TimeSignature");
-        }
 
         // call the implementation
         try {
@@ -423,6 +411,13 @@ SQInteger TransportPositionbar(HSQUIRRELVM vm)
 //
 // Transport.TimeSignature class
 //
+TimeSignature *getTransportTimeSignature(HSQUIRRELVM &vm, int index) {
+    SQUserPointer objPtr;
+    if (!SQ_FAILED(sq_getinstanceup(vm, index, (SQUserPointer*)&objPtr, &TransportTimeSignatureObject))) {
+        return static_cast<TimeSignature*>(objPtr);
+    }
+}
+
 SQInteger TransportTimeSignatureRelease(SQUserPointer p, SQInteger size)
 {
     delete static_cast<TimeSignature*>(p);

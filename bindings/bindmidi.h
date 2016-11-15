@@ -18,9 +18,11 @@
 #define BINDMIDI_H
 
 #include "squirrel.h"
+class Note;
 class NoteOn;
 class NoteOff;
 class Control;
+class Pattern;
 
 namespace binding
 {
@@ -43,6 +45,8 @@ namespace binding
     SQInteger MidiNoteOnPush(HSQUIRRELVM vm, NoteOn *);
     SQInteger MidiNoteOffPush(HSQUIRRELVM vm, NoteOff *);
     SQInteger MidiControlPush(HSQUIRRELVM vm, Control *);
+    Note *getMidiNote(HSQUIRRELVM &vm, int index);
+    Pattern *getMidiPattern(HSQUIRRELVM &vm, int index);
     // release hooks for types in this package
     SQInteger MidiABCReaderRelease(SQUserPointer p, SQInteger size);
     SQInteger MidiDrumTabReaderRelease(SQUserPointer p, SQInteger size);

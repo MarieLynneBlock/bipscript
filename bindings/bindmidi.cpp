@@ -641,6 +641,13 @@ SQInteger MidiSystemInonNoteOn(HSQUIRRELVM vm)
 //
 // Midi.Note class
 //
+Note *getMidiNote(HSQUIRRELVM &vm, int index) {
+    SQUserPointer objPtr;
+    if (!SQ_FAILED(sq_getinstanceup(vm, index, (SQUserPointer*)&objPtr, &MidiNoteObject))) {
+        return static_cast<Note*>(objPtr);
+    }
+}
+
 SQInteger MidiNoteRelease(SQUserPointer p, SQInteger size)
 {
     delete static_cast<Note*>(p);
@@ -1407,6 +1414,13 @@ SQInteger MidiOutputonNoteOn(HSQUIRRELVM vm)
 //
 // Midi.Pattern class
 //
+Pattern *getMidiPattern(HSQUIRRELVM &vm, int index) {
+    SQUserPointer objPtr;
+    if (!SQ_FAILED(sq_getinstanceup(vm, index, (SQUserPointer*)&objPtr, &MidiPatternObject))) {
+        return static_cast<Pattern*>(objPtr);
+    }
+}
+
 SQInteger MidiPatternRelease(SQUserPointer p, SQInteger size)
 {
     delete static_cast<Pattern*>(p);
@@ -1424,14 +1438,8 @@ SQInteger MidiPatternCtor(HSQUIRRELVM vm)
     if(numargs == 2) {
 
         // get parameter 1 "other" as Midi.Pattern
-        Pattern *other = 0;
-        sq_getinstanceup(vm, 2, (SQUserPointer*)&other, 0);
+        Pattern *other = getMidiPattern(vm, 2);
         if(other == 0) {
-            return sq_throwerror(vm, "argument 1 \"other\" is not of type Midi.Pattern");
-        }
-        SQUserPointer otherTypeTag;
-        sq_gettypetag(vm, 2, &otherTypeTag);
-        if(otherTypeTag != &MidiPatternObject) {
             return sq_throwerror(vm, "argument 1 \"other\" is not of type Midi.Pattern");
         }
 
@@ -1481,14 +1489,8 @@ SQInteger MidiPatternadd(HSQUIRRELVM vm)
     Pattern *obj = static_cast<Pattern*>(userPtr);
 
     // get parameter 1 "note" as Midi.Note
-    Note *note = 0;
-    sq_getinstanceup(vm, 2, (SQUserPointer*)&note, 0);
+    Note *note = getMidiNote(vm, 2);
     if(note == 0) {
-        return sq_throwerror(vm, "argument 1 \"note\" is not of type Midi.Note");
-    }
-    SQUserPointer noteTypeTag;
-    sq_gettypetag(vm, 2, &noteTypeTag);
-    if(noteTypeTag != &MidiNoteObject) {
         return sq_throwerror(vm, "argument 1 \"note\" is not of type Midi.Note");
     }
 
@@ -1964,12 +1966,7 @@ SQInteger MidiSystemOutmidiChannel(HSQUIRRELVM vm)
 SQInteger MidiSystemOutschedule(HSQUIRRELVM vm)
 {
     SQObjectType overrideType = sq_gettype(vm, 2);
-    SQUserPointer overrideTypeTag;
-    if(overrideType == OT_INSTANCE) {
-        sq_gettypetag(vm, 2, &overrideTypeTag);
-    }
-
-    if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiNoteObject) {
+    if(Note *note = getMidiNote(vm, 2)) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
         if(numargs > 6) {
@@ -1984,13 +1981,6 @@ SQInteger MidiSystemOutschedule(HSQUIRRELVM vm)
             return sq_throwerror(vm, "schedule method needs an instance of SystemOut");
         }
         MidiOutputPort *obj = static_cast<MidiOutputPort*>(userPtr);
-
-        // get parameter 1 "note" as Midi.Note
-        Note *note = 0;
-        sq_getinstanceup(vm, 2, (SQUserPointer*)&note, 0);
-        if(note == 0) {
-            return sq_throwerror(vm, "argument 1 \"note\" is not of type Midi.Note");
-        }
 
         // get parameter 2 "bar" as integer
         SQInteger bar;
@@ -2083,7 +2073,7 @@ SQInteger MidiSystemOutschedule(HSQUIRRELVM vm)
         // void method, returns no value
         return 0;
     }
-    else if(overrideType == OT_INSTANCE && overrideTypeTag == &MidiPatternObject) {
+    else if(Pattern *pattern = getMidiPattern(vm, 2)) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
         if(numargs > 6) {
@@ -2098,13 +2088,6 @@ SQInteger MidiSystemOutschedule(HSQUIRRELVM vm)
             return sq_throwerror(vm, "schedule method needs an instance of SystemOut");
         }
         MidiOutputPort *obj = static_cast<MidiOutputPort*>(userPtr);
-
-        // get parameter 1 "pattern" as Midi.Pattern
-        Pattern *pattern = 0;
-        sq_getinstanceup(vm, 2, (SQUserPointer*)&pattern, 0);
-        if(pattern == 0) {
-            return sq_throwerror(vm, "argument 1 \"pattern\" is not of type Midi.Pattern");
-        }
 
         // get parameter 2 "bar" as integer
         SQInteger bar;

@@ -162,6 +162,13 @@ SQInteger OscInputurl(HSQUIRRELVM vm)
 //
 // Osc.Message class
 //
+OscMessage *getOscMessage(HSQUIRRELVM &vm, int index) {
+    SQUserPointer objPtr;
+    if (!SQ_FAILED(sq_getinstanceup(vm, index, (SQUserPointer*)&objPtr, &OscMessageObject))) {
+        return static_cast<OscMessage*>(objPtr);
+    }
+}
+
 SQInteger OscMessageRelease(SQUserPointer p, SQInteger size)
 {
     delete static_cast<OscMessage*>(p);
@@ -204,11 +211,6 @@ SQInteger OscMessageCtor(HSQUIRRELVM vm)
 SQInteger OscMessageadd(HSQUIRRELVM vm)
 {
     SQObjectType overrideType = sq_gettype(vm, 2);
-    SQUserPointer overrideTypeTag;
-    if(overrideType == OT_INSTANCE) {
-        sq_gettypetag(vm, 2, &overrideTypeTag);
-    }
-
     if(overrideType == OT_INTEGER) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
@@ -468,14 +470,8 @@ SQInteger OscOutputschedule(HSQUIRRELVM vm)
     OscOutput *obj = static_cast<OscOutput*>(userPtr);
 
     // get parameter 1 "message" as Osc.Message
-    OscMessage *message = 0;
-    sq_getinstanceup(vm, 2, (SQUserPointer*)&message, 0);
+    OscMessage *message = getOscMessage(vm, 2);
     if(message == 0) {
-        return sq_throwerror(vm, "argument 1 \"message\" is not of type Osc.Message");
-    }
-    SQUserPointer messageTypeTag;
-    sq_gettypetag(vm, 2, &messageTypeTag);
-    if(messageTypeTag != &OscMessageObject) {
         return sq_throwerror(vm, "argument 1 \"message\" is not of type Osc.Message");
     }
 

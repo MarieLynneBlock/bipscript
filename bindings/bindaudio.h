@@ -18,6 +18,7 @@
 #define BINDAUDIO_H
 
 #include "squirrel.h"
+class AudioConnection;
 
 namespace binding
 {
@@ -30,6 +31,7 @@ namespace binding
     extern HSQOBJECT AudioStereoInObject;
     extern HSQOBJECT AudioStereoOutObject;
     extern HSQOBJECT AudioBeatTrackerObject;
+    AudioConnection *getAudioOutput(HSQUIRRELVM &vm, int index);
     // release hooks for types in this package
     SQInteger AudioStereoOutRelease(SQUserPointer p, SQInteger size);
     // method to bind this package
