@@ -23,6 +23,7 @@ include_directories("tinymml")
 include_directories("tlsf")
 
 add_definitions(-DANSILIBS)
+add_definitions(-DUSE_FFTW)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 
 # message(STATUS "SRC_LIST : ${SRC_LIST}")
