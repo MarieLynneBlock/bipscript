@@ -379,6 +379,79 @@ SQInteger OscMessageadd(HSQUIRRELVM vm)
 }
 
 //
+// Osc.Message arg
+//
+SQInteger OscMessagearg(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "arg method needs an instance of Message");
+    }
+    OscMessage *obj = static_cast<OscMessage*>(userPtr);
+
+    // get parameter 1 "index" as integer
+    SQInteger index;
+    if (SQ_FAILED(sq_getinteger(vm, 2, &index))){
+        return sq_throwerror(vm, "argument 1 \"index\" is not of type integer");
+    }
+
+    // return value
+    ScriptValue  ret;
+    // call the implementation
+    try {
+        ret = obj->arg(index);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    ret.pushValue(vm);
+    return 1;
+}
+
+//
+// Osc.Message args
+//
+SQInteger OscMessageargs(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 1) {
+        return sq_throwerror(vm, "too many parameters, expected at most 0");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "args method needs an instance of Message");
+    }
+    OscMessage *obj = static_cast<OscMessage*>(userPtr);
+
+    // return value
+    SQInteger ret;
+    // call the implementation
+    try {
+        ret = obj->getParameterCount();
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushinteger(vm, ret);
+    return 1;
+}
+
+//
 // Osc.Message path
 //
 SQInteger OscMessagepath(HSQUIRRELVM vm)
@@ -581,6 +654,14 @@ void bindOsc(HSQUIRRELVM vm)
     // methods for class Message
     sq_pushstring(vm, _SC("add"), -1);
     sq_newclosure(vm, &OscMessageadd, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("arg"), -1);
+    sq_newclosure(vm, &OscMessagearg, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("args"), -1);
+    sq_newclosure(vm, &OscMessageargs, 0);
     sq_newslot(vm, -3, false);
 
     sq_pushstring(vm, _SC("path"), -1);

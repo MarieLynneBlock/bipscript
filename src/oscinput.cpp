@@ -30,6 +30,30 @@ OscInput::OscInput(int port, const char *protocol)
 int OscInput::handle(const char *path, const char *types, lo_arg **argv, int argc, void *data)
 {
     OscMessage *message = new OscMessage(path);
+    for (int i = 0; i < argc; i++) {
+        switch(types[i]) {
+        case 'i':
+            message->addInteger(*(int32_t *)argv[i]);
+            break;
+        case 'f':
+            message->addFloat(*(float*)argv[i]);
+            break;
+        case 's':
+            message->addString((const char *)argv[i]);
+            break;
+        case 'T':
+            message->addBoolean(true);
+            break;
+        case 'F':
+            message->addBoolean(false);
+            break;
+        case 'N':
+            message->addNull(0);
+            break;
+        default:
+            break;
+        }
+    }
     ScriptFunction *handler = onReceiveHandler.load();
     if(handler) {
         (new OnReceiveClosure(*handler, message))->dispatch();
@@ -44,7 +68,7 @@ const char *OscInput::getUrl()
 void OscInput::onReceive(ScriptFunction &handler)
 {
     if(handler.getNumargs() != 2) {
-        throw std::logic_error("onOnset handler should take one argument");
+        throw std::logic_error("onReceive handler should take one argument");
     }
     onReceiveHandler.store(new ScriptFunction(handler));
 }

@@ -18,6 +18,7 @@
 #define OSCMESSAGE_H
 
 #include "event.h"
+#include "scripttypes.h"
 
 #include <string>
 #include <cstring>
@@ -91,6 +92,35 @@ public:
     }
     OscParameter getParameter(int i) {
         return parameters[i];
+    }
+    ScriptValue arg(int i) {
+      ScriptValue value;
+      switch(parameters[i].type) {
+      case 'i':
+        value.type = INTEGER;
+        value.intValue = parameters[i].value.intValue;
+        break;
+      case 'f':
+        value.type = FLOAT;
+        value.floatValue = parameters[i].value.floatValue;
+        break;
+      case 's':
+        value.type = STRING;
+        value.stringValue = parameters[i].value.stringValue;
+        break;
+      case 'T':
+        value.type = BOOL;
+        value.intValue = 1;
+        break;
+      case 'F':
+        value.type = BOOL;
+        value.intValue = 0;
+        break;
+      case 'N':
+        value.type = NULLVALUE;
+        break;
+      }
+      return value;
     }
 };
 

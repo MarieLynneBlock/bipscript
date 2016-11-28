@@ -18,6 +18,7 @@
 #include "scripttypes.h"
 
 #include <stdexcept>
+#include <cstring>
 
 ScriptHashIterator::ScriptHashIterator(HSQUIRRELVM &vm, HSQOBJECT &hash)
     : vm(vm)
@@ -68,6 +69,34 @@ void ScriptValue::setValue(HSQUIRRELVM &vm, SQInteger idx)
             sq_getstackobj(vm, idx, &arrayObj);
             arrayValue = new ScriptArray(vm, arrayObj);
             break;
+        case OT_TABLE:
+            throw std::logic_error("Table not supported here");
+        default:
+            throw std::logic_error("Unknown type not supported here");
+    }
+}
+
+void ScriptValue::pushValue(HSQUIRRELVM &vm)
+{
+    switch(type)
+    {
+        case BOOL:
+            sq_pushbool(vm, intValue);
+            break;
+        case NULLVALUE:
+            sq_pushnull(vm);
+            break;
+        case INTEGER:
+            sq_pushinteger(vm, intValue);
+            break;                    
+        case FLOAT:
+            sq_pushfloat(vm, floatValue);
+            break;
+        case STRING:
+            sq_pushstring(vm, stringValue, std::strlen(stringValue));
+            break;
+        case ARRAY:
+            throw std::logic_error("Array not supported here");
         case OT_TABLE:
             throw std::logic_error("Table not supported here");
         default:

@@ -1543,6 +1543,9 @@ SQInteger MidiPatternnote(HSQUIRRELVM vm)
         return sq_throwerror(vm, "note method needs an instance of Pattern");
     }
     Pattern *obj = static_cast<Pattern*>(userPtr);
+    if(!obj) {
+        return sq_throwerror(vm, "Pattern obj is null here!!!!");
+    }
 
     // get parameter 1 "index" as integer
     SQInteger index;

@@ -61,6 +61,12 @@ classes:
           parameters:
           - { name: value, type: "null" }
           cppname: addNull
+        - name: arg
+          parameters: { name: index, type: integer }
+          returns: primitive
+        - name: args
+          cppname: getParameterCount
+          returns: integer
         - name: path
           cppname: getPath
           returns: string

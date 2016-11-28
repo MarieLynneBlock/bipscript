@@ -22,7 +22,7 @@
 #include "methodqueue.h"
 
 enum ScriptValueType {
-    NULLVALUE, INTEGER, FLOAT, STRING, ARRAY
+    NULLVALUE, BOOL, INTEGER, FLOAT, STRING, ARRAY
 };
 
 class ScriptArray;
@@ -37,6 +37,7 @@ struct ScriptValue
         ScriptArray *arrayValue;
     };
     void setValue(HSQUIRRELVM &vm, SQInteger idx);
+    void pushValue(HSQUIRRELVM &vm);
 };
 
 class ScriptArray
