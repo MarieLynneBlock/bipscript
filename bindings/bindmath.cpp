@@ -74,7 +74,9 @@ SQInteger MathRandominteger(HSQUIRRELVM vm)
         return sq_throwerror(vm, "integer method needs an instance of Random");
     }
     Random *obj = static_cast<Random*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "integer method called before Math.Random constructor");
+    }
     // get parameter 1 "max" as integer
     SQInteger max;
     if (SQ_FAILED(sq_getinteger(vm, 2, &max))){

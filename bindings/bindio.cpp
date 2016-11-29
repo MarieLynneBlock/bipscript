@@ -80,7 +80,9 @@ SQInteger IOFileexists(HSQUIRRELVM vm)
         return sq_throwerror(vm, "exists method needs an instance of File");
     }
     File *obj = static_cast<File*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "exists method called before IO.File constructor");
+    }
     // return value
     SQBool ret;
     // call the implementation
@@ -112,7 +114,9 @@ SQInteger IOFileisFolder(HSQUIRRELVM vm)
         return sq_throwerror(vm, "isFolder method needs an instance of File");
     }
     File *obj = static_cast<File*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "isFolder method called before IO.File constructor");
+    }
     // return value
     SQBool ret;
     // call the implementation
@@ -144,7 +148,9 @@ SQInteger IOFilereadAll(HSQUIRRELVM vm)
         return sq_throwerror(vm, "readAll method needs an instance of File");
     }
     File *obj = static_cast<File*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "readAll method called before IO.File constructor");
+    }
     // return value
     const SQChar* ret;
     // call the implementation
@@ -176,7 +182,9 @@ SQInteger IOFilesize(HSQUIRRELVM vm)
         return sq_throwerror(vm, "size method needs an instance of File");
     }
     File *obj = static_cast<File*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "size method called before IO.File constructor");
+    }
     // return value
     SQInteger ret;
     // call the implementation

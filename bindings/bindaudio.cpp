@@ -94,7 +94,9 @@ SQInteger AudioMixeraddGainController(HSQUIRRELVM vm)
         return sq_throwerror(vm, "addGainController method needs an instance of Mixer");
     }
     Mixer *obj = static_cast<Mixer*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "addGainController method called before Audio.Mixer constructor");
+    }
     // get parameter 1 "source" as Midi.Source
     MidiSource *source = getMidiSource(vm);
     if(source == 0) {
@@ -153,7 +155,9 @@ SQInteger AudioMixerconnect(HSQUIRRELVM vm)
             return sq_throwerror(vm, "connect method needs an instance of Mixer");
         }
         Mixer *obj = static_cast<Mixer*>(userPtr);
-
+        if(!obj) {
+            return sq_throwerror(vm, "connect method called before Audio.Mixer constructor");
+        }
         // get parameter 1 "source" as Audio.Source
         AudioSource *source = getAudioSource(vm);
         if(source == 0) {
@@ -187,7 +191,9 @@ SQInteger AudioMixerconnect(HSQUIRRELVM vm)
             return sq_throwerror(vm, "connect method needs an instance of Mixer");
         }
         Mixer *obj = static_cast<Mixer*>(userPtr);
-
+        if(!obj) {
+            return sq_throwerror(vm, "connect method called before Audio.Mixer constructor");
+        }
         // get parameter 1 "source" as Audio.Source
         AudioSource *source = getAudioSource(vm);
         if(source == 0) {
@@ -240,7 +246,9 @@ SQInteger AudioMixerconnect(HSQUIRRELVM vm)
             return sq_throwerror(vm, "connect method needs an instance of Mixer");
         }
         Mixer *obj = static_cast<Mixer*>(userPtr);
-
+        if(!obj) {
+            return sq_throwerror(vm, "connect method called before Audio.Mixer constructor");
+        }
         // get parameter 1 "source" as Audio.Source
         AudioSource *source = getAudioSource(vm);
         if(source == 0) {
@@ -306,7 +314,9 @@ SQInteger AudioMixeroutput(HSQUIRRELVM vm)
         return sq_throwerror(vm, "output method needs an instance of Mixer");
     }
     Mixer *obj = static_cast<Mixer*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "output method called before Audio.Mixer constructor");
+    }
     // get parameter 1 "channel" as integer
     SQInteger channel;
     if (SQ_FAILED(sq_getinteger(vm, 2, &channel))){
@@ -352,7 +362,9 @@ SQInteger AudioMixerscheduleGain(HSQUIRRELVM vm)
         return sq_throwerror(vm, "scheduleGain method needs an instance of Mixer");
     }
     Mixer *obj = static_cast<Mixer*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "scheduleGain method called before Audio.Mixer constructor");
+    }
     // get parameter 1 "input" as integer
     SQInteger input;
     if (SQ_FAILED(sq_getinteger(vm, 2, &input))){
@@ -466,7 +478,9 @@ SQInteger AudioOnsetDetectorconnect(HSQUIRRELVM vm)
             return sq_throwerror(vm, "connect method needs an instance of OnsetDetector");
         }
         OnsetDetector *obj = static_cast<OnsetDetector*>(userPtr);
-
+        if(!obj) {
+            return sq_throwerror(vm, "connect method called before Audio.OnsetDetector constructor");
+        }
         // call the implementation
         try {
             obj->connect(*source);
@@ -493,7 +507,9 @@ SQInteger AudioOnsetDetectorconnect(HSQUIRRELVM vm)
             return sq_throwerror(vm, "connect method needs an instance of OnsetDetector");
         }
         OnsetDetector *obj = static_cast<OnsetDetector*>(userPtr);
-
+        if(!obj) {
+            return sq_throwerror(vm, "connect method called before Audio.OnsetDetector constructor");
+        }
         // call the implementation
         try {
             obj->connect(*output);
@@ -529,7 +545,9 @@ SQInteger AudioOnsetDetectoronOnset(HSQUIRRELVM vm)
         return sq_throwerror(vm, "onOnset method needs an instance of OnsetDetector");
     }
     OnsetDetector *obj = static_cast<OnsetDetector*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "onOnset method called before Audio.OnsetDetector constructor");
+    }
     // get parameter 1 "handler" as function
     HSQOBJECT handlerObj;
     if (SQ_FAILED(sq_getstackobj(vm, 2, &handlerObj))) {
@@ -574,7 +592,9 @@ SQInteger AudioOnsetDetectorsilence(HSQUIRRELVM vm)
         return sq_throwerror(vm, "silence method needs an instance of OnsetDetector");
     }
     OnsetDetector *obj = static_cast<OnsetDetector*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "silence method called before Audio.OnsetDetector constructor");
+    }
     // get parameter 1 "silence" as float
     SQFloat silence;
     if (SQ_FAILED(sq_getfloat(vm, 2, &silence))){
@@ -612,7 +632,9 @@ SQInteger AudioOnsetDetectorthreshold(HSQUIRRELVM vm)
         return sq_throwerror(vm, "threshold method needs an instance of OnsetDetector");
     }
     OnsetDetector *obj = static_cast<OnsetDetector*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "threshold method called before Audio.OnsetDetector constructor");
+    }
     // return value
     SQFloat ret;
     // 1 parameters passed in
@@ -737,7 +759,9 @@ SQInteger AudioSystemOutconnect(HSQUIRRELVM vm)
             return sq_throwerror(vm, "connect method needs an instance of SystemOut");
         }
         AudioOutputPort *obj = static_cast<AudioOutputPort*>(userPtr);
-
+        if(!obj) {
+            return sq_throwerror(vm, "connect method called before Audio.SystemOut constructor");
+        }
         // call the implementation
         try {
             obj->connect(*source);
@@ -764,7 +788,9 @@ SQInteger AudioSystemOutconnect(HSQUIRRELVM vm)
             return sq_throwerror(vm, "connect method needs an instance of SystemOut");
         }
         AudioOutputPort *obj = static_cast<AudioOutputPort*>(userPtr);
-
+        if(!obj) {
+            return sq_throwerror(vm, "connect method called before Audio.SystemOut constructor");
+        }
         // call the implementation
         try {
             obj->connect(*output);
@@ -853,7 +879,9 @@ SQInteger AudioSystemInoutput(HSQUIRRELVM vm)
         return sq_throwerror(vm, "output method needs an instance of SystemIn");
     }
     AudioInputPort *obj = static_cast<AudioInputPort*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "output method called before Audio.SystemIn constructor");
+    }
     // get parameter 1 "channel" as integer
     SQInteger channel;
     if (SQ_FAILED(sq_getinteger(vm, 2, &channel))){
@@ -944,7 +972,9 @@ SQInteger AudioStereoInoutput(HSQUIRRELVM vm)
         return sq_throwerror(vm, "output method needs an instance of StereoIn");
     }
     AudioStereoInput *obj = static_cast<AudioStereoInput*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "output method called before Audio.StereoIn constructor");
+    }
     // get parameter 1 "channel" as integer
     SQInteger channel;
     if (SQ_FAILED(sq_getinteger(vm, 2, &channel))){
@@ -1043,7 +1073,9 @@ SQInteger AudioStereoOutconnect(HSQUIRRELVM vm)
             return sq_throwerror(vm, "connect method needs an instance of StereoOut");
         }
         AudioStereoOutput *obj = static_cast<AudioStereoOutput*>(userPtr);
-
+        if(!obj) {
+            return sq_throwerror(vm, "connect method called before Audio.StereoOut constructor");
+        }
         // call the implementation
         try {
             obj->connect(*source);
@@ -1070,7 +1102,9 @@ SQInteger AudioStereoOutconnect(HSQUIRRELVM vm)
             return sq_throwerror(vm, "connect method needs an instance of StereoOut");
         }
         AudioStereoOutput *obj = static_cast<AudioStereoOutput*>(userPtr);
-
+        if(!obj) {
+            return sq_throwerror(vm, "connect method called before Audio.StereoOut constructor");
+        }
         // call the implementation
         try {
             obj->connect(*output);
@@ -1141,7 +1175,9 @@ SQInteger AudioBeatTrackerconnect(HSQUIRRELVM vm)
             return sq_throwerror(vm, "connect method needs an instance of BeatTracker");
         }
         BeatTracker *obj = static_cast<BeatTracker*>(userPtr);
-
+        if(!obj) {
+            return sq_throwerror(vm, "connect method called before Audio.BeatTracker constructor");
+        }
         // call the implementation
         try {
             obj->connect(*source);
@@ -1168,7 +1204,9 @@ SQInteger AudioBeatTrackerconnect(HSQUIRRELVM vm)
             return sq_throwerror(vm, "connect method needs an instance of BeatTracker");
         }
         BeatTracker *obj = static_cast<BeatTracker*>(userPtr);
-
+        if(!obj) {
+            return sq_throwerror(vm, "connect method called before Audio.BeatTracker constructor");
+        }
         // call the implementation
         try {
             obj->connect(*output);

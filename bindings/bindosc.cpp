@@ -101,7 +101,9 @@ SQInteger OscInputonReceive(HSQUIRRELVM vm)
         return sq_throwerror(vm, "onReceive method needs an instance of Input");
     }
     OscInput *obj = static_cast<OscInput*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "onReceive method called before Osc.Input constructor");
+    }
     // get parameter 1 "handler" as function
     HSQOBJECT handlerObj;
     if (SQ_FAILED(sq_getstackobj(vm, 2, &handlerObj))) {
@@ -143,7 +145,9 @@ SQInteger OscInputurl(HSQUIRRELVM vm)
         return sq_throwerror(vm, "url method needs an instance of Input");
     }
     OscInput *obj = static_cast<OscInput*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "url method called before Osc.Input constructor");
+    }
     // return value
     const SQChar* ret;
     // call the implementation
@@ -226,7 +230,9 @@ SQInteger OscMessageadd(HSQUIRRELVM vm)
             return sq_throwerror(vm, "add method needs an instance of Message");
         }
         OscMessage *obj = static_cast<OscMessage*>(userPtr);
-
+        if(!obj) {
+            return sq_throwerror(vm, "add method called before Osc.Message constructor");
+        }
         // get parameter 1 "value" as integer
         SQInteger value;
         if (SQ_FAILED(sq_getinteger(vm, 2, &value))){
@@ -259,7 +265,9 @@ SQInteger OscMessageadd(HSQUIRRELVM vm)
             return sq_throwerror(vm, "add method needs an instance of Message");
         }
         OscMessage *obj = static_cast<OscMessage*>(userPtr);
-
+        if(!obj) {
+            return sq_throwerror(vm, "add method called before Osc.Message constructor");
+        }
         // get parameter 1 "value" as float
         SQFloat value;
         if (SQ_FAILED(sq_getfloat(vm, 2, &value))){
@@ -292,7 +300,9 @@ SQInteger OscMessageadd(HSQUIRRELVM vm)
             return sq_throwerror(vm, "add method needs an instance of Message");
         }
         OscMessage *obj = static_cast<OscMessage*>(userPtr);
-
+        if(!obj) {
+            return sq_throwerror(vm, "add method called before Osc.Message constructor");
+        }
         // get parameter 1 "value" as string
         const SQChar* value;
         if (SQ_FAILED(sq_getstring(vm, 2, &value))){
@@ -325,7 +335,9 @@ SQInteger OscMessageadd(HSQUIRRELVM vm)
             return sq_throwerror(vm, "add method needs an instance of Message");
         }
         OscMessage *obj = static_cast<OscMessage*>(userPtr);
-
+        if(!obj) {
+            return sq_throwerror(vm, "add method called before Osc.Message constructor");
+        }
         // get parameter 1 "value" as bool
         SQBool value;
         if (SQ_FAILED(sq_getbool(vm, 2, &value))){
@@ -358,7 +370,9 @@ SQInteger OscMessageadd(HSQUIRRELVM vm)
             return sq_throwerror(vm, "add method needs an instance of Message");
         }
         OscMessage *obj = static_cast<OscMessage*>(userPtr);
-
+        if(!obj) {
+            return sq_throwerror(vm, "add method called before Osc.Message constructor");
+        }
         // get parameter 1 "value" as null
         const char *value = 0;
 
@@ -397,7 +411,9 @@ SQInteger OscMessagearg(HSQUIRRELVM vm)
         return sq_throwerror(vm, "arg method needs an instance of Message");
     }
     OscMessage *obj = static_cast<OscMessage*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "arg method called before Osc.Message constructor");
+    }
     // get parameter 1 "index" as integer
     SQInteger index;
     if (SQ_FAILED(sq_getinteger(vm, 2, &index))){
@@ -435,7 +451,9 @@ SQInteger OscMessageargs(HSQUIRRELVM vm)
         return sq_throwerror(vm, "args method needs an instance of Message");
     }
     OscMessage *obj = static_cast<OscMessage*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "args method called before Osc.Message constructor");
+    }
     // return value
     SQInteger ret;
     // call the implementation
@@ -467,7 +485,9 @@ SQInteger OscMessagepath(HSQUIRRELVM vm)
         return sq_throwerror(vm, "path method needs an instance of Message");
     }
     OscMessage *obj = static_cast<OscMessage*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "path method called before Osc.Message constructor");
+    }
     // return value
     const SQChar* ret;
     // call the implementation
@@ -541,7 +561,9 @@ SQInteger OscOutputschedule(HSQUIRRELVM vm)
         return sq_throwerror(vm, "schedule method needs an instance of Output");
     }
     OscOutput *obj = static_cast<OscOutput*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "schedule method called before Osc.Output constructor");
+    }
     // get parameter 1 "message" as Osc.Message
     OscMessage *message = getOscMessage(vm, 2);
     if(message == 0) {

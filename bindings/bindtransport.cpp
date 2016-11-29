@@ -260,7 +260,9 @@ SQInteger TransportMastertimeSignature(HSQUIRRELVM vm)
             return sq_throwerror(vm, "timeSignature method needs an instance of Master");
         }
         TransportMaster *obj = static_cast<TransportMaster*>(userPtr);
-
+        if(!obj) {
+            return sq_throwerror(vm, "timeSignature method called before Transport.Master constructor");
+        }
         // call the implementation
         try {
             obj->setTimeSignature(*signature);
@@ -287,7 +289,9 @@ SQInteger TransportMastertimeSignature(HSQUIRRELVM vm)
             return sq_throwerror(vm, "timeSignature method needs an instance of Master");
         }
         TransportMaster *obj = static_cast<TransportMaster*>(userPtr);
-
+        if(!obj) {
+            return sq_throwerror(vm, "timeSignature method called before Transport.Master constructor");
+        }
         // get parameter 1 "numerator" as integer
         SQInteger numerator;
         if (SQ_FAILED(sq_getinteger(vm, 2, &numerator))){
@@ -392,7 +396,9 @@ SQInteger TransportPositionbar(HSQUIRRELVM vm)
         return sq_throwerror(vm, "bar method needs an instance of Position");
     }
     Position *obj = static_cast<Position*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "bar method called before Transport.Position constructor");
+    }
     // return value
     SQInteger ret;
     // call the implementation
@@ -476,7 +482,9 @@ SQInteger TransportTimeSignaturedenominator(HSQUIRRELVM vm)
         return sq_throwerror(vm, "denominator method needs an instance of TimeSignature");
     }
     TimeSignature *obj = static_cast<TimeSignature*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "denominator method called before Transport.TimeSignature constructor");
+    }
     // return value
     SQInteger ret;
     // call the implementation
@@ -508,7 +516,9 @@ SQInteger TransportTimeSignaturenumerator(HSQUIRRELVM vm)
         return sq_throwerror(vm, "numerator method needs an instance of TimeSignature");
     }
     TimeSignature *obj = static_cast<TimeSignature*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "numerator method called before Transport.TimeSignature constructor");
+    }
     // return value
     SQInteger ret;
     // call the implementation

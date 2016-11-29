@@ -184,7 +184,9 @@ SQInteger Lv2PluginaddController(HSQUIRRELVM vm)
         return sq_throwerror(vm, "addController method needs an instance of Plugin");
     }
     Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "addController method called before Lv2.Plugin constructor");
+    }
     // get parameter 1 "source" as Midi.Source
     MidiSource *source = getMidiSource(vm);
     if(source == 0) {
@@ -278,7 +280,9 @@ SQInteger Lv2Pluginconnect(HSQUIRRELVM vm)
         return sq_throwerror(vm, "connect method needs an instance of Plugin");
     }
     Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "connect method called before Lv2.Plugin constructor");
+    }
     // get parameter 1 "source" as Audio.Source
     AudioSource *source = getAudioSource(vm);
     if(source == 0) {
@@ -316,7 +320,9 @@ SQInteger Lv2PluginconnectMidi(HSQUIRRELVM vm)
         return sq_throwerror(vm, "connectMidi method needs an instance of Plugin");
     }
     Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "connectMidi method called before Lv2.Plugin constructor");
+    }
     // get parameter 1 "source" as Midi.Source
     MidiSource *source = getMidiSource(vm);
     if(source == 0) {
@@ -351,7 +357,9 @@ SQInteger Lv2PluginmidiChannel(HSQUIRRELVM vm)
         return sq_throwerror(vm, "midiChannel method needs an instance of Plugin");
     }
     Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "midiChannel method called before Lv2.Plugin constructor");
+    }
     // return value
     SQInteger ret;
     // 1 parameters passed in
@@ -406,7 +414,9 @@ SQInteger Lv2PluginmidiOutput(HSQUIRRELVM vm)
         return sq_throwerror(vm, "midiOutput method needs an instance of Plugin");
     }
     Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "midiOutput method called before Lv2.Plugin constructor");
+    }
     // get parameter 1 "index" as integer
     SQInteger index;
     if (SQ_FAILED(sq_getinteger(vm, 2, &index))){
@@ -452,7 +462,9 @@ SQInteger Lv2PluginonControl(HSQUIRRELVM vm)
         return sq_throwerror(vm, "onControl method needs an instance of Plugin");
     }
     Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "onControl method called before Lv2.Plugin constructor");
+    }
     // get parameter 1 "handler" as function
     HSQOBJECT handlerObj;
     if (SQ_FAILED(sq_getstackobj(vm, 2, &handlerObj))) {
@@ -497,7 +509,9 @@ SQInteger Lv2PluginonNoteOff(HSQUIRRELVM vm)
         return sq_throwerror(vm, "onNoteOff method needs an instance of Plugin");
     }
     Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "onNoteOff method called before Lv2.Plugin constructor");
+    }
     // get parameter 1 "handler" as function
     HSQOBJECT handlerObj;
     if (SQ_FAILED(sq_getstackobj(vm, 2, &handlerObj))) {
@@ -542,7 +556,9 @@ SQInteger Lv2PluginonNoteOn(HSQUIRRELVM vm)
         return sq_throwerror(vm, "onNoteOn method needs an instance of Plugin");
     }
     Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "onNoteOn method called before Lv2.Plugin constructor");
+    }
     // get parameter 1 "handler" as function
     HSQOBJECT handlerObj;
     if (SQ_FAILED(sq_getstackobj(vm, 2, &handlerObj))) {
@@ -587,7 +603,9 @@ SQInteger Lv2Pluginoutput(HSQUIRRELVM vm)
         return sq_throwerror(vm, "output method needs an instance of Plugin");
     }
     Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "output method called before Lv2.Plugin constructor");
+    }
     // get parameter 1 "channel" as integer
     SQInteger channel;
     if (SQ_FAILED(sq_getinteger(vm, 2, &channel))){
@@ -635,7 +653,9 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
             return sq_throwerror(vm, "schedule method needs an instance of Plugin");
         }
         Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
-
+        if(!obj) {
+            return sq_throwerror(vm, "schedule method called before Lv2.Plugin constructor");
+        }
         // get parameter 2 "bar" as integer
         SQInteger bar;
         if (SQ_FAILED(sq_getinteger(vm, 3, &bar))){
@@ -742,7 +762,9 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
             return sq_throwerror(vm, "schedule method needs an instance of Plugin");
         }
         Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
-
+        if(!obj) {
+            return sq_throwerror(vm, "schedule method called before Lv2.Plugin constructor");
+        }
         // get parameter 2 "bar" as integer
         SQInteger bar;
         if (SQ_FAILED(sq_getinteger(vm, 3, &bar))){
@@ -849,7 +871,9 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
             return sq_throwerror(vm, "schedule method needs an instance of Plugin");
         }
         Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
-
+        if(!obj) {
+            return sq_throwerror(vm, "schedule method called before Lv2.Plugin constructor");
+        }
         // get parameter 2 "bar" as integer
         SQInteger bar;
         if (SQ_FAILED(sq_getinteger(vm, 3, &bar))){
@@ -965,7 +989,9 @@ SQInteger Lv2PluginscheduleControl(HSQUIRRELVM vm)
         return sq_throwerror(vm, "scheduleControl method needs an instance of Plugin");
     }
     Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "scheduleControl method called before Lv2.Plugin constructor");
+    }
     // get parameter 1 "control" as string
     const SQChar* control;
     if (SQ_FAILED(sq_getstring(vm, 2, &control))){
@@ -1027,7 +1053,9 @@ SQInteger Lv2PluginsetControl(HSQUIRRELVM vm)
         return sq_throwerror(vm, "setControl method needs an instance of Plugin");
     }
     Lv2Plugin *obj = static_cast<Lv2Plugin*>(userPtr);
-
+    if(!obj) {
+        return sq_throwerror(vm, "setControl method called before Lv2.Plugin constructor");
+    }
     // get parameter 1 "control" as string
     const SQChar* control;
     if (SQ_FAILED(sq_getstring(vm, 2, &control))){
