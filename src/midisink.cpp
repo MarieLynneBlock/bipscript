@@ -58,6 +58,6 @@ void MidiSink::schedule(MidiMessage &mesg, Position &position, unsigned char cha
     if(channel < 1 || channel > 16) {
         throw std::logic_error("MIDI channel must be between 1 and 16");
     }
-    MidiEvent* evt = new MidiEvent(position, mesg.byte(0), mesg.byte(1), mesg.type(), channel);
+    MidiEvent* evt = new MidiEvent(position, mesg.byte(0), mesg.byte(1), mesg.type(), channel - 1);
     addMidiEvent(evt);
 }
