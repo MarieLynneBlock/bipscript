@@ -20,21 +20,23 @@
 #include "audioconnection.h"
 #include "objectcache.h"
 #include "eventclosure.h"
-
-#include "aubio/aubio.h"
+#include "OnsetDetectionFunction.h"
 
 const unsigned int ONSET_HOP_SIZE = 512;
+const unsigned int HISTORY_SIZE = 8;
 
 class OnsetDetector : public Processor
 {
-    aubio_onset_t *aubioOnset;
-    fvec_t *aubioInput;
-    fvec_t *aubioOutput;
+    OnsetDetectionFunction odf;
     unsigned int index;
+    double *buffer;
+    double history[HISTORY_SIZE];
+    float thold;
+    jack_nframes_t lastOnsetFrame;
     std::atomic<AudioConnection *> audioInput;
     std::atomic<ScriptFunction*> onOnsetHandler;
 public:
-    OnsetDetector(const char *type);
+    OnsetDetector();
     ~OnsetDetector();
     void onOnset(ScriptFunction &handler);
     void connect(AudioSource &source) {
@@ -44,21 +46,12 @@ public:
         this->audioInput.store(&connection);
     }
     float threshold() {
-        return aubio_onset_get_threshold(aubioOnset);
+        return thold;
     }
-    float threshold(smpl_t threshold) {
-        aubio_onset_set_threshold(aubioOnset, threshold);
-        return threshold;
+    float threshold(float threshold) {
+        return thold = threshold;
     }
-    // uncomment when supported by aubio
-//    float silence() {
-//        return aubio_onset_get_silence(aubioOnset);
-//    }
-    float silence(smpl_t silence) {
-        aubio_onset_set_silence(aubioOnset, silence);
-        return silence;
-    }
-    void reset(const char *type);
+    void reset();
     void doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
     void reposition() {}
 };
@@ -79,10 +72,7 @@ public:
         static OnsetDetectorCache instance;
         return instance;
     }
-    OnsetDetector *getOnsetDetector(const char *type);
-    OnsetDetector *getOnsetDetector() {
-        return getOnsetDetector("default");
-    }
+    OnsetDetector *getOnsetDetector();
 };
 
 

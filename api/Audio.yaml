@@ -82,7 +82,6 @@ classes :
         - Audio.Sink
       include: onsetdetector
       ctor:
-        parameters: { name: type, type: string, optional: true }
         expression: OnsetDetectorCache::instance().getOnsetDetector
       methods:
       - name: onOnset
@@ -91,10 +90,6 @@ classes :
       - name: threshold
         parameters:
         - { name: threshold, type: float, optional: true }
-        returns: float
-      - name: silence
-        parameters:
-        - { name: silence, type: float }
         returns: float
 
     - name: Output
