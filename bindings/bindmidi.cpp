@@ -1520,8 +1520,8 @@ SQInteger MidiPatternadd(HSQUIRRELVM vm)
     if(numargs > 5) {
         return sq_throwerror(vm, "too many parameters, expected at most 4");
     }
-    if(numargs < 5) {
-        return sq_throwerror(vm, "insufficient parameters, expected at least 4");
+    if(numargs < 3) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 2");
     }
     // get "this" pointer
     SQUserPointer userPtr = 0;
@@ -1544,24 +1544,56 @@ SQInteger MidiPatternadd(HSQUIRRELVM vm)
         return sq_throwerror(vm, "argument 2 \"bar\" is not of type integer");
     }
 
-    // get parameter 3 "position" as integer
-    SQInteger position;
-    if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
-        return sq_throwerror(vm, "argument 3 \"position\" is not of type integer");
+    // 3 parameters passed in
+    if(numargs == 4) {
+
+        // get parameter 3 "position" as integer
+        SQInteger position;
+        if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
+            return sq_throwerror(vm, "argument 3 \"position\" is not of type integer");
+        }
+
+        // call the implementation
+        try {
+            obj->addNote(*note, bar, position);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
     }
 
-    // get parameter 4 "division" as integer
-    SQInteger division;
-    if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
-        return sq_throwerror(vm, "argument 4 \"division\" is not of type integer");
+    // 4 parameters passed in
+    else if(numargs == 5) {
+
+        // get parameter 3 "position" as integer
+        SQInteger position;
+        if (SQ_FAILED(sq_getinteger(vm, 4, &position))){
+            return sq_throwerror(vm, "argument 3 \"position\" is not of type integer");
+        }
+
+        // get parameter 4 "division" as integer
+        SQInteger division;
+        if (SQ_FAILED(sq_getinteger(vm, 5, &division))){
+            return sq_throwerror(vm, "argument 4 \"division\" is not of type integer");
+        }
+
+        // call the implementation
+        try {
+            obj->addNote(*note, bar, position, division);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
     }
 
-    // call the implementation
-    try {
-        obj->addNote(*note, bar, position, division);
-    }
-    catch(std::exception const& e) {
-        return sq_throwerror(vm, e.what());
+    else {
+        // call the implementation
+        try {
+            obj->addNote(*note, bar);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
     }
 
     // void method, returns no value

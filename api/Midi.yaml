@@ -204,8 +204,8 @@ classes :
           parameters:
             - {name: note, type: Midi.Note}
             - {name: bar, type: integer}
-            - {name: position, type: integer}
-            - {name: division, type: integer}
+            - {name: position, type: integer, optional: true}
+            - {name: division, type: integer, optional: true}
           cppname: addNote
         - name: size
           returns: integer

@@ -48,6 +48,12 @@ class Pattern
 public:
     // methods for notes
     void addNote(Note &note, int bar, int position, int division);
+    void addNote(Note &note, int bar, int position) {
+        addNote(note, bar, position, 4);
+    }
+    void addNote(Note &note, int bar) {
+        addNote(note, bar, 0);
+    }
     void addNote(Note &note, Position &position);
     unsigned int size() {
         return noteList.size();
