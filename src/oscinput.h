@@ -7,6 +7,7 @@
 #include "bindosc.h"
 
 #include "lo/lo.h"
+#include <atomic>
 #include <string>
 #include <stdexcept>
 
