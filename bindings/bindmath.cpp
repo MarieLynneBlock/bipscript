@@ -17,6 +17,7 @@
 
 #include "bindmath.h"
 #include "bindtypes.h"
+#include "bindcommon.h"
 
 #include "random.h"
 
@@ -53,6 +54,17 @@ SQInteger MathRandomCtor(HSQUIRRELVM vm)
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
     sq_setreleasehook(vm, 1, MathRandomRelease);
     return 1;
+}
+
+SQInteger MathRandomClone(HSQUIRRELVM vm)
+{
+    // get instance ptr of original
+    SQUserPointer userPtr;
+    sq_getinstanceup(vm, 2, &userPtr, 0);
+    // set instance ptr to a copy
+    sq_setinstanceup(vm, 1, new Random(*(Random*)userPtr));
+    sq_setreleasehook(vm, 1, &MathRandomRelease);
+    return 0;
 }
 
 //
@@ -114,6 +126,11 @@ void bindMath(HSQUIRRELVM vm)
     // ctor for class Random
     sq_pushstring(vm, _SC("constructor"), -1);
     sq_newclosure(vm, &MathRandomCtor, 0);
+    sq_newslot(vm, -3, false);
+
+    // clone for class Random
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &MathRandomClone, 0);
     sq_newslot(vm, -3, false);
 
     // methods for class Random

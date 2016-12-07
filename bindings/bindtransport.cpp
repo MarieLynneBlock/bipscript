@@ -17,6 +17,7 @@
 
 #include "bindtransport.h"
 #include "bindtypes.h"
+#include "bindcommon.h"
 
 #include "transport.h"
 #include "audioengine.h"
@@ -380,6 +381,17 @@ SQInteger TransportPositionCtor(HSQUIRRELVM vm)
     return 1;
 }
 
+SQInteger TransportPositionClone(HSQUIRRELVM vm)
+{
+    // get instance ptr of original
+    SQUserPointer userPtr;
+    sq_getinstanceup(vm, 2, &userPtr, 0);
+    // set instance ptr to a copy
+    sq_setinstanceup(vm, 1, new Position(*(Position*)userPtr));
+    sq_setreleasehook(vm, 1, &TransportPositionRelease);
+    return 0;
+}
+
 //
 // Transport.Position bar
 //
@@ -464,6 +476,17 @@ SQInteger TransportTimeSignatureCtor(HSQUIRRELVM vm)
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
     sq_setreleasehook(vm, 1, TransportTimeSignatureRelease);
     return 1;
+}
+
+SQInteger TransportTimeSignatureClone(HSQUIRRELVM vm)
+{
+    // get instance ptr of original
+    SQUserPointer userPtr;
+    sq_getinstanceup(vm, 2, &userPtr, 0);
+    // set instance ptr to a copy
+    sq_setinstanceup(vm, 1, new TimeSignature(*(TimeSignature*)userPtr));
+    sq_setreleasehook(vm, 1, &TransportTimeSignatureRelease);
+    return 0;
 }
 
 //
@@ -567,6 +590,11 @@ void bindTransport(HSQUIRRELVM vm)
     sq_newclosure(vm, &TransportMasterCtor, 0);
     sq_newslot(vm, -3, false);
 
+    // clone for class Master
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &unclonable, 0);
+    sq_newslot(vm, -3, false);
+
     // methods for class Master
     sq_pushstring(vm, _SC("timeSignature"), -1);
     sq_newclosure(vm, &TransportMastertimeSignature, 0);
@@ -586,6 +614,11 @@ void bindTransport(HSQUIRRELVM vm)
     sq_newclosure(vm, &TransportPositionCtor, 0);
     sq_newslot(vm, -3, false);
 
+    // clone for class Position
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &TransportPositionClone, 0);
+    sq_newslot(vm, -3, false);
+
     // methods for class Position
     sq_pushstring(vm, _SC("bar"), -1);
     sq_newclosure(vm, &TransportPositionbar, 0);
@@ -603,6 +636,11 @@ void bindTransport(HSQUIRRELVM vm)
     // ctor for class TimeSignature
     sq_pushstring(vm, _SC("constructor"), -1);
     sq_newclosure(vm, &TransportTimeSignatureCtor, 0);
+    sq_newslot(vm, -3, false);
+
+    // clone for class TimeSignature
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &TransportTimeSignatureClone, 0);
     sq_newslot(vm, -3, false);
 
     // methods for class TimeSignature

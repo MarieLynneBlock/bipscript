@@ -17,6 +17,7 @@
 
 #include "bindio.h"
 #include "bindtypes.h"
+#include "bindcommon.h"
 
 #include "io.h"
 
@@ -62,6 +63,17 @@ SQInteger IOFileCtor(HSQUIRRELVM vm)
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
     sq_setreleasehook(vm, 1, IOFileRelease);
     return 1;
+}
+
+SQInteger IOFileClone(HSQUIRRELVM vm)
+{
+    // get instance ptr of original
+    SQUserPointer userPtr;
+    sq_getinstanceup(vm, 2, &userPtr, 0);
+    // set instance ptr to a copy
+    sq_setinstanceup(vm, 1, new File(*(File*)userPtr));
+    sq_setreleasehook(vm, 1, &IOFileRelease);
+    return 0;
 }
 
 //
@@ -216,6 +228,11 @@ void bindIO(HSQUIRRELVM vm)
     // ctor for class File
     sq_pushstring(vm, _SC("constructor"), -1);
     sq_newclosure(vm, &IOFileCtor, 0);
+    sq_newslot(vm, -3, false);
+
+    // clone for class File
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &IOFileClone, 0);
     sq_newslot(vm, -3, false);
 
     // methods for class File

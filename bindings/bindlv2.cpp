@@ -17,6 +17,7 @@
 
 #include "bindlv2.h"
 #include "bindtypes.h"
+#include "bindcommon.h"
 #include "bindaudio.h"
 #include "bindmidi.h"
 
@@ -1165,6 +1166,17 @@ SQInteger Lv2StateCtor(HSQUIRRELVM vm)
     }
 }
 
+SQInteger Lv2StateClone(HSQUIRRELVM vm)
+{
+    // get instance ptr of original
+    SQUserPointer userPtr;
+    sq_getinstanceup(vm, 2, &userPtr, 0);
+    // set instance ptr to a copy
+    sq_setinstanceup(vm, 1, new Lv2State(*(Lv2State*)userPtr));
+    sq_setreleasehook(vm, 1, &Lv2StateRelease);
+    return 0;
+}
+
 
 void bindLv2(HSQUIRRELVM vm)
 {
@@ -1181,6 +1193,11 @@ void bindLv2(HSQUIRRELVM vm)
     // ctor for class Plugin
     sq_pushstring(vm, _SC("constructor"), -1);
     sq_newclosure(vm, &Lv2PluginCtor, 0);
+    sq_newslot(vm, -3, false);
+
+    // clone for class Plugin
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &unclonable, 0);
     sq_newslot(vm, -3, false);
 
     // methods for class Plugin
@@ -1244,6 +1261,11 @@ void bindLv2(HSQUIRRELVM vm)
     // ctor for class State
     sq_pushstring(vm, _SC("constructor"), -1);
     sq_newclosure(vm, &Lv2StateCtor, 0);
+    sq_newslot(vm, -3, false);
+
+    // clone for class State
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &Lv2StateClone, 0);
     sq_newslot(vm, -3, false);
 
     // methods for class State

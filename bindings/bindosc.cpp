@@ -17,6 +17,7 @@
 
 #include "bindosc.h"
 #include "bindtypes.h"
+#include "bindcommon.h"
 
 #include "oscinput.h"
 #include "oscmessage.h"
@@ -207,6 +208,17 @@ SQInteger OscMessageCtor(HSQUIRRELVM vm)
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
     sq_setreleasehook(vm, 1, OscMessageRelease);
     return 1;
+}
+
+SQInteger OscMessageClone(HSQUIRRELVM vm)
+{
+    // get instance ptr of original
+    SQUserPointer userPtr;
+    sq_getinstanceup(vm, 2, &userPtr, 0);
+    // set instance ptr to a copy
+    sq_setinstanceup(vm, 1, new OscMessage(*(OscMessage*)userPtr));
+    sq_setreleasehook(vm, 1, &OscMessageRelease);
+    return 0;
 }
 
 //
@@ -650,6 +662,11 @@ void bindOsc(HSQUIRRELVM vm)
     sq_newclosure(vm, &OscInputCtor, 0);
     sq_newslot(vm, -3, false);
 
+    // clone for class Input
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &unclonable, 0);
+    sq_newslot(vm, -3, false);
+
     // methods for class Input
     sq_pushstring(vm, _SC("onReceive"), -1);
     sq_newclosure(vm, &OscInputonReceive, 0);
@@ -671,6 +688,11 @@ void bindOsc(HSQUIRRELVM vm)
     // ctor for class Message
     sq_pushstring(vm, _SC("constructor"), -1);
     sq_newclosure(vm, &OscMessageCtor, 0);
+    sq_newslot(vm, -3, false);
+
+    // clone for class Message
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &OscMessageClone, 0);
     sq_newslot(vm, -3, false);
 
     // methods for class Message
@@ -702,6 +724,11 @@ void bindOsc(HSQUIRRELVM vm)
     // ctor for class Output
     sq_pushstring(vm, _SC("constructor"), -1);
     sq_newclosure(vm, &OscOutputCtor, 0);
+    sq_newslot(vm, -3, false);
+
+    // clone for class Output
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &unclonable, 0);
     sq_newslot(vm, -3, false);
 
     // methods for class Output

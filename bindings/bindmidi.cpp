@@ -17,6 +17,7 @@
 
 #include "bindmidi.h"
 #include "bindtypes.h"
+#include "bindcommon.h"
 #include "bindtransport.h"
 
 #include "abcreader.h"
@@ -74,6 +75,17 @@ SQInteger MidiABCReaderCtor(HSQUIRRELVM vm)
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
     sq_setreleasehook(vm, 1, MidiABCReaderRelease);
     return 1;
+}
+
+SQInteger MidiABCReaderClone(HSQUIRRELVM vm)
+{
+    // get instance ptr of original
+    SQUserPointer userPtr;
+    sq_getinstanceup(vm, 2, &userPtr, 0);
+    // set instance ptr to a copy
+    sq_setinstanceup(vm, 1, new ABCReader(*(ABCReader*)userPtr));
+    sq_setreleasehook(vm, 1, &MidiABCReaderRelease);
+    return 0;
 }
 
 //
@@ -310,6 +322,17 @@ SQInteger MidiDrumTabReaderCtor(HSQUIRRELVM vm)
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
     sq_setreleasehook(vm, 1, MidiDrumTabReaderRelease);
     return 1;
+}
+
+SQInteger MidiDrumTabReaderClone(HSQUIRRELVM vm)
+{
+    // get instance ptr of original
+    SQUserPointer userPtr;
+    sq_getinstanceup(vm, 2, &userPtr, 0);
+    // set instance ptr to a copy
+    sq_setinstanceup(vm, 1, new DrumTabReader(*(DrumTabReader*)userPtr));
+    sq_setreleasehook(vm, 1, &MidiDrumTabReaderRelease);
+    return 0;
 }
 
 //
@@ -718,6 +741,17 @@ SQInteger MidiNoteCtor(HSQUIRRELVM vm)
     return 1;
 }
 
+SQInteger MidiNoteClone(HSQUIRRELVM vm)
+{
+    // get instance ptr of original
+    SQUserPointer userPtr;
+    sq_getinstanceup(vm, 2, &userPtr, 0);
+    // set instance ptr to a copy
+    sq_setinstanceup(vm, 1, new Note(*(Note*)userPtr));
+    sq_setreleasehook(vm, 1, &MidiNoteRelease);
+    return 0;
+}
+
 //
 // Midi.Note pitch
 //
@@ -900,6 +934,17 @@ SQInteger MidiNoteOnCtor(HSQUIRRELVM vm)
     return 1;
 }
 
+SQInteger MidiNoteOnClone(HSQUIRRELVM vm)
+{
+    // get instance ptr of original
+    SQUserPointer userPtr;
+    sq_getinstanceup(vm, 2, &userPtr, 0);
+    // set instance ptr to a copy
+    sq_setinstanceup(vm, 1, new NoteOn(*(NoteOn*)userPtr));
+    sq_setreleasehook(vm, 1, &MidiNoteOnRelease);
+    return 0;
+}
+
 //
 // Midi.NoteOn pitch
 //
@@ -1036,6 +1081,17 @@ SQInteger MidiNoteOffCtor(HSQUIRRELVM vm)
     return 1;
 }
 
+SQInteger MidiNoteOffClone(HSQUIRRELVM vm)
+{
+    // get instance ptr of original
+    SQUserPointer userPtr;
+    sq_getinstanceup(vm, 2, &userPtr, 0);
+    // set instance ptr to a copy
+    sq_setinstanceup(vm, 1, new NoteOff(*(NoteOff*)userPtr));
+    sq_setreleasehook(vm, 1, &MidiNoteOffRelease);
+    return 0;
+}
+
 //
 // Midi.NoteOff pitch
 //
@@ -1158,6 +1214,17 @@ SQInteger MidiControlCtor(HSQUIRRELVM vm)
     return 1;
 }
 
+SQInteger MidiControlClone(HSQUIRRELVM vm)
+{
+    // get instance ptr of original
+    SQUserPointer userPtr;
+    sq_getinstanceup(vm, 2, &userPtr, 0);
+    // set instance ptr to a copy
+    sq_setinstanceup(vm, 1, new Control(*(Control*)userPtr));
+    sq_setreleasehook(vm, 1, &MidiControlRelease);
+    return 0;
+}
+
 //
 // Midi.Control controller
 //
@@ -1254,6 +1321,17 @@ SQInteger MidiMMLReaderCtor(HSQUIRRELVM vm)
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
     sq_setreleasehook(vm, 1, MidiMMLReaderRelease);
     return 1;
+}
+
+SQInteger MidiMMLReaderClone(HSQUIRRELVM vm)
+{
+    // get instance ptr of original
+    SQUserPointer userPtr;
+    sq_getinstanceup(vm, 2, &userPtr, 0);
+    // set instance ptr to a copy
+    sq_setinstanceup(vm, 1, new MMLReader(*(MMLReader*)userPtr));
+    sq_setreleasehook(vm, 1, &MidiMMLReaderRelease);
+    return 0;
 }
 
 //
@@ -1508,6 +1586,17 @@ SQInteger MidiPatternCtor(HSQUIRRELVM vm)
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
     sq_setreleasehook(vm, 1, MidiPatternRelease);
     return 1;
+}
+
+SQInteger MidiPatternClone(HSQUIRRELVM vm)
+{
+    // get instance ptr of original
+    SQUserPointer userPtr;
+    sq_getinstanceup(vm, 2, &userPtr, 0);
+    // set instance ptr to a copy
+    sq_setinstanceup(vm, 1, new Pattern(*(Pattern*)userPtr));
+    sq_setreleasehook(vm, 1, &MidiPatternRelease);
+    return 0;
 }
 
 //
@@ -1790,6 +1879,17 @@ SQInteger MidiTuneCtor(HSQUIRRELVM vm)
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
     sq_setreleasehook(vm, 1, MidiTuneRelease);
     return 1;
+}
+
+SQInteger MidiTuneClone(HSQUIRRELVM vm)
+{
+    // get instance ptr of original
+    SQUserPointer userPtr;
+    sq_getinstanceup(vm, 2, &userPtr, 0);
+    // set instance ptr to a copy
+    sq_setinstanceup(vm, 1, new MidiTune(*(MidiTune*)userPtr));
+    sq_setreleasehook(vm, 1, &MidiTuneRelease);
+    return 0;
 }
 
 //
@@ -2431,6 +2531,17 @@ SQInteger MidiPitchBendCtor(HSQUIRRELVM vm)
     return 1;
 }
 
+SQInteger MidiPitchBendClone(HSQUIRRELVM vm)
+{
+    // get instance ptr of original
+    SQUserPointer userPtr;
+    sq_getinstanceup(vm, 2, &userPtr, 0);
+    // set instance ptr to a copy
+    sq_setinstanceup(vm, 1, new PitchBend(*(PitchBend*)userPtr));
+    sq_setreleasehook(vm, 1, &MidiPitchBendRelease);
+    return 0;
+}
+
 //
 // Midi.ProgramChange class
 //
@@ -2468,6 +2579,17 @@ SQInteger MidiProgramChangeCtor(HSQUIRRELVM vm)
     sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
     sq_setreleasehook(vm, 1, MidiProgramChangeRelease);
     return 1;
+}
+
+SQInteger MidiProgramChangeClone(HSQUIRRELVM vm)
+{
+    // get instance ptr of original
+    SQUserPointer userPtr;
+    sq_getinstanceup(vm, 2, &userPtr, 0);
+    // set instance ptr to a copy
+    sq_setinstanceup(vm, 1, new ProgramChange(*(ProgramChange*)userPtr));
+    sq_setreleasehook(vm, 1, &MidiProgramChangeRelease);
+    return 0;
 }
 
 //
@@ -2825,6 +2947,11 @@ void bindMidi(HSQUIRRELVM vm)
     sq_newclosure(vm, &MidiABCReaderCtor, 0);
     sq_newslot(vm, -3, false);
 
+    // clone for class ABCReader
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &MidiABCReaderClone, 0);
+    sq_newslot(vm, -3, false);
+
     // methods for class ABCReader
     sq_pushstring(vm, _SC("read"), -1);
     sq_newclosure(vm, &MidiABCReaderread, 0);
@@ -2848,6 +2975,11 @@ void bindMidi(HSQUIRRELVM vm)
     sq_newclosure(vm, &MidiDrumTabReaderCtor, 0);
     sq_newslot(vm, -3, false);
 
+    // clone for class DrumTabReader
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &MidiDrumTabReaderClone, 0);
+    sq_newslot(vm, -3, false);
+
     // methods for class DrumTabReader
     sq_pushstring(vm, _SC("read"), -1);
     sq_newclosure(vm, &MidiDrumTabReaderread, 0);
@@ -2869,6 +3001,11 @@ void bindMidi(HSQUIRRELVM vm)
     // ctor for class SystemIn
     sq_pushstring(vm, _SC("constructor"), -1);
     sq_newclosure(vm, &MidiSystemInCtor, 0);
+    sq_newslot(vm, -3, false);
+
+    // clone for class SystemIn
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &unclonable, 0);
     sq_newslot(vm, -3, false);
 
     // methods for class SystemIn
@@ -2902,6 +3039,11 @@ void bindMidi(HSQUIRRELVM vm)
     sq_newclosure(vm, &MidiNoteCtor, 0);
     sq_newslot(vm, -3, false);
 
+    // clone for class Note
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &MidiNoteClone, 0);
+    sq_newslot(vm, -3, false);
+
     // methods for class Note
     sq_pushstring(vm, _SC("pitch"), -1);
     sq_newclosure(vm, &MidiNotepitch, 0);
@@ -2929,6 +3071,11 @@ void bindMidi(HSQUIRRELVM vm)
     sq_newclosure(vm, &MidiNoteOnCtor, 0);
     sq_newslot(vm, -3, false);
 
+    // clone for class NoteOn
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &MidiNoteOnClone, 0);
+    sq_newslot(vm, -3, false);
+
     // methods for class NoteOn
     sq_pushstring(vm, _SC("pitch"), -1);
     sq_newclosure(vm, &MidiNoteOnpitch, 0);
@@ -2950,6 +3097,11 @@ void bindMidi(HSQUIRRELVM vm)
     // ctor for class NoteOff
     sq_pushstring(vm, _SC("constructor"), -1);
     sq_newclosure(vm, &MidiNoteOffCtor, 0);
+    sq_newslot(vm, -3, false);
+
+    // clone for class NoteOff
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &MidiNoteOffClone, 0);
     sq_newslot(vm, -3, false);
 
     // methods for class NoteOff
@@ -2975,6 +3127,11 @@ void bindMidi(HSQUIRRELVM vm)
     sq_newclosure(vm, &MidiControlCtor, 0);
     sq_newslot(vm, -3, false);
 
+    // clone for class Control
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &MidiControlClone, 0);
+    sq_newslot(vm, -3, false);
+
     // methods for class Control
     sq_pushstring(vm, _SC("controller"), -1);
     sq_newclosure(vm, &MidiControlcontroller, 0);
@@ -2998,6 +3155,11 @@ void bindMidi(HSQUIRRELVM vm)
     sq_newclosure(vm, &MidiMMLReaderCtor, 0);
     sq_newslot(vm, -3, false);
 
+    // clone for class MMLReader
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &MidiMMLReaderClone, 0);
+    sq_newslot(vm, -3, false);
+
     // methods for class MMLReader
     sq_pushstring(vm, _SC("read"), -1);
     sq_newclosure(vm, &MidiMMLReaderread, 0);
@@ -3015,6 +3177,11 @@ void bindMidi(HSQUIRRELVM vm)
     // ctor for class Output
     sq_pushstring(vm, _SC("constructor"), -1);
     sq_newclosure(vm, &MidiOutputCtor, 0);
+    sq_newslot(vm, -3, false);
+
+    // clone for class Output
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &unclonable, 0);
     sq_newslot(vm, -3, false);
 
     // methods for class Output
@@ -3042,6 +3209,11 @@ void bindMidi(HSQUIRRELVM vm)
     // ctor for class Pattern
     sq_pushstring(vm, _SC("constructor"), -1);
     sq_newclosure(vm, &MidiPatternCtor, 0);
+    sq_newslot(vm, -3, false);
+
+    // clone for class Pattern
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &MidiPatternClone, 0);
     sq_newslot(vm, -3, false);
 
     // methods for class Pattern
@@ -3079,6 +3251,11 @@ void bindMidi(HSQUIRRELVM vm)
     sq_newclosure(vm, &MidiTuneCtor, 0);
     sq_newslot(vm, -3, false);
 
+    // clone for class Tune
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &MidiTuneClone, 0);
+    sq_newslot(vm, -3, false);
+
     // methods for class Tune
     sq_pushstring(vm, _SC("timeSignature"), -1);
     sq_newclosure(vm, &MidiTunetimeSignature, 0);
@@ -3110,6 +3287,11 @@ void bindMidi(HSQUIRRELVM vm)
     sq_newclosure(vm, &MidiSystemOutCtor, 0);
     sq_newslot(vm, -3, false);
 
+    // clone for class SystemOut
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &unclonable, 0);
+    sq_newslot(vm, -3, false);
+
     // methods for class SystemOut
     sq_pushstring(vm, _SC("midiChannel"), -1);
     sq_newclosure(vm, &MidiSystemOutmidiChannel, 0);
@@ -3133,6 +3315,11 @@ void bindMidi(HSQUIRRELVM vm)
     sq_newclosure(vm, &MidiPitchBendCtor, 0);
     sq_newslot(vm, -3, false);
 
+    // clone for class PitchBend
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &MidiPitchBendClone, 0);
+    sq_newslot(vm, -3, false);
+
     // methods for class PitchBend
     // push PitchBend to Midi package table
     sq_newslot(vm, -3, false);
@@ -3148,6 +3335,11 @@ void bindMidi(HSQUIRRELVM vm)
     sq_newclosure(vm, &MidiProgramChangeCtor, 0);
     sq_newslot(vm, -3, false);
 
+    // clone for class ProgramChange
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &MidiProgramChangeClone, 0);
+    sq_newslot(vm, -3, false);
+
     // methods for class ProgramChange
     // push ProgramChange to Midi package table
     sq_newslot(vm, -3, false);
@@ -3161,6 +3353,11 @@ void bindMidi(HSQUIRRELVM vm)
     // ctor for class BeatTracker
     sq_pushstring(vm, _SC("constructor"), -1);
     sq_newclosure(vm, &MidiBeatTrackerCtor, 0);
+    sq_newslot(vm, -3, false);
+
+    // clone for class BeatTracker
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &unclonable, 0);
     sq_newslot(vm, -3, false);
 
     // methods for class BeatTracker

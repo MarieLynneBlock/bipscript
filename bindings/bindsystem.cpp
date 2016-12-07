@@ -17,6 +17,7 @@
 
 #include "bindsystem.h"
 #include "bindtypes.h"
+#include "bindcommon.h"
 
 #include "systempackage.h"
 

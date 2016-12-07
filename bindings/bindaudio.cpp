@@ -17,6 +17,7 @@
 
 #include "bindaudio.h"
 #include "bindtypes.h"
+#include "bindcommon.h"
 
 #include "mixer.h"
 #include "onsetdetector.h"
@@ -989,6 +990,17 @@ SQInteger AudioStereoOutCtor(HSQUIRRELVM vm)
     return 1;
 }
 
+SQInteger AudioStereoOutClone(HSQUIRRELVM vm)
+{
+    // get instance ptr of original
+    SQUserPointer userPtr;
+    sq_getinstanceup(vm, 2, &userPtr, 0);
+    // set instance ptr to a copy
+    sq_setinstanceup(vm, 1, new AudioStereoOutput(*(AudioStereoOutput*)userPtr));
+    sq_setreleasehook(vm, 1, &AudioStereoOutRelease);
+    return 0;
+}
+
 //
 // Audio.StereoOut connect
 //
@@ -1178,6 +1190,11 @@ void bindAudio(HSQUIRRELVM vm)
     sq_newclosure(vm, &AudioMixerCtor, 0);
     sq_newslot(vm, -3, false);
 
+    // clone for class Mixer
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &unclonable, 0);
+    sq_newslot(vm, -3, false);
+
     // methods for class Mixer
     sq_pushstring(vm, _SC("addGainController"), -1);
     sq_newclosure(vm, &AudioMixeraddGainController, 0);
@@ -1209,6 +1226,11 @@ void bindAudio(HSQUIRRELVM vm)
     sq_newclosure(vm, &AudioOnsetDetectorCtor, 0);
     sq_newslot(vm, -3, false);
 
+    // clone for class OnsetDetector
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &unclonable, 0);
+    sq_newslot(vm, -3, false);
+
     // methods for class OnsetDetector
     sq_pushstring(vm, _SC("connect"), -1);
     sq_newclosure(vm, &AudioOnsetDetectorconnect, 0);
@@ -1236,6 +1258,11 @@ void bindAudio(HSQUIRRELVM vm)
     sq_newclosure(vm, &AudioOutputCtor, 0);
     sq_newslot(vm, -3, false);
 
+    // clone for class Output
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &unclonable, 0);
+    sq_newslot(vm, -3, false);
+
     // methods for class Output
     // push Output to Audio package table
     sq_newslot(vm, -3, false);
@@ -1249,6 +1276,11 @@ void bindAudio(HSQUIRRELVM vm)
     // ctor for class SystemOut
     sq_pushstring(vm, _SC("constructor"), -1);
     sq_newclosure(vm, &AudioSystemOutCtor, 0);
+    sq_newslot(vm, -3, false);
+
+    // clone for class SystemOut
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &unclonable, 0);
     sq_newslot(vm, -3, false);
 
     // methods for class SystemOut
@@ -1270,6 +1302,11 @@ void bindAudio(HSQUIRRELVM vm)
     sq_newclosure(vm, &AudioSystemInCtor, 0);
     sq_newslot(vm, -3, false);
 
+    // clone for class SystemIn
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &unclonable, 0);
+    sq_newslot(vm, -3, false);
+
     // methods for class SystemIn
     sq_pushstring(vm, _SC("output"), -1);
     sq_newclosure(vm, &AudioSystemInoutput, 0);
@@ -1287,6 +1324,11 @@ void bindAudio(HSQUIRRELVM vm)
     // ctor for class StereoIn
     sq_pushstring(vm, _SC("constructor"), -1);
     sq_newclosure(vm, &AudioStereoInCtor, 0);
+    sq_newslot(vm, -3, false);
+
+    // clone for class StereoIn
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &unclonable, 0);
     sq_newslot(vm, -3, false);
 
     // methods for class StereoIn
@@ -1308,6 +1350,11 @@ void bindAudio(HSQUIRRELVM vm)
     sq_newclosure(vm, &AudioStereoOutCtor, 0);
     sq_newslot(vm, -3, false);
 
+    // clone for class StereoOut
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &AudioStereoOutClone, 0);
+    sq_newslot(vm, -3, false);
+
     // methods for class StereoOut
     sq_pushstring(vm, _SC("connect"), -1);
     sq_newclosure(vm, &AudioStereoOutconnect, 0);
@@ -1325,6 +1372,11 @@ void bindAudio(HSQUIRRELVM vm)
     // ctor for class BeatTracker
     sq_pushstring(vm, _SC("constructor"), -1);
     sq_newclosure(vm, &AudioBeatTrackerCtor, 0);
+    sq_newslot(vm, -3, false);
+
+    // clone for class BeatTracker
+    sq_pushstring(vm, _SC("_cloned"), -1);
+    sq_newclosure(vm, &unclonable, 0);
     sq_newslot(vm, -3, false);
 
     // methods for class BeatTracker
