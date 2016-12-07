@@ -196,9 +196,7 @@ classes :
           parameters: { name: handler, type: function, args: [Midi.NoteOff, Transport.Position] }
 
     - name: Pattern
-      ctor:
-        parameters:
-        - { name: other, type: Midi.Pattern, optional: true}
+      ctor: {}
       methods:
         - name: add
           parameters:

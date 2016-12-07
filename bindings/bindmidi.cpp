@@ -1550,36 +1550,16 @@ SQInteger MidiPatternCtor(HSQUIRRELVM vm)
 {
     SQInteger numargs = sq_gettop(vm);
     // check parameter count
-    if(numargs > 2) {
-        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    if(numargs > 1) {
+        return sq_throwerror(vm, "too many parameters, expected at most 0");
     }
     Pattern *obj;
-    // 1 parameters passed in
-    if(numargs == 2) {
-
-        // get parameter 1 "other" as Midi.Pattern
-        Pattern *other = getMidiPattern(vm, 2);
-        if(other == 0) {
-            return sq_throwerror(vm, "argument 1 \"other\" is not of type Midi.Pattern");
-        }
-
-        // call the implementation
-        try {
-            obj = new Pattern(*other);
-        }
-        catch(std::exception const& e) {
-            return sq_throwerror(vm, e.what());
-        }
+    // call the implementation
+    try {
+        obj = new Pattern();
     }
-
-    else {
-        // call the implementation
-        try {
-            obj = new Pattern();
-        }
-        catch(std::exception const& e) {
-            return sq_throwerror(vm, e.what());
-        }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
     }
 
     // return pointer to new object
