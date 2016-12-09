@@ -24,6 +24,8 @@
 #include "audioport.h"
 #include "audioengine.h"
 #include "beattracker.h"
+#include <stdexcept>
+#include <cstring>
 
 namespace binding {
 
@@ -99,7 +101,7 @@ SQInteger AudioMixeraddGainController(HSQUIRRELVM vm)
         return sq_throwerror(vm, "addGainController method called before Audio.Mixer constructor");
     }
     // get parameter 1 "source" as Midi.Source
-    MidiSource *source = getMidiSource(vm);
+    MidiSource *source = getMidiSource(vm, 2);
     if(source == 0) {
         return sq_throwerror(vm, "argument 1 \"source\" is not of type Midi.Source");
     }
@@ -160,7 +162,7 @@ SQInteger AudioMixerconnect(HSQUIRRELVM vm)
             return sq_throwerror(vm, "connect method called before Audio.Mixer constructor");
         }
         // get parameter 1 "source" as Audio.Source
-        AudioSource *source = getAudioSource(vm);
+        AudioSource *source = getAudioSource(vm, 2);
         if(source == 0) {
             return sq_throwerror(vm, "argument 1 \"source\" is not of type Audio.Source");
         }
@@ -196,7 +198,7 @@ SQInteger AudioMixerconnect(HSQUIRRELVM vm)
             return sq_throwerror(vm, "connect method called before Audio.Mixer constructor");
         }
         // get parameter 1 "source" as Audio.Source
-        AudioSource *source = getAudioSource(vm);
+        AudioSource *source = getAudioSource(vm, 2);
         if(source == 0) {
             return sq_throwerror(vm, "argument 1 \"source\" is not of type Audio.Source");
         }
@@ -251,7 +253,7 @@ SQInteger AudioMixerconnect(HSQUIRRELVM vm)
             return sq_throwerror(vm, "connect method called before Audio.Mixer constructor");
         }
         // get parameter 1 "source" as Audio.Source
-        AudioSource *source = getAudioSource(vm);
+        AudioSource *source = getAudioSource(vm, 2);
         if(source == 0) {
             return sq_throwerror(vm, "argument 1 \"source\" is not of type Audio.Source");
         }
@@ -444,7 +446,7 @@ SQInteger AudioOnsetDetectorCtor(HSQUIRRELVM vm)
 SQInteger AudioOnsetDetectorconnect(HSQUIRRELVM vm)
 {
     SQObjectType overrideType = sq_gettype(vm, 2);
-    if(AudioSource *source = getAudioSource(vm)) {
+    if(AudioSource *source = getAudioSource(vm, 2)) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
         if(numargs > 2) {
@@ -682,7 +684,7 @@ SQInteger AudioSystemOutCtor(HSQUIRRELVM vm)
 SQInteger AudioSystemOutconnect(HSQUIRRELVM vm)
 {
     SQObjectType overrideType = sq_gettype(vm, 2);
-    if(AudioSource *source = getAudioSource(vm)) {
+    if(AudioSource *source = getAudioSource(vm, 2)) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
         if(numargs > 2) {
@@ -1007,7 +1009,7 @@ SQInteger AudioStereoOutClone(HSQUIRRELVM vm)
 SQInteger AudioStereoOutconnect(HSQUIRRELVM vm)
 {
     SQObjectType overrideType = sq_gettype(vm, 2);
-    if(AudioSource *source = getAudioSource(vm)) {
+    if(AudioSource *source = getAudioSource(vm, 2)) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
         if(numargs > 2) {
@@ -1109,7 +1111,7 @@ SQInteger AudioBeatTrackerCtor(HSQUIRRELVM vm)
 SQInteger AudioBeatTrackerconnect(HSQUIRRELVM vm)
 {
     SQObjectType overrideType = sq_gettype(vm, 2);
-    if(AudioSource *source = getAudioSource(vm)) {
+    if(AudioSource *source = getAudioSource(vm, 2)) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
         if(numargs > 2) {

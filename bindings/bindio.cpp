@@ -20,6 +20,8 @@
 #include "bindcommon.h"
 
 #include "io.h"
+#include <stdexcept>
+#include <cstring>
 
 namespace binding {
 

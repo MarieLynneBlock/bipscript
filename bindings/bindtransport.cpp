@@ -23,6 +23,8 @@
 #include "audioengine.h"
 #include "transportmaster.h"
 #include "timesignature.h"
+#include <stdexcept>
+#include <cstring>
 
 namespace binding {
 

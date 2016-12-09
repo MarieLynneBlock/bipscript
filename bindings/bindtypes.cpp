@@ -28,60 +28,60 @@
 namespace binding
 {
 
-    AudioSource *getAudioSource(HSQUIRRELVM &vm) {
+    AudioSource *getAudioSource(HSQUIRRELVM &vm, int index) {
         SQUserPointer sourcePtr;
-        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &AudioMixerObject))) {
+        if (!SQ_FAILED(sq_getinstanceup(vm, index, (SQUserPointer*)&sourcePtr, &AudioMixerObject))) {
             return static_cast<Mixer*>(sourcePtr);
         }
-        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &AudioSystemInObject))) {
+        if (!SQ_FAILED(sq_getinstanceup(vm, index, (SQUserPointer*)&sourcePtr, &AudioSystemInObject))) {
             return static_cast<AudioInputPort*>(sourcePtr);
         }
-        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &AudioStereoInObject))) {
+        if (!SQ_FAILED(sq_getinstanceup(vm, index, (SQUserPointer*)&sourcePtr, &AudioStereoInObject))) {
             return static_cast<AudioStereoInput*>(sourcePtr);
         }
-        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &Lv2PluginObject))) {
+        if (!SQ_FAILED(sq_getinstanceup(vm, index, (SQUserPointer*)&sourcePtr, &Lv2PluginObject))) {
             return static_cast<Lv2Plugin*>(sourcePtr);
         }
         return 0;
     }
     
-    MidiMessage *getMidiMessage(HSQUIRRELVM &vm) {
+    MidiMessage *getMidiMessage(HSQUIRRELVM &vm, int index) {
         SQUserPointer sourcePtr;
-        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &MidiNoteOnObject))) {
+        if (!SQ_FAILED(sq_getinstanceup(vm, index, (SQUserPointer*)&sourcePtr, &MidiNoteOnObject))) {
             return static_cast<NoteOn*>(sourcePtr);
         }
-        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &MidiNoteOffObject))) {
+        if (!SQ_FAILED(sq_getinstanceup(vm, index, (SQUserPointer*)&sourcePtr, &MidiNoteOffObject))) {
             return static_cast<NoteOff*>(sourcePtr);
         }
-        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &MidiControlObject))) {
+        if (!SQ_FAILED(sq_getinstanceup(vm, index, (SQUserPointer*)&sourcePtr, &MidiControlObject))) {
             return static_cast<Control*>(sourcePtr);
         }
-        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &MidiPitchBendObject))) {
+        if (!SQ_FAILED(sq_getinstanceup(vm, index, (SQUserPointer*)&sourcePtr, &MidiPitchBendObject))) {
             return static_cast<PitchBend*>(sourcePtr);
         }
-        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &MidiProgramChangeObject))) {
+        if (!SQ_FAILED(sq_getinstanceup(vm, index, (SQUserPointer*)&sourcePtr, &MidiProgramChangeObject))) {
             return static_cast<ProgramChange*>(sourcePtr);
         }
         return 0;
     }
     
-    MidiSource *getMidiSource(HSQUIRRELVM &vm) {
+    MidiSource *getMidiSource(HSQUIRRELVM &vm, int index) {
         SQUserPointer sourcePtr;
-        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &Lv2PluginObject))) {
+        if (!SQ_FAILED(sq_getinstanceup(vm, index, (SQUserPointer*)&sourcePtr, &Lv2PluginObject))) {
             return static_cast<Lv2Plugin*>(sourcePtr);
         }
-        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &MidiSystemInObject))) {
+        if (!SQ_FAILED(sq_getinstanceup(vm, index, (SQUserPointer*)&sourcePtr, &MidiSystemInObject))) {
             return static_cast<MidiInputPort*>(sourcePtr);
         }
         return 0;
     }
     
-    MidiSink *getMidiSink(HSQUIRRELVM &vm) {
+    MidiSink *getMidiSink(HSQUIRRELVM &vm, int index) {
         SQUserPointer sourcePtr;
-        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &Lv2PluginObject))) {
+        if (!SQ_FAILED(sq_getinstanceup(vm, index, (SQUserPointer*)&sourcePtr, &Lv2PluginObject))) {
             return static_cast<Lv2Plugin*>(sourcePtr);
         }
-        if (!SQ_FAILED(sq_getinstanceup(vm, 2, (SQUserPointer*)&sourcePtr, &MidiSystemOutObject))) {
+        if (!SQ_FAILED(sq_getinstanceup(vm, index, (SQUserPointer*)&sourcePtr, &MidiSystemOutObject))) {
             return static_cast<MidiOutputPort*>(sourcePtr);
         }
         return 0;

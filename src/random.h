@@ -19,6 +19,7 @@
 
 #include <random>
 #include <time.h>
+#include <stdexcept>
 
 class Random
 {

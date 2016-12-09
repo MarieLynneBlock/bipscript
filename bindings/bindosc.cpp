@@ -22,6 +22,8 @@
 #include "oscinput.h"
 #include "oscmessage.h"
 #include "oscoutput.h"
+#include <stdexcept>
+#include <cstring>
 
 namespace binding {
 

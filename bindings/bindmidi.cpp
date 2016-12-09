@@ -27,6 +27,8 @@
 #include "mmlreader.h"
 #include "miditune.h"
 #include "beattracker.h"
+#include <stdexcept>
+#include <cstring>
 
 namespace binding {
 
@@ -2358,7 +2360,7 @@ SQInteger MidiSystemOutschedule(HSQUIRRELVM vm)
         // void method, returns no value
         return 0;
     }
-    else if(MidiMessage *message = getMidiMessage(vm)) {
+    else if(MidiMessage *message = getMidiMessage(vm, 2)) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
         if(numargs > 6) {
@@ -2672,7 +2674,7 @@ SQInteger MidiBeatTrackerconnectMidi(HSQUIRRELVM vm)
         return sq_throwerror(vm, "connectMidi method called before Midi.BeatTracker constructor");
     }
     // get parameter 1 "source" as Midi.Source
-    MidiSource *source = getMidiSource(vm);
+    MidiSource *source = getMidiSource(vm, 2);
     if(source == 0) {
         return sq_throwerror(vm, "argument 1 \"source\" is not of type Midi.Source");
     }

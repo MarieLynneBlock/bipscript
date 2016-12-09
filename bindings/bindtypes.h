@@ -19,18 +19,18 @@
 
 #include "squirrel.h"
 
-#include "audioconnection.h"
-#include "midiconnection.h"
-#include "midimessage.h"
-#include "midisink.h"
+class AudioSource;
+class MidiMessage;
+class MidiSource;
+class MidiSink;
 
 namespace binding
 {
     // type conversion methods
-    AudioSource *getAudioSource(HSQUIRRELVM &vm);
-    MidiMessage *getMidiMessage(HSQUIRRELVM &vm);
-    MidiSource *getMidiSource(HSQUIRRELVM &vm);
-    MidiSink *getMidiSink(HSQUIRRELVM &vm);
+    AudioSource *getAudioSource(HSQUIRRELVM &vm, int index);
+    MidiMessage *getMidiMessage(HSQUIRRELVM &vm, int index);
+    MidiSource *getMidiSource(HSQUIRRELVM &vm, int index);
+    MidiSink *getMidiSink(HSQUIRRELVM &vm, int index);
 }
 
 #endif // BINDTYPES_H

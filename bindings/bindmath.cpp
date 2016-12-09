@@ -20,6 +20,8 @@
 #include "bindcommon.h"
 
 #include "random.h"
+#include <stdexcept>
+#include <cstring>
 
 namespace binding {
 
