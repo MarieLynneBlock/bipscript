@@ -20,6 +20,7 @@
 #include "bindcommon.h"
 #include "bindtransport.h"
 
+#include "midipackage.h"
 #include "abcreader.h"
 #include "drumtabreader.h"
 #include "midiport.h"
@@ -48,6 +49,119 @@ HSQOBJECT MidiSystemOutObject;
 HSQOBJECT MidiPitchBendObject;
 HSQOBJECT MidiProgramChangeObject;
 HSQOBJECT MidiBeatTrackerObject;
+
+//
+// Midi abc
+//
+SQInteger Midiabc(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 5) {
+        return sq_throwerror(vm, "too many parameters, expected at most 4");
+    }
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get parameter 1 "abc" as string
+    const SQChar* abc;
+    if (SQ_FAILED(sq_getstring(vm, 2, &abc))){
+        return sq_throwerror(vm, "argument 1 \"abc\" is not of type string");
+    }
+
+    // return value
+    Pattern* ret;
+    // 2 parameters passed in
+    if(numargs == 3) {
+
+        // get parameter 2 "key" as string
+        const SQChar* key;
+        if (SQ_FAILED(sq_getstring(vm, 3, &key))){
+            return sq_throwerror(vm, "argument 2 \"key\" is not of type string");
+        }
+
+        // call the implementation
+        try {
+            ret = Midi::abc(abc, key);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
+    }
+
+    // 3 parameters passed in
+    else if(numargs == 4) {
+
+        // get parameter 2 "key" as string
+        const SQChar* key;
+        if (SQ_FAILED(sq_getstring(vm, 3, &key))){
+            return sq_throwerror(vm, "argument 2 \"key\" is not of type string");
+        }
+
+        // get parameter 3 "noteLength" as string
+        const SQChar* noteLength;
+        if (SQ_FAILED(sq_getstring(vm, 4, &noteLength))){
+            return sq_throwerror(vm, "argument 3 \"noteLength\" is not of type string");
+        }
+
+        // call the implementation
+        try {
+            ret = Midi::abc(abc, key, noteLength);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
+    }
+
+    // 4 parameters passed in
+    else if(numargs == 5) {
+
+        // get parameter 2 "key" as string
+        const SQChar* key;
+        if (SQ_FAILED(sq_getstring(vm, 3, &key))){
+            return sq_throwerror(vm, "argument 2 \"key\" is not of type string");
+        }
+
+        // get parameter 3 "noteLength" as string
+        const SQChar* noteLength;
+        if (SQ_FAILED(sq_getstring(vm, 4, &noteLength))){
+            return sq_throwerror(vm, "argument 3 \"noteLength\" is not of type string");
+        }
+
+        // get parameter 4 "meter" as string
+        const SQChar* meter;
+        if (SQ_FAILED(sq_getstring(vm, 5, &meter))){
+            return sq_throwerror(vm, "argument 4 \"meter\" is not of type string");
+        }
+
+        // call the implementation
+        try {
+            ret = Midi::abc(abc, key, noteLength, meter);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
+    }
+
+    else {
+        // call the implementation
+        try {
+            ret = Midi::abc(abc);
+        }
+        catch(std::exception const& e) {
+            return sq_throwerror(vm, e.what());
+        }
+    }
+
+    // push return value
+    sq_pushobject(vm, MidiPatternObject);
+    sq_createinstance(vm, -1);
+    sq_remove(vm, -2);
+    sq_setinstanceup(vm, -1, ret);
+    sq_setreleasehook(vm, -1, &MidiPatternRelease);
+
+    return 1;
+}
 
 //
 // Midi.ABCReader class
@@ -2917,6 +3031,11 @@ void bindMidi(HSQUIRRELVM vm)
     // create package table
     sq_pushstring(vm, "Midi", -1);
     sq_newtable(vm);
+
+    // static method abc
+    sq_pushstring(vm, _SC("abc"), -1);
+    sq_newclosure(vm, &Midiabc, 0);
+    sq_newslot(vm, -3, false);
 
     // create class Midi.ABCReader
     sq_pushstring(vm, "ABCReader", -1);
