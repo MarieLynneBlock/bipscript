@@ -646,6 +646,46 @@ SQInteger OscOutputschedule(HSQUIRRELVM vm)
     return 0;
 }
 
+//
+// Osc.Output send
+//
+SQInteger OscOutputsend(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 2) {
+        return sq_throwerror(vm, "too many parameters, expected at most 1");
+    }
+    if(numargs < 2) {
+        return sq_throwerror(vm, "insufficient parameters, expected at least 1");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "send method needs an instance of Output");
+    }
+    OscOutput *obj = static_cast<OscOutput*>(userPtr);
+    if(!obj) {
+        return sq_throwerror(vm, "send method called before Osc.Output constructor");
+    }
+    // get parameter 1 "message" as Osc.Message
+    OscMessage *message = getOscMessage(vm, 2);
+    if(message == 0) {
+        return sq_throwerror(vm, "argument 1 \"message\" is not of type Osc.Message");
+    }
+
+    // call the implementation
+    try {
+        obj->send(*message);
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // void method, returns no value
+    return 0;
+}
+
 
 void bindOsc(HSQUIRRELVM vm)
 {
@@ -736,6 +776,10 @@ void bindOsc(HSQUIRRELVM vm)
     // methods for class Output
     sq_pushstring(vm, _SC("schedule"), -1);
     sq_newclosure(vm, &OscOutputschedule, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("send"), -1);
+    sq_newclosure(vm, &OscOutputsend, 0);
     sq_newslot(vm, -3, false);
 
     // push Output to Osc package table

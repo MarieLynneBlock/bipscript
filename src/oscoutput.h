@@ -41,6 +41,10 @@ public:
     void schedule(OscMessage &message, int bar) {
         schedule(message, bar, 0);
     }
+    void send(OscMessage &message) {
+        Position pos;
+        eventBuffer.addEvent(new OscEvent(pos, message));
+    }
     void run();
     void reset();
     void doProcess(bool, jack_position_t&, jack_nframes_t, jack_nframes_t) {}

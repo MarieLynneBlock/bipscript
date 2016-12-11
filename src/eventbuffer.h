@@ -60,8 +60,13 @@ template <class T>
 T *EventBuffer<T>::getNextEvent(bool rolling, jack_position_t &pos, jack_nframes_t nframes)
 {
     update();
+    T *first = sortedEvents.getFirst();
+    // pass thru zero bar events
+    if(first && !first->getBar()) {
+      sortedEvents.pop();
+      return first;
+    }
     if(rolling) {
-        T *first = sortedEvents.getFirst();
         // drop events that have already passed
         while(first && first->updateFrameOffset(pos) < -256) { // TODO: grace period depends on framerate
             T *late = first; // grab reference, cannot delete before pop()

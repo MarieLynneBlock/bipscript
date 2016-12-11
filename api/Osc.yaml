@@ -86,3 +86,7 @@ classes:
             - {name: bar, type: integer}
             - {name: position, type: integer, optional: true }
             - {name: division, type: integer, optional: true }
+        - name: send
+          parameters:
+            - {name: message, type: Osc.Message}
+

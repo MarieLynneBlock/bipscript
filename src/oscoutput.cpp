@@ -60,35 +60,33 @@ void OscOutput::run()
         jack_position_t jack_pos;
         bool rolling = AudioEngine::instance().getPosition(jack_pos);
 
-        if(rolling) {
-            // calculate window size
-            jack_nframes_t nframes = 2048; // TODO: calculate from framerate
+        // calculate window size
+        jack_nframes_t nframes = 2048; // TODO: calculate from framerate
 
-            OscEvent *event = eventBuffer.getNextEvent(rolling, jack_pos, nframes);
-            while(event) {
-                OscMessage &message = event->getMessage();
-                lo_message mesg = lo_message_new();
-                for(int i = 0; i < message.getParameterCount(); i++) {
-                    OscParameter param = message.getParameter(i);
-                    if(param.type == 'i') {
-                        lo_message_add_int32(mesg, param.value.intValue);
-                    } else if(param.type == 'f') {
-                        lo_message_add_float(mesg, param.value.floatValue);
-                    } else if(param.type == 's') {
-                        lo_message_add_string(mesg, param.value.stringValue);
-                    } else if(param.type == 'T') {
-                        lo_message_add_true(mesg);
-                    } else if(param.type == 'F') {
-                        lo_message_add_false(mesg);
-                    } else if(param.type == 'N') {
-                        lo_message_add_nil(mesg);
-                    }
+        OscEvent *event = eventBuffer.getNextEvent(rolling, jack_pos, nframes);
+        while(event) {
+            OscMessage &message = event->getMessage();
+            lo_message mesg = lo_message_new();
+            for(int i = 0; i < message.getParameterCount(); i++) {
+                OscParameter param = message.getParameter(i);
+                if(param.type == 'i') {
+                    lo_message_add_int32(mesg, param.value.intValue);
+                } else if(param.type == 'f') {
+                    lo_message_add_float(mesg, param.value.floatValue);
+                } else if(param.type == 's') {
+                    lo_message_add_string(mesg, param.value.stringValue);
+                } else if(param.type == 'T') {
+                    lo_message_add_true(mesg);
+                } else if(param.type == 'F') {
+                    lo_message_add_false(mesg);
+                } else if(param.type == 'N') {
+                    lo_message_add_nil(mesg);
                 }
-                lo_send_message (loAddress, event->getMessage().getPath(), mesg);
-                lo_message_free (mesg);
-                ObjectCollector::scriptCollector().recycle(event);
-                event = eventBuffer.getNextEvent(rolling, jack_pos, nframes);
             }
+            lo_send_message (loAddress, event->getMessage().getPath(), mesg);
+            lo_message_free (mesg);
+            ObjectCollector::scriptCollector().recycle(event);
+            event = eventBuffer.getNextEvent(rolling, jack_pos, nframes);
         }
 
         // TODO: better timing
