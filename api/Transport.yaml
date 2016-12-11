@@ -58,6 +58,8 @@ classes:
             - {name: denominator, type: integer }
 
     - name: Position
+      cppname: TimePosition
+      include: timeposition
       ctor:
         parameters:
         - {name: bar, type: integer }
@@ -67,6 +69,16 @@ classes:
         - name: bar
           cppname: getBar
           returns: integer
+        - name: num
+          cppname: getPosition
+          returns: integer
+        - name: div
+          cppname: getDivision
+          returns: integer
+        - name: time
+          cppname: getTime
+          returns: integer
+
 
     - name: TimeSignature
       include: timesignature

@@ -45,7 +45,13 @@ public:
     void schedule(Note &note, unsigned int bar) {
         schedule(note, bar, 0);
     }
-    void schedule(const Note &note, Position &position, unsigned char channel);
+    void schedule(const Note &note, Position &position, unsigned char channel)
+    {
+        if(channel < 1 || channel > 16) {
+            throw std::logic_error("MIDI channel must be between 1 and 16");
+        }
+        scheduleNote(note, position, channel);
+    }
     void schedule(Pattern &pattern, unsigned int bar, unsigned int position, unsigned int division, unsigned char channel) {
         Position pos(bar, position, division);
         schedule(pattern, pos, channel);
@@ -76,6 +82,8 @@ public:
     }
     void schedule(MidiMessage &message, Position &position, unsigned char channel);
     virtual void addMidiEvent(MidiEvent* evt) = 0;
+private:
+    void scheduleNote(const Note &note, Position &position, unsigned char channel);
 };
 
 #endif // MIDISINK_H

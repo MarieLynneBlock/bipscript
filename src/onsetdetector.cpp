@@ -87,7 +87,8 @@ void OnsetDetector::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t
                 ScriptFunction *handler = onOnsetHandler.load();
                 if(handler) {
                     // TODO: compute position from interpolation?
-                    (new OnOnsetClosure(*handler, 0))->dispatch();
+                    TimePosition position(pos);
+                    (new OnOnsetClosure(*handler, position))->dispatch();
                 }
                 lastOnsetFrame = time;
             }

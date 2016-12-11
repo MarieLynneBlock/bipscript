@@ -100,7 +100,7 @@ std::ostream& operator<< (std::ostream &out, Duration &duration)
 
 
 Position::Position(unsigned int bar, unsigned int position, unsigned int division) :
-    Duration(bar - 1, position, division)
+    Duration(bar, position, division)
 {
     if(bar == 0) {
         //std::cerr << "position = 0 at " << bar << ":0/" << division << std::endl;
@@ -131,12 +131,6 @@ Position &Position::operator+=(const Duration &duration)
     }
     // std::cout << " yields " << *this << ", " << std::endl;
     normalize();
-    return *this;
-}
-
-Position &Position::operator-=(int bars)
-{
-    this->whole -= bars - 1; // parameter bars is also 1-based
     return *this;
 }
 

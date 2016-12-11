@@ -44,7 +44,6 @@ public:
 class Pattern
 {
     std::deque<PatternNote> noteList;
-    EventList<MidiEvent> eventList;
 public:
     // methods for notes
     void addNote(Note &note, int bar, int position, int division);
@@ -62,15 +61,7 @@ public:
     const PatternNote &get(unsigned int index) {
         return noteList[index];
     }
-    // methods for events
-    MidiEvent* getFirstEvent() {
-        return eventList.getFirst();
-    }
-    MidiEvent* getNextEvent(MidiEvent *event) {
-        return eventList.getNext(event);
-    }
     std::string print();
-    //void schedule(MidiSink *sink, Position position);
     void transpose(int amount);
 };
 

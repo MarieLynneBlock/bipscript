@@ -21,6 +21,8 @@
 #include "objectcache.h"
 #include "eventclosure.h"
 #include "OnsetDetectionFunction.h"
+#include "timeposition.h"
+#include "bindtransport.h"
 
 const unsigned int ONSET_HOP_SIZE = 512;
 const unsigned int HISTORY_SIZE = 8;
@@ -57,12 +59,12 @@ public:
 };
 
 class OnOnsetClosure : public EventClosure {
-    int count;
+    TimePosition pos;
 protected:
-     void addParameters() { addInteger(count); }
+     void addParameters() { addObject(&pos, binding::TransportPositionObject); }
 public:
-    OnOnsetClosure(ScriptFunction function, int count) :
-        EventClosure(function), count(count) {}
+    OnOnsetClosure(ScriptFunction function, TimePosition &pos) :
+        EventClosure(function), pos(pos) {}
 };
 
 class OnsetDetectorCache : public ProcessorCache<OnsetDetector>

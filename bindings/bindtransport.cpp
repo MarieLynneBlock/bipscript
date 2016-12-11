@@ -22,6 +22,7 @@
 #include "transport.h"
 #include "audioengine.h"
 #include "transportmaster.h"
+#include "timeposition.h"
 #include "timesignature.h"
 #include <stdexcept>
 #include <cstring>
@@ -326,18 +327,18 @@ SQInteger TransportMastertimeSignature(HSQUIRRELVM vm)
 //
 // Transport.Position class
 //
-SQInteger TransportPositionPush(HSQUIRRELVM vm, Position *obj)
+SQInteger TransportPositionPush(HSQUIRRELVM vm, TimePosition *obj)
 {
     sq_pushobject(vm, TransportPositionObject);
     sq_createinstance(vm, -1);
     sq_remove(vm, -2);
-    sq_setinstanceup(vm, -1, new Position(*obj));
+    sq_setinstanceup(vm, -1, new TimePosition(*obj));
     sq_setreleasehook(vm, -1, &TransportPositionRelease);
 }
 
 SQInteger TransportPositionRelease(SQUserPointer p, SQInteger size)
 {
-    delete static_cast<Position*>(p);
+    delete static_cast<TimePosition*>(p);
 }
 
 SQInteger TransportPositionCtor(HSQUIRRELVM vm)
@@ -368,10 +369,10 @@ SQInteger TransportPositionCtor(HSQUIRRELVM vm)
         return sq_throwerror(vm, "argument 3 \"division\" is not of type integer");
     }
 
-    Position *obj;
+    TimePosition *obj;
     // call the implementation
     try {
-        obj = new Position(bar, position, division);
+        obj = new TimePosition(bar, position, division);
     }
     catch(std::exception const& e) {
         return sq_throwerror(vm, e.what());
@@ -389,7 +390,7 @@ SQInteger TransportPositionClone(HSQUIRRELVM vm)
     SQUserPointer userPtr;
     sq_getinstanceup(vm, 2, &userPtr, 0);
     // set instance ptr to a copy
-    sq_setinstanceup(vm, 1, new Position(*(Position*)userPtr));
+    sq_setinstanceup(vm, 1, new TimePosition(*(TimePosition*)userPtr));
     sq_setreleasehook(vm, 1, &TransportPositionRelease);
     return 0;
 }
@@ -409,7 +410,7 @@ SQInteger TransportPositionbar(HSQUIRRELVM vm)
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
         return sq_throwerror(vm, "bar method needs an instance of Position");
     }
-    Position *obj = static_cast<Position*>(userPtr);
+    TimePosition *obj = static_cast<TimePosition*>(userPtr);
     if(!obj) {
         return sq_throwerror(vm, "bar method called before Transport.Position constructor");
     }
@@ -418,6 +419,108 @@ SQInteger TransportPositionbar(HSQUIRRELVM vm)
     // call the implementation
     try {
         ret = obj->getBar();
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushinteger(vm, ret);
+    return 1;
+}
+
+//
+// Transport.Position div
+//
+SQInteger TransportPositiondiv(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 1) {
+        return sq_throwerror(vm, "too many parameters, expected at most 0");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "div method needs an instance of Position");
+    }
+    TimePosition *obj = static_cast<TimePosition*>(userPtr);
+    if(!obj) {
+        return sq_throwerror(vm, "div method called before Transport.Position constructor");
+    }
+    // return value
+    SQInteger ret;
+    // call the implementation
+    try {
+        ret = obj->getDivision();
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushinteger(vm, ret);
+    return 1;
+}
+
+//
+// Transport.Position num
+//
+SQInteger TransportPositionnum(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 1) {
+        return sq_throwerror(vm, "too many parameters, expected at most 0");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "num method needs an instance of Position");
+    }
+    TimePosition *obj = static_cast<TimePosition*>(userPtr);
+    if(!obj) {
+        return sq_throwerror(vm, "num method called before Transport.Position constructor");
+    }
+    // return value
+    SQInteger ret;
+    // call the implementation
+    try {
+        ret = obj->getPosition();
+    }
+    catch(std::exception const& e) {
+        return sq_throwerror(vm, e.what());
+    }
+
+    // push return value
+    sq_pushinteger(vm, ret);
+    return 1;
+}
+
+//
+// Transport.Position time
+//
+SQInteger TransportPositiontime(HSQUIRRELVM vm)
+{
+    SQInteger numargs = sq_gettop(vm);
+    // check parameter count
+    if(numargs > 1) {
+        return sq_throwerror(vm, "too many parameters, expected at most 0");
+    }
+    // get "this" pointer
+    SQUserPointer userPtr = 0;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
+        return sq_throwerror(vm, "time method needs an instance of Position");
+    }
+    TimePosition *obj = static_cast<TimePosition*>(userPtr);
+    if(!obj) {
+        return sq_throwerror(vm, "time method called before Transport.Position constructor");
+    }
+    // return value
+    SQInteger ret;
+    // call the implementation
+    try {
+        ret = obj->getTime();
     }
     catch(std::exception const& e) {
         return sq_throwerror(vm, e.what());
@@ -624,6 +727,18 @@ void bindTransport(HSQUIRRELVM vm)
     // methods for class Position
     sq_pushstring(vm, _SC("bar"), -1);
     sq_newclosure(vm, &TransportPositionbar, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("div"), -1);
+    sq_newclosure(vm, &TransportPositiondiv, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("num"), -1);
+    sq_newclosure(vm, &TransportPositionnum, 0);
+    sq_newslot(vm, -3, false);
+
+    sq_pushstring(vm, _SC("time"), -1);
+    sq_newclosure(vm, &TransportPositiontime, 0);
     sq_newslot(vm, -3, false);
 
     // push Position to Transport package table

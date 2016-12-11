@@ -18,7 +18,7 @@
 #define BINDTRANSPORT_H
 
 #include "squirrel.h"
-class Position;
+class TimePosition;
 class TimeSignature;
 
 namespace binding
@@ -27,7 +27,7 @@ namespace binding
     extern HSQOBJECT TransportMasterObject;
     extern HSQOBJECT TransportPositionObject;
     extern HSQOBJECT TransportTimeSignatureObject;
-    SQInteger TransportPositionPush(HSQUIRRELVM vm, Position *);
+    SQInteger TransportPositionPush(HSQUIRRELVM vm, TimePosition *);
     TimeSignature *getTransportTimeSignature(HSQUIRRELVM &vm, int index);
     // release hooks for types in this package
     SQInteger TransportPositionRelease(SQUserPointer p, SQInteger size);

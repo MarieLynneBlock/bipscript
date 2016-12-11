@@ -687,7 +687,7 @@ void Lv2Plugin::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nfr
     lilv_instance_run(instance, nframes);
 
     // fire MIDI events
-    fireMidiEvents();
+    fireMidiEvents(pos);
 
     // emit worker responses
     if(worker) {

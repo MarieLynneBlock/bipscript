@@ -31,20 +31,28 @@ protected:
 public:
     Duration(unsigned int whole, unsigned int position, unsigned int division);
     friend std::ostream& operator<< (std::ostream &out, Duration &duration);
-    // getters
+    // accessors
     unsigned int getBar() const {
         return whole;
+    }
+    void setBar(unsigned int bar) {
+        this->whole = bar;
     }
     unsigned int getPosition() const {
         return position;
     }
+    void setPosition(unsigned int position) {
+        this->position = position;
+    }
     unsigned int getDivision() const {
         return division;
+    }
+    void setDivision(unsigned int division) {
+        this->division = division;
     }
     // operators
     bool operator< (Duration &other);
     bool operator<= (Duration &other);
-    const Duration operator+ (Duration &other);
     const Duration operator- (const Duration &other);
 };
 
@@ -55,16 +63,9 @@ public:
     Position(unsigned int bar, unsigned int position, unsigned int division);
     friend std::ostream& operator<< (std::ostream &out, Position &pos);
     long calculateFrameOffset(jack_position_t &pos);
-    unsigned int getBar() {
-        return whole + 1;
-    }
     Position &operator +=(const Duration &duration);
     const Position operator+ (const Duration &duration) {
         return Position(*this) += duration;
-    }
-    Position &operator -=(int bars);
-    const Position operator- (int bars) {
-        return Position(*this) -= bars;
     }
 };
 

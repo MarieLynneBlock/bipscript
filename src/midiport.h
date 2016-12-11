@@ -63,9 +63,9 @@ public:
     unsigned int getMidiOutputCount() { return 1; }
     // Source interface
     bool connectsTo(Source *) { return false; }
-    void doProcess(bool, jack_position_t&, jack_nframes_t nframes, jack_nframes_t) {
+    void doProcess(bool, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t) {
         connection.process(nframes);
-        fireMidiEvents();
+        fireMidiEvents(pos);
     }
     void reposition() {}
 };

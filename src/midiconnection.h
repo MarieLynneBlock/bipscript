@@ -25,10 +25,11 @@
 #include "midimessage.h"
 #include "bindmidi.h"
 #include "bindtransport.h"
+#include "timeposition.h"
 
 class MidiControlEventClosure : public EventClosure {
     Control control;
-    Position position;
+    TimePosition position;
 protected:
     void addParameters() {
         binding::MidiControlPush(vm, &control);
@@ -36,13 +37,13 @@ protected:
     }
 public:
     MidiControlEventClosure(ScriptFunction function,
-                            Control &control, Position &position)
+                            Control &control, TimePosition &position)
       : EventClosure(function), control(control), position(position) {}
 };
 
 class MidiNoteOnEventClosure : public EventClosure {
     NoteOn noteOn;
-    Position position;
+    TimePosition position;
 protected:
     void addParameters() {
         binding::MidiNoteOnPush(vm, &noteOn);
@@ -50,13 +51,13 @@ protected:
     }
 public:
     MidiNoteOnEventClosure(ScriptFunction function,
-                            NoteOn &noteOn, Position &position)
+                            NoteOn &noteOn, TimePosition &position)
       : EventClosure(function), noteOn(noteOn), position(position) {}
 };
 
 class MidiNoteOffEventClosure : public EventClosure {
     NoteOff noteOff;
-    Position position;
+    TimePosition position;
 protected:
     void addParameters() {
         binding::MidiNoteOffPush(vm, &noteOff);
@@ -64,7 +65,7 @@ protected:
     }
 public:
     MidiNoteOffEventClosure(ScriptFunction function,
-                            NoteOff &noteOff, Position &position)
+                            NoteOff &noteOff, TimePosition &position)
       : EventClosure(function), noteOff(noteOff), position(position) {}
 };
 
@@ -104,25 +105,27 @@ public:
         onNoteOffHandler.store(new ScriptFunction(handler));
         handlerDefined.store(true);
     }
-    void fireEvents() {
+    void fireEvents(jack_position_t &pos) {
         if(handlerDefined.load()) {
             ScriptFunction *ccHandler = onControlHandler.load();
             ScriptFunction *onHandler = onNoteOnHandler.load();
             ScriptFunction *offHandler = onNoteOffHandler.load();
-            Position pos;
             for(int j = 0; j < getEventCount(); j++) {
                 MidiEvent *evt = getEvent(j);
                 if(evt->getType() == MidiEvent::TYPE_CONTROL && ccHandler) {
+                    TimePosition position(pos, evt->getFrameOffset());
                     Control control(evt->getDatabyte1(), evt->getDatabyte2());
-                    (new MidiControlEventClosure(*ccHandler, control, pos))->dispatch();
+                    (new MidiControlEventClosure(*ccHandler, control, position))->dispatch();
                 }
                 else if(evt->getType() == MidiEvent::TYPE_NOTE_ON && onHandler) {
+                    TimePosition position(pos, evt->getFrameOffset());
                     NoteOn noteOn(evt->getDatabyte1(), evt->getDatabyte2());
-                    (new MidiNoteOnEventClosure(*onHandler, noteOn, pos))->dispatch();
+                    (new MidiNoteOnEventClosure(*onHandler, noteOn, position))->dispatch();
                 }
                 else if(evt->getType() == MidiEvent::TYPE_NOTE_OFF && offHandler) {
+                    TimePosition position(pos, evt->getFrameOffset());
                     NoteOff noteOff(evt->getDatabyte1(), evt->getDatabyte2());
-                    (new MidiNoteOffEventClosure(*offHandler, noteOff, pos))->dispatch();
+                    (new MidiNoteOffEventClosure(*offHandler, noteOff, position))->dispatch();
                 }
             }
         }
@@ -150,9 +153,9 @@ public:
         }
     }
 protected:
-    void fireMidiEvents() {
+    void fireMidiEvents(jack_position_t &pos) {
         for(int i = 0; i < getMidiOutputCount(); i++) {
-            getMidiConnection(i)->fireEvents();
+            getMidiConnection(i)->fireEvents(pos);
         }
     }
 };

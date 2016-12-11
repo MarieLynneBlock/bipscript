@@ -54,23 +54,7 @@ std::string Pattern::print() {
 
 void Pattern::transpose(int amount)
 {
-    MidiEvent *event = getFirstEvent();
-    if(!event) {
-        for(auto it = noteList.begin(); it != noteList.end(); it++) {
-            it->note.transpose(amount);
-        }
-    }
-    else {
-        while(event) {
-            int value = amount + event->getDatabyte1();
-            if(value < 0) {
-                throw std::logic_error("Cannot transpose this note that low");
-            }
-            else if(value > 127) {
-                throw std::logic_error("Cannot transpose this note that high");
-            }
-            event->setDatabyte1(value);
-            event = getNextEvent(event);
-        }
+    for(auto it = noteList.begin(); it != noteList.end(); it++) {
+        it->note.transpose(amount);
     }
 }
