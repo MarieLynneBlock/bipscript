@@ -18,8 +18,13 @@
 #define BINDTRANSPORT_H
 
 #include "squirrel.h"
+
+namespace bipscript {
+
+namespace transport {
 class TimePosition;
 class TimeSignature;
+}
 
 namespace binding
 {
@@ -27,13 +32,13 @@ namespace binding
     extern HSQOBJECT TransportMasterObject;
     extern HSQOBJECT TransportPositionObject;
     extern HSQOBJECT TransportTimeSignatureObject;
-    SQInteger TransportPositionPush(HSQUIRRELVM vm, TimePosition *);
-    TimeSignature *getTransportTimeSignature(HSQUIRRELVM &vm, int index);
+    SQInteger TransportPositionPush(HSQUIRRELVM vm, transport::TimePosition *);
+    transport::TimeSignature *getTransportTimeSignature(HSQUIRRELVM &vm, int index);
     // release hooks for types in this package
     SQInteger TransportPositionRelease(SQUserPointer p, SQInteger size);
     SQInteger TransportTimeSignatureRelease(SQUserPointer p, SQInteger size);
     // method to bind this package
     void bindTransport(HSQUIRRELVM vm);
-}
+}}
 
 #endif // BINDTRANSPORT_H

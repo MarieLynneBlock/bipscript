@@ -17,7 +17,8 @@
 
 #include "midisink.h"
 
-
+namespace bipscript {
+namespace midi {
 
 void MidiSink::scheduleNote(const Note &note, Position &position, unsigned char channel)
 {
@@ -49,3 +50,5 @@ void MidiSink::schedule(MidiMessage &mesg, Position &position, unsigned char cha
     MidiEvent* evt = new MidiEvent(position, mesg.byte(0), mesg.byte(1), mesg.type(), channel - 1);
     addMidiEvent(evt);
 }
+
+}}

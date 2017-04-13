@@ -1,6 +1,9 @@
 #include "mmlreader.h"
 #include "audioengine.h"
 
+namespace bipscript {
+namespace midi {
+
 static void mml_callback(MML_INFO *p, void *extobj)
 {
   MMLReader *mmlReader = (MMLReader*)extobj;
@@ -56,7 +59,7 @@ Pattern *MMLReader::read(const char *text)
 {
     pattern = new Pattern();
     currentPosition = Position(1, 0, 1);
-    TimeSignature &time = AudioEngine::instance().getTimeSignature();
+    transport::TimeSignature &time = AudioEngine::instance().getTimeSignature();
     if(time.isValid()) {
         ticksPerBar = mmlopt.bticks * time.getNumerator() * 4 / time.getDenominator();
     } else {
@@ -66,3 +69,5 @@ Pattern *MMLReader::read(const char *text)
     while (mml_fetch(&mml) == MML_RESULT_OK) {}
     return pattern;
 }
+
+}}

@@ -25,66 +25,67 @@
 #include "midiport.h"
 #include "mixer.h"
 
-namespace binding
-{
+namespace bipscript {
+namespace binding {
 
-    AudioSource *getAudioSource(HSQUIRRELVM &vm, int index) {
+
+    audio::AudioSource *getAudioSource(HSQUIRRELVM &vm, int index) {
         SQUserPointer sourcePtr;
         if (!SQ_FAILED(sq_getinstanceup(vm, index, (SQUserPointer*)&sourcePtr, &AudioMixerObject))) {
-            return static_cast<Mixer*>(sourcePtr);
+            return static_cast<audio::Mixer*>(sourcePtr);
         }
         if (!SQ_FAILED(sq_getinstanceup(vm, index, (SQUserPointer*)&sourcePtr, &AudioSystemInObject))) {
-            return static_cast<AudioInputPort*>(sourcePtr);
+            return static_cast<audio::AudioInputPort*>(sourcePtr);
         }
         if (!SQ_FAILED(sq_getinstanceup(vm, index, (SQUserPointer*)&sourcePtr, &AudioStereoInObject))) {
-            return static_cast<AudioStereoInput*>(sourcePtr);
+            return static_cast<audio::AudioStereoInput*>(sourcePtr);
         }
         if (!SQ_FAILED(sq_getinstanceup(vm, index, (SQUserPointer*)&sourcePtr, &Lv2PluginObject))) {
-            return static_cast<Lv2Plugin*>(sourcePtr);
+            return static_cast<lv2::Lv2Plugin*>(sourcePtr);
         }
         return 0;
     }
     
-    MidiMessage *getMidiMessage(HSQUIRRELVM &vm, int index) {
+    midi::MidiMessage *getMidiMessage(HSQUIRRELVM &vm, int index) {
         SQUserPointer sourcePtr;
         if (!SQ_FAILED(sq_getinstanceup(vm, index, (SQUserPointer*)&sourcePtr, &MidiNoteOnObject))) {
-            return static_cast<NoteOn*>(sourcePtr);
+            return static_cast<midi::NoteOn*>(sourcePtr);
         }
         if (!SQ_FAILED(sq_getinstanceup(vm, index, (SQUserPointer*)&sourcePtr, &MidiNoteOffObject))) {
-            return static_cast<NoteOff*>(sourcePtr);
+            return static_cast<midi::NoteOff*>(sourcePtr);
         }
         if (!SQ_FAILED(sq_getinstanceup(vm, index, (SQUserPointer*)&sourcePtr, &MidiControlObject))) {
-            return static_cast<Control*>(sourcePtr);
+            return static_cast<midi::Control*>(sourcePtr);
         }
         if (!SQ_FAILED(sq_getinstanceup(vm, index, (SQUserPointer*)&sourcePtr, &MidiPitchBendObject))) {
-            return static_cast<PitchBend*>(sourcePtr);
+            return static_cast<midi::PitchBend*>(sourcePtr);
         }
         if (!SQ_FAILED(sq_getinstanceup(vm, index, (SQUserPointer*)&sourcePtr, &MidiProgramChangeObject))) {
-            return static_cast<ProgramChange*>(sourcePtr);
+            return static_cast<midi::ProgramChange*>(sourcePtr);
         }
         return 0;
     }
     
-    MidiSource *getMidiSource(HSQUIRRELVM &vm, int index) {
+    midi::MidiSource *getMidiSource(HSQUIRRELVM &vm, int index) {
         SQUserPointer sourcePtr;
         if (!SQ_FAILED(sq_getinstanceup(vm, index, (SQUserPointer*)&sourcePtr, &Lv2PluginObject))) {
-            return static_cast<Lv2Plugin*>(sourcePtr);
+            return static_cast<lv2::Lv2Plugin*>(sourcePtr);
         }
         if (!SQ_FAILED(sq_getinstanceup(vm, index, (SQUserPointer*)&sourcePtr, &MidiSystemInObject))) {
-            return static_cast<MidiInputPort*>(sourcePtr);
+            return static_cast<midi::MidiInputPort*>(sourcePtr);
         }
         return 0;
     }
     
-    MidiSink *getMidiSink(HSQUIRRELVM &vm, int index) {
+    midi::MidiSink *getMidiSink(HSQUIRRELVM &vm, int index) {
         SQUserPointer sourcePtr;
         if (!SQ_FAILED(sq_getinstanceup(vm, index, (SQUserPointer*)&sourcePtr, &Lv2PluginObject))) {
-            return static_cast<Lv2Plugin*>(sourcePtr);
+            return static_cast<lv2::Lv2Plugin*>(sourcePtr);
         }
         if (!SQ_FAILED(sq_getinstanceup(vm, index, (SQUserPointer*)&sourcePtr, &MidiSystemOutObject))) {
-            return static_cast<MidiOutputPort*>(sourcePtr);
+            return static_cast<midi::MidiOutputPort*>(sourcePtr);
         }
         return 0;
     }
     
-}
+}}

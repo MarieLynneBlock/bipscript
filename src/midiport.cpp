@@ -19,6 +19,9 @@
 #include "objectcollector.h"
 #include "audioengine.h"
 
+namespace bipscript {
+namespace midi {
+
 MidiEvent *MidiInputConnection::getEvent(uint32_t i) {
     jack_midi_event_t in_event;
     jack_midi_event_get(&in_event, buffer, i);
@@ -102,3 +105,4 @@ MidiOutputPort *MidiOutputPortCache::getMidiOutputPort(const char* portName, con
     return port;
 }
 
+}}

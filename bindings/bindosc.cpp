@@ -25,6 +25,10 @@
 #include <stdexcept>
 #include <cstring>
 
+namespace bipscript {
+
+using namespace osc;
+
 namespace binding {
 
 // object references to types in this package
@@ -579,7 +583,7 @@ SQInteger OscOutputschedule(HSQUIRRELVM vm)
         return sq_throwerror(vm, "schedule method called before Osc.Output constructor");
     }
     // get parameter 1 "message" as Osc.Message
-    OscMessage *message = getOscMessage(vm, 2);
+    osc::OscMessage *message = getOscMessage(vm, 2);
     if(message == 0) {
         return sq_throwerror(vm, "argument 1 \"message\" is not of type Osc.Message");
     }
@@ -669,7 +673,7 @@ SQInteger OscOutputsend(HSQUIRRELVM vm)
         return sq_throwerror(vm, "send method called before Osc.Output constructor");
     }
     // get parameter 1 "message" as Osc.Message
-    OscMessage *message = getOscMessage(vm, 2);
+    osc::OscMessage *message = getOscMessage(vm, 2);
     if(message == 0) {
         return sq_throwerror(vm, "argument 1 \"message\" is not of type Osc.Message");
     }
@@ -788,4 +792,4 @@ void bindOsc(HSQUIRRELVM vm)
     // push package "Osc" to root table
     sq_newslot(vm, -3, false);
 }
-}
+}}

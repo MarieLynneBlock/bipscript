@@ -17,6 +17,9 @@
 #include "transport.h"
 #include <iostream>
 
+namespace bipscript {
+namespace transport {
+
 void Transport::schedule(ScriptFunction &function, unsigned int bar, unsigned int position, unsigned int division)
 {
     eventBuffer.addEvent(new AsyncClosure(function, bar, position, division));
@@ -30,3 +33,5 @@ void Transport::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nfr
         closure = eventBuffer.getNextEvent(rolling, pos, nframes);
     }
 }
+
+}}

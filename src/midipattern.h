@@ -23,6 +23,9 @@
 
 #include <deque>
 
+namespace bipscript {
+namespace midi {
+
 class PatternNote {
     friend class Pattern;
     Note note;
@@ -64,5 +67,7 @@ public:
     std::string print();
     void transpose(int amount);
 };
+
+}}
 
 #endif // MIDIPATTERN_H

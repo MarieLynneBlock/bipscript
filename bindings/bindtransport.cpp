@@ -27,6 +27,10 @@
 #include <stdexcept>
 #include <cstring>
 
+namespace bipscript {
+
+using namespace transport;
+
 namespace binding {
 
 // object references to types in this package
@@ -249,7 +253,7 @@ SQInteger TransportMasterCtor(HSQUIRRELVM vm)
 SQInteger TransportMastertimeSignature(HSQUIRRELVM vm)
 {
     SQObjectType overrideType = sq_gettype(vm, 2);
-    if(TimeSignature *signature = getTransportTimeSignature(vm, 2)) {
+    if(transport::TimeSignature *signature = getTransportTimeSignature(vm, 2)) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
         if(numargs > 2) {
@@ -327,7 +331,7 @@ SQInteger TransportMastertimeSignature(HSQUIRRELVM vm)
 //
 // Transport.Position class
 //
-SQInteger TransportPositionPush(HSQUIRRELVM vm, TimePosition *obj)
+SQInteger TransportPositionPush(HSQUIRRELVM vm, transport::TimePosition *obj)
 {
     sq_pushobject(vm, TransportPositionObject);
     sq_createinstance(vm, -1);
@@ -775,4 +779,4 @@ void bindTransport(HSQUIRRELVM vm)
     // push package "Transport" to root table
     sq_newslot(vm, -3, false);
 }
-}
+}}

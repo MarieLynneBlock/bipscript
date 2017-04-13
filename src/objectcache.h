@@ -23,6 +23,8 @@
 
 #include "audioengine.h"
 
+namespace bipscript {
+
 class ObjectCache
 {
 public:
@@ -127,5 +129,7 @@ template <class T> class ProcessorCache : public ActiveCache<T>
         AudioEngine::instance().removeProcessor(obj);
     }
 };
+
+}
 
 #endif // OBJECTCACHE_H

@@ -30,8 +30,13 @@
 using boost::lockfree::spsc_queue;
 using std::map;
 
-class MixerControlConnection;
+namespace bipscript {
+
 class ScriptArray;
+
+namespace audio {
+
+class MixerControlConnection;
 
 struct MixerControlMapping : public Listable
 {
@@ -47,11 +52,11 @@ struct MixerControlMapping : public Listable
 class MixerControlConnection : public Listable
 {
     List<MixerControlMapping> mappings;
-    MidiConnection *connection;
+    midi::MidiConnection *connection;
     u_int32_t eventCount;
     u_int32_t eventIndex;
 public:
-    MixerControlConnection(MidiConnection *connection) :
+    MixerControlConnection(midi::MidiConnection *connection) :
         connection(connection) {}
     void addMapping(MixerControlMapping *mapping) {
         mappings.add(mapping);
@@ -92,7 +97,7 @@ class Mixer : public AudioSource
     const unsigned int audioOutputCount;
     AudioConnection **audioOutput;
     // control connections
-    map<MidiConnection*,MixerControlConnection*> controlConnectionMap;
+    map<midi::MidiConnection*,MixerControlConnection*> controlConnectionMap;
     spsc_queue<MixerControlMapping*> newControlMappingsQueue;
     QueueList<MixerControlConnection> controlConnections;
     EventBuffer<MixerGainEvent> gainEventBuffer;
@@ -104,7 +109,7 @@ public:
     void connect(AudioSource &source) {
         connect(source, 1.0);
     }
-    void addGainController(MidiSource &source, unsigned int cc, unsigned int input, unsigned int output);
+    void addGainController(midi::MidiSource &source, unsigned int cc, unsigned int input, unsigned int output);
     void scheduleGain(uint32_t input, uint32_t output, float gain, uint32_t bar, uint32_t position, uint32_t division);
     void restore();
     // Source interface
@@ -132,5 +137,7 @@ public:
     }
     Mixer *getMixer(uint16_t inputs, uint16_t outputs);
 };
+
+}}
 
 #endif // MIXER_H

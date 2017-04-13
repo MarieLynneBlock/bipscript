@@ -25,6 +25,8 @@
 #include "position.h"
 #include "objectcache.h"
 
+namespace bipscript {
+
 class ScriptHost
 {
     HSQUIRRELVM vm;
@@ -67,5 +69,7 @@ private:
     void bindModules(HSQUIRRELVM vm);
     bool waitForRestart(HSQOBJECT &context);
 };
+
+}
 
 #endif // SCRIPTHOST_H

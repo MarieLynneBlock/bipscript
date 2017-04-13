@@ -1,5 +1,6 @@
 #include "methodqueue.h"
 
+namespace bipscript {
 
 void MethodQueue::dispatch(ScriptFunctionClosure *function)
 {
@@ -11,4 +12,7 @@ void MethodQueue::dispatch(ScriptFunctionClosure *function)
 ScriptFunctionClosure *MethodQueue::next() {
     ScriptFunctionClosure *function;
     return dispatchQueue.pop(function) ? function : 0;
+}
+
+
 }

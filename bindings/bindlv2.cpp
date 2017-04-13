@@ -25,6 +25,10 @@
 #include <stdexcept>
 #include <cstring>
 
+namespace bipscript {
+
+using namespace lv2;
+
 namespace binding {
 
 // object references to types in this package
@@ -115,7 +119,7 @@ SQInteger Lv2PluginCtor(HSQUIRRELVM vm)
         sq_setinstanceup(vm, 1, (SQUserPointer*)obj);
         return 1;
     }
-    else if(Lv2State *state = getLv2State(vm, 3)) {
+    else if(lv2::Lv2State *state = getLv2State(vm, 3)) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
         if(numargs > 3) {
@@ -135,7 +139,7 @@ SQInteger Lv2PluginCtor(HSQUIRRELVM vm)
         if(numargs == 3) {
 
             // get parameter 2 "state" as Lv2.State
-            Lv2State *state = getLv2State(vm, 3);
+            lv2::Lv2State *state = getLv2State(vm, 3);
             if(state == 0) {
                 return sq_throwerror(vm, "argument 2 \"state\" is not of type Lv2.State");
             }
@@ -191,7 +195,7 @@ SQInteger Lv2PluginaddController(HSQUIRRELVM vm)
         return sq_throwerror(vm, "addController method called before Lv2.Plugin constructor");
     }
     // get parameter 1 "source" as Midi.Source
-    MidiSource *source = getMidiSource(vm, 2);
+    midi::MidiSource *source = getMidiSource(vm, 2);
     if(source == 0) {
         return sq_throwerror(vm, "argument 1 \"source\" is not of type Midi.Source");
     }
@@ -287,7 +291,7 @@ SQInteger Lv2Pluginconnect(HSQUIRRELVM vm)
         return sq_throwerror(vm, "connect method called before Lv2.Plugin constructor");
     }
     // get parameter 1 "source" as Audio.Source
-    AudioSource *source = getAudioSource(vm, 2);
+    audio::AudioSource *source = getAudioSource(vm, 2);
     if(source == 0) {
         return sq_throwerror(vm, "argument 1 \"source\" is not of type Audio.Source");
     }
@@ -327,7 +331,7 @@ SQInteger Lv2PluginconnectMidi(HSQUIRRELVM vm)
         return sq_throwerror(vm, "connectMidi method called before Lv2.Plugin constructor");
     }
     // get parameter 1 "source" as Midi.Source
-    MidiSource *source = getMidiSource(vm, 2);
+    midi::MidiSource *source = getMidiSource(vm, 2);
     if(source == 0) {
         return sq_throwerror(vm, "argument 1 \"source\" is not of type Midi.Source");
     }
@@ -427,7 +431,7 @@ SQInteger Lv2PluginmidiOutput(HSQUIRRELVM vm)
     }
 
     // return value
-    MidiConnection* ret;
+    midi::MidiConnection* ret;
     // call the implementation
     try {
         ret = obj->getMidiConnection(index);
@@ -616,7 +620,7 @@ SQInteger Lv2Pluginoutput(HSQUIRRELVM vm)
     }
 
     // return value
-    AudioConnection* ret;
+    audio::AudioConnection* ret;
     // call the implementation
     try {
         ret = obj->getAudioConnection(channel);
@@ -641,7 +645,7 @@ SQInteger Lv2Pluginoutput(HSQUIRRELVM vm)
 SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
 {
     SQObjectType overrideType = sq_gettype(vm, 2);
-    if(Note *note = getMidiNote(vm, 2)) {
+    if(midi::Note *note = getMidiNote(vm, 2)) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
         if(numargs > 6) {
@@ -750,7 +754,7 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
         // void method, returns no value
         return 0;
     }
-    else if(Pattern *pattern = getMidiPattern(vm, 2)) {
+    else if(midi::Pattern *pattern = getMidiPattern(vm, 2)) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
         if(numargs > 6) {
@@ -859,7 +863,7 @@ SQInteger Lv2Pluginschedule(HSQUIRRELVM vm)
         // void method, returns no value
         return 0;
     }
-    else if(MidiMessage *message = getMidiMessage(vm, 2)) {
+    else if(midi::MidiMessage *message = getMidiMessage(vm, 2)) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
         if(numargs > 6) {
@@ -1277,4 +1281,4 @@ void bindLv2(HSQUIRRELVM vm)
     // push package "Lv2" to root table
     sq_newslot(vm, -3, false);
 }
-}
+}}

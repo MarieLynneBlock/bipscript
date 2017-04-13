@@ -19,6 +19,11 @@
 
 #include "squirrel.h"
 
+namespace bipscript {
+
+namespace math {
+}
+
 namespace binding
 {
     // object references to types in this package
@@ -27,6 +32,6 @@ namespace binding
     SQInteger MathRandomRelease(SQUserPointer p, SQInteger size);
     // method to bind this package
     void bindMath(HSQUIRRELVM vm);
-}
+}}
 
 #endif // BINDMATH_H

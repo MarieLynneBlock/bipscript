@@ -23,6 +23,9 @@
 #include "event.h"
 #include "audioengine.h"
 
+namespace bipscript {
+namespace transport {
+
 class AsyncClosure : public Event, public ScriptFunctionClosure {
     int nparams;
 protected:
@@ -70,5 +73,7 @@ public:
     void reposition() { eventBuffer.recycleRemaining(); }
     bool repositionComplete() { return true; }
 };
+
+}}
 
 #endif // TRANSPORT_H

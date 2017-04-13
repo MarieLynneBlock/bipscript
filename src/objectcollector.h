@@ -20,6 +20,8 @@
 #include "listable.h"
 #include <boost/lockfree/queue.hpp>
 
+namespace bipscript {
+
 class ObjectCollector
 {
     boost::lockfree::queue<Listable*> objectQueue; // script thread -> collector thread
@@ -42,5 +44,7 @@ public:
     void update();
     void free();
 };
+
+}
 
 #endif // OBJECTCOLLECTOR_H

@@ -20,6 +20,8 @@
 #include <jack/types.h>
 #include <ostream>
 
+namespace bipscript {
+
 class Duration
 {
     static const uint32_t MAX_DENOMINATOR = 384000; // frames in a measure 44.1k 60bpm
@@ -68,5 +70,7 @@ public:
         return Position(*this) += duration;
     }
 };
+
+}
 
 #endif // POSITION_H

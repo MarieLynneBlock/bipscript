@@ -21,6 +21,8 @@
 
 #include <jack/types.h>
 
+namespace bipscript {
+
 class Processor : public Listable
 {
     jack_nframes_t processedUntil;
@@ -54,5 +56,7 @@ public:
 protected:
     virtual void doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time) = 0;
 };
+
+}
 
 #endif // PROCESSOR_H

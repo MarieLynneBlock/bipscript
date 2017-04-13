@@ -1,6 +1,9 @@
 #ifndef TIMESIGNATURE_H
 #define TIMESIGNATURE_H
 
+namespace bipscript {
+namespace transport {
+
 class TimeSignature
 {
     bool valid;
@@ -23,5 +26,7 @@ public:
         return denominator;
     }
 };
+
+}}
 
 #endif // TIMESIGNATURE_H

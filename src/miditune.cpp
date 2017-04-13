@@ -1,5 +1,7 @@
 #include "miditune.h"
 
+namespace bipscript {
+namespace midi {
 
 Pattern *MidiTune::track(uint32_t tracknum)
 {
@@ -11,3 +13,5 @@ Pattern *MidiTune::track(uint32_t tracknum)
     }
     return &tracks[tracknum - 1];
 }
+
+}}

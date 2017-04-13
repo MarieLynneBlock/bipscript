@@ -22,6 +22,8 @@
 
 //#include <set> // debuggin
 
+namespace bipscript {
+
 class Event : public Position, public Listable
 {
 //    static int refCount; // debugging
@@ -61,5 +63,7 @@ public:
     }
     */
 };
+
+}
 
 #endif // EVENT_H

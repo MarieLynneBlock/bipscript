@@ -1,5 +1,8 @@
 #include "oscinput.h"
 
+namespace bipscript {
+namespace osc {
+
 void osc_error(int num, const char *msg, const char *path)
 {
     std::string mesg("osc input error ");
@@ -87,3 +90,5 @@ OscInput *OscInputFactory::getOscInput(int port, const char *protocol)
     }
     return obj;
 }
+
+}}

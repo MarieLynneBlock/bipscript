@@ -27,6 +27,9 @@
 
 namespace fs = boost::filesystem;
 
+namespace bipscript {
+namespace lv2 {
+
 uint32_t Lv2MidiEvent::midiEventTypeId;
 
 static LV2_URID uridMap(LV2_URID_Map_Handle handle, const char *uri) {
@@ -144,14 +147,14 @@ void Lv2MidiInput::process(bool rolling, jack_position_t &pos, jack_nframes_t nf
         lv2Event.buffer[1] = 0x7b; // CC 123 = all notes off
         lv2Event.buffer[2] = 0;
         for(uint8_t channel = 0; channel < 16; channel++) {
-            lv2Event.buffer[0] = MidiEvent::TYPE_CONTROL + channel;
+            lv2Event.buffer[0] = midi::MidiEvent::TYPE_CONTROL + channel;
             lv2_atom_sequence_append_event(atomSequence, CAPACITY, &lv2Event.event);
         }
     }
     localRolling = rolling;
 
     // get connection and event count
-    MidiConnection *connection = eventConnector.getConnection();
+    midi::MidiConnection *connection = eventConnector.getConnection();
     uint32_t eventCount = 0;
     if(connection) {
         connection->getSource()->process(rolling, pos, nframes, time);
@@ -159,15 +162,15 @@ void Lv2MidiInput::process(bool rolling, jack_position_t &pos, jack_nframes_t nf
     }
 
     // get top events from buffer + connection
-    MidiEvent* bufferEvent = eventBuffer.getNextEvent(rolling, pos, nframes);
-    MidiEvent *connectionEvent = eventCount ? connection->getEvent(0) : 0;
+    midi::MidiEvent* bufferEvent = eventBuffer.getNextEvent(rolling, pos, nframes);
+    midi::MidiEvent *connectionEvent = eventCount ? connection->getEvent(0) : 0;
     uint32_t eventIndex = 1;
 
     // loop while events on either buffer or connection
     while(bufferEvent || connectionEvent) {
         bool bufferNext = bufferEvent &&
                 (!connectionEvent || bufferEvent->getFrameOffset() < connectionEvent->getFrameOffset());
-        MidiEvent *event = bufferNext ? bufferEvent : connectionEvent;
+        midi::MidiEvent *event = bufferNext ? bufferEvent : connectionEvent;
         // lv2 event
         Lv2MidiEvent lv2Event;
         long frame = event->getFrameOffset();
@@ -200,7 +203,7 @@ uint32_t Lv2MidiOutput::getEventCount()
     return counter;
 }
 
-MidiEvent *Lv2MidiOutput::getEvent(uint32_t i)
+midi::MidiEvent *Lv2MidiOutput::getEvent(uint32_t i)
 {
     // TODO: direct access?
     uint32_t counter = 0;
@@ -223,8 +226,8 @@ void Lv2ControlConnection::process(bool rolling, jack_position_t &pos, jack_nfra
     u_int32_t eventIndex = 0;
     u_int32_t eventCount = connection->getEventCount();
     while(eventIndex < eventCount) {
-        MidiEvent *nextEvent = connection->getEvent(eventIndex);
-        if(nextEvent->matches(MidiEvent::TYPE_CONTROL)) {
+        midi::MidiEvent *nextEvent = connection->getEvent(eventIndex);
+        if(nextEvent->matches(midi::MidiEvent::TYPE_CONTROL)) {
             // check mappings
             Lv2ControlMapping *mapping = mappings.getFirst();
             while(mapping) {
@@ -258,14 +261,14 @@ Lv2Plugin::Lv2Plugin(const LilvPlugin *plugin, LilvInstance *instance,
     // audio inputs
     audioInputCount = lilv_plugin_get_num_ports_of_class(plugin, uris.lv2AudioPort, uris.lv2InputPort, 0);
     audioInputIndex = new uint32_t[audioInputCount];
-    audioInput = new AudioConnector[audioInputCount];
+    audioInput = new audio::AudioConnector[audioInputCount];
 
     // audio outputs
     audioOutputCount = lilv_plugin_get_num_ports_of_class(plugin, uris.lv2AudioPort, uris.lv2OutputPort, 0);
     audioOutputIndex = new uint32_t[audioOutputCount];
-    audioOutput = new AudioConnection*[audioOutputCount];
+    audioOutput = new audio::AudioConnection*[audioOutputCount];
     for(uint32_t i = 0; i < audioOutputCount; i++) {
-        audioOutput[i] = new AudioConnection(this);
+        audioOutput[i] = new audio::AudioConnection(this);
         audioOutput[i]->clear();
     }
 
@@ -354,7 +357,7 @@ void Lv2Plugin::connect(AudioSource &source)
     }
 }
 
-void Lv2Plugin::connect(AudioConnection *connection, uint32_t channel)
+void Lv2Plugin::connect(audio::AudioConnection *connection, uint32_t channel)
 {
     if(channel == 0) {
         throw std::logic_error("cannot connect: there is no channel zero");
@@ -559,7 +562,7 @@ void Lv2Plugin::addController(MidiSource &source, unsigned int cc, const char *s
         throw std::logic_error("Minimum cannot be greater than maximum");
     }
     Lv2ControlPort *port = getPort(symbol);
-    MidiConnection *connection = source.getMidiConnection(0); // TODO: how to specify other connections
+    midi::MidiConnection *connection = source.getMidiConnection(0); // TODO: how to specify other connections
     // check hash for existing connection
     Lv2ControlConnection *controlConnection = controlConnectionMap[connection];
     if(!controlConnection) {
@@ -593,7 +596,7 @@ void Lv2Plugin::restore()
 	// TODO: reset control values
 }
 
-void Lv2Plugin::addMidiEvent(MidiEvent *evt) {
+void Lv2Plugin::addMidiEvent(midi::MidiEvent *evt) {
     // for now just add to first midi port
     Lv2MidiInput *midiInput = midiInputList.getFirst();
     if(midiInput) {
@@ -612,7 +615,7 @@ bool Lv2Plugin::connectsTo(Source *source) {
     }
     // audio inputs
     for(uint32_t i = 0; i < audioInputCount; i++) {
-        AudioConnection *connection = audioInput[i].getConnection();
+        audio::AudioConnection *connection = audioInput[i].getConnection();
         if(connection && connection->getSource()->connectsTo(source)) {
             return true;
         }
@@ -620,7 +623,7 @@ bool Lv2Plugin::connectsTo(Source *source) {
     return false;
 }
 
-MidiConnection *Lv2Plugin::getMidiConnection(unsigned int index) {
+midi::MidiConnection *Lv2Plugin::getMidiConnection(unsigned int index) {
     unsigned int count = 0;
     Lv2MidiOutput *output = midiOutputList.getFirst();
     while(output && count < index) {
@@ -647,12 +650,12 @@ void Lv2Plugin::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nfr
 
     // process and connect audio inputs
     for(uint32_t i = 0; i < audioInputCount; i++) {
-        AudioConnection *connection = audioInput[i].getConnection();
+        audio::AudioConnection *connection = audioInput[i].getConnection();
         if(connection) {
             connection->getSource()->process(rolling, pos, nframes, time);
             lilv_instance_connect_port(instance, audioInputIndex[i], connection->getAudio());
         } else {
-            lilv_instance_connect_port(instance, audioInputIndex[i], AudioConnection::getDummyBuffer());
+            lilv_instance_connect_port(instance, audioInputIndex[i], audio::AudioConnection::getDummyBuffer());
         }
     }
 
@@ -926,3 +929,5 @@ Lv2PluginCache::~Lv2PluginCache()
 {
     lilv_world_free(world);
 }
+
+}}

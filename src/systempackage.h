@@ -17,6 +17,9 @@
 #ifndef SYSTEMPACKAGE_H
 #define SYSTEMPACKAGE_H
 
+namespace bipscript {
+namespace system {
+
 class System
 {
     static int argumentCount;
@@ -33,5 +36,7 @@ public:
         return argumentVector[index];
     }
 };
+
+}}
 
 #endif // SYSTEMPACKAGE_H

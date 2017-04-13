@@ -26,6 +26,9 @@
 #include "objectcache.h"
 #include "audioengine.h"
 
+namespace bipscript {
+namespace audio {
+
 class AudioInputPort : public AudioSource
 {
     jack_port_t* port;
@@ -143,5 +146,7 @@ public:
     }
     AudioStereoInput *getAudioStereoInput(const char* name, const char *connectLeft, const char *connectRight);
 };
+
+}}
 
 #endif // AUDIOOUTPUT_H

@@ -19,6 +19,11 @@
 
 #include "squirrel.h"
 
+namespace bipscript {
+
+namespace io {
+}
+
 namespace binding
 {
     // object references to types in this package
@@ -27,6 +32,6 @@ namespace binding
     SQInteger IOFileRelease(SQUserPointer p, SQInteger size);
     // method to bind this package
     void bindIO(HSQUIRRELVM vm);
-}
+}}
 
 #endif // BINDIO_H

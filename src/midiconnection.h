@@ -27,9 +27,12 @@
 #include "bindtransport.h"
 #include "timeposition.h"
 
+namespace bipscript {
+namespace midi {
+
 class MidiControlEventClosure : public EventClosure {
     Control control;
-    TimePosition position;
+    transport::TimePosition position;
 protected:
     void addParameters() {
         binding::MidiControlPush(vm, &control);
@@ -37,13 +40,13 @@ protected:
     }
 public:
     MidiControlEventClosure(ScriptFunction function,
-                            Control &control, TimePosition &position)
+                            Control &control, transport::TimePosition &position)
       : EventClosure(function), control(control), position(position) {}
 };
 
 class MidiNoteOnEventClosure : public EventClosure {
     NoteOn noteOn;
-    TimePosition position;
+    transport::TimePosition position;
 protected:
     void addParameters() {
         binding::MidiNoteOnPush(vm, &noteOn);
@@ -51,13 +54,13 @@ protected:
     }
 public:
     MidiNoteOnEventClosure(ScriptFunction function,
-                            NoteOn &noteOn, TimePosition &position)
+                            NoteOn &noteOn, transport::TimePosition &position)
       : EventClosure(function), noteOn(noteOn), position(position) {}
 };
 
 class MidiNoteOffEventClosure : public EventClosure {
     NoteOff noteOff;
-    TimePosition position;
+    transport::TimePosition position;
 protected:
     void addParameters() {
         binding::MidiNoteOffPush(vm, &noteOff);
@@ -65,7 +68,7 @@ protected:
     }
 public:
     MidiNoteOffEventClosure(ScriptFunction function,
-                            NoteOff &noteOff, TimePosition &position)
+                            NoteOff &noteOff, transport::TimePosition &position)
       : EventClosure(function), noteOff(noteOff), position(position) {}
 };
 
@@ -113,17 +116,17 @@ public:
             for(int j = 0; j < getEventCount(); j++) {
                 MidiEvent *evt = getEvent(j);
                 if(evt->getType() == MidiEvent::TYPE_CONTROL && ccHandler) {
-                    TimePosition position(pos, evt->getFrameOffset());
+                    transport::TimePosition position(pos, evt->getFrameOffset());
                     Control control(evt->getDatabyte1(), evt->getDatabyte2());
                     (new MidiControlEventClosure(*ccHandler, control, position))->dispatch();
                 }
                 else if(evt->getType() == MidiEvent::TYPE_NOTE_ON && onHandler) {
-                    TimePosition position(pos, evt->getFrameOffset());
+                    transport::TimePosition position(pos, evt->getFrameOffset());
                     NoteOn noteOn(evt->getDatabyte1(), evt->getDatabyte2());
                     (new MidiNoteOnEventClosure(*onHandler, noteOn, position))->dispatch();
                 }
                 else if(evt->getType() == MidiEvent::TYPE_NOTE_OFF && offHandler) {
-                    TimePosition position(pos, evt->getFrameOffset());
+                    transport::TimePosition position(pos, evt->getFrameOffset());
                     NoteOff noteOff(evt->getDatabyte1(), evt->getDatabyte2());
                     (new MidiNoteOffEventClosure(*offHandler, noteOff, position))->dispatch();
                 }
@@ -175,5 +178,7 @@ public:
         return connection.load();
     }
 };
+
+}}
 
 #endif // MIDICONNECTION_H

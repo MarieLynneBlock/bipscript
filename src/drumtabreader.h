@@ -21,6 +21,8 @@
 #include <string>
 #include <map>
 
+namespace bipscript {
+namespace midi {
 
 class DrumTabReader
 {
@@ -39,5 +41,7 @@ private:
     void define(std::string code, std::string hit, int note, int velocity);
     void define(int note, std::string hit, int velocity);
 };
+
+}}
 
 #endif // DRUMTABPARSER_H

@@ -22,6 +22,7 @@
 #include "memorypool.h"
 #include "objectcollector.h"
 
+namespace bipscript {
 /**
   *
   * represents a closure created from the process thread
@@ -42,5 +43,7 @@ public:
     ObjectCollector::processCollector().recycle(this);
   }
 };
+
+}
 
 #endif // EVENTCLOSURE_H

@@ -19,6 +19,9 @@
 
 #include "abcreader.h"
 
+namespace bipscript {
+namespace midi {
+
 class Pattern;
 
 class Midi
@@ -42,5 +45,7 @@ public:
         return abcReader().read(str);
     }
 };
+
+}}
 
 #endif // MIDIPACKAGE_H

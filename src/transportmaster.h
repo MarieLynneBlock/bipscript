@@ -22,6 +22,9 @@
 #include "timesignature.h"
 #include <atomic>
 
+namespace bipscript {
+namespace transport {
+
 class TransportMaster
 {
     double lastTick;
@@ -71,5 +74,7 @@ public:
     // object cache interface
     bool scriptComplete();
 };
+
+}}
 
 #endif // TRANSPORT_H

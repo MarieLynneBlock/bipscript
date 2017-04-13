@@ -20,6 +20,9 @@
 //int Event::refCount = 0;
 //std::set<Event*> Event::refSet;
 
+namespace bipscript {
+namespace midi {
+
 MidiEvent::MidiEvent(const MidiEvent &other) :
     Event(other), type(other.type),
     databyte1(other.databyte1),
@@ -92,3 +95,5 @@ std::ostream& operator<< (std::ostream &out, MidiEvent &evt)
     out << " (" << evt.getFrameOffset() << ")";
     return out;
 }
+
+}}

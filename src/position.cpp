@@ -20,6 +20,8 @@
 
 #include <iostream>
 
+namespace bipscript {
+
 Duration::Duration(unsigned int whole, unsigned int position, unsigned int division)
     : whole(whole), position(position), division(division) {
     if(division == 0) {
@@ -139,4 +141,6 @@ std::ostream& operator<< (std::ostream &out, Position &pos)
     out << "@" << pos.getBar() << "+" <<
                pos.position << "/" << pos.division;
     return out;
+}
+
 }

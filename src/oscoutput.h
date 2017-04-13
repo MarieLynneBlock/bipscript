@@ -25,6 +25,9 @@
 #include <atomic>
 #include <lo/lo.h>
 
+namespace bipscript {
+namespace osc {
+
 class OscOutput : public Processor
 {
     pthread_t thread;
@@ -64,5 +67,7 @@ public:
     void shutdown() { removeAll(); }
     void removeObject(OscOutput *obj) { obj->cancel(); }
 };
+
+}}
 
 #endif // OSCOUTPUT_H

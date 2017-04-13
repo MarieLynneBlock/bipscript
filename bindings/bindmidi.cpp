@@ -31,6 +31,10 @@
 #include <stdexcept>
 #include <cstring>
 
+namespace bipscript {
+
+using namespace midi;
+
 namespace binding {
 
 // object references to types in this package
@@ -70,7 +74,7 @@ SQInteger Midiabc(HSQUIRRELVM vm)
     }
 
     // return value
-    Pattern* ret;
+    midi::Pattern* ret;
     // 2 parameters passed in
     if(numargs == 3) {
 
@@ -233,7 +237,7 @@ SQInteger MidiABCReaderread(HSQUIRRELVM vm)
     }
 
     // return value
-    Pattern* ret;
+    midi::Pattern* ret;
     // 2 parameters passed in
     if(numargs == 3) {
 
@@ -391,7 +395,7 @@ SQInteger MidiABCReaderreadTune(HSQUIRRELVM vm)
     }
 
     // return value
-    MidiTune* ret;
+    midi::MidiTune* ret;
     // call the implementation
     try {
         ret = obj->readTune(abc);
@@ -480,7 +484,7 @@ SQInteger MidiDrumTabReaderread(HSQUIRRELVM vm)
     }
 
     // return value
-    Pattern* ret;
+    midi::Pattern* ret;
     // call the implementation
     try {
         ret = obj->read(tab);
@@ -633,7 +637,7 @@ SQInteger MidiSystemInmidiOutput(HSQUIRRELVM vm)
     }
 
     // return value
-    MidiConnection* ret;
+    midi::MidiConnection* ret;
     // call the implementation
     try {
         ret = obj->getMidiConnection(index);
@@ -999,7 +1003,7 @@ SQInteger MidiNotevelocity(HSQUIRRELVM vm)
 //
 // Midi.NoteOn class
 //
-SQInteger MidiNoteOnPush(HSQUIRRELVM vm, NoteOn *obj)
+SQInteger MidiNoteOnPush(HSQUIRRELVM vm, midi::NoteOn *obj)
 {
     sq_pushobject(vm, MidiNoteOnObject);
     sq_createinstance(vm, -1);
@@ -1132,7 +1136,7 @@ SQInteger MidiNoteOnvelocity(HSQUIRRELVM vm)
 //
 // Midi.NoteOff class
 //
-SQInteger MidiNoteOffPush(HSQUIRRELVM vm, NoteOff *obj)
+SQInteger MidiNoteOffPush(HSQUIRRELVM vm, midi::NoteOff *obj)
 {
     sq_pushobject(vm, MidiNoteOffObject);
     sq_createinstance(vm, -1);
@@ -1279,7 +1283,7 @@ SQInteger MidiNoteOffvelocity(HSQUIRRELVM vm)
 //
 // Midi.Control class
 //
-SQInteger MidiControlPush(HSQUIRRELVM vm, Control *obj)
+SQInteger MidiControlPush(HSQUIRRELVM vm, midi::Control *obj)
 {
     sq_pushobject(vm, MidiControlObject);
     sq_createinstance(vm, -1);
@@ -1479,7 +1483,7 @@ SQInteger MidiMMLReaderread(HSQUIRRELVM vm)
     }
 
     // return value
-    Pattern* ret;
+    midi::Pattern* ret;
     // call the implementation
     try {
         ret = obj->read(mml);
@@ -1718,7 +1722,7 @@ SQInteger MidiPatternadd(HSQUIRRELVM vm)
         return sq_throwerror(vm, "add method called before Midi.Pattern constructor");
     }
     // get parameter 1 "note" as Midi.Note
-    Note *note = getMidiNote(vm, 2);
+    midi::Note *note = getMidiNote(vm, 2);
     if(note == 0) {
         return sq_throwerror(vm, "argument 1 \"note\" is not of type Midi.Note");
     }
@@ -1814,7 +1818,7 @@ SQInteger MidiPatternnote(HSQUIRRELVM vm)
     }
 
     // return value
-    Note* ret;
+    midi::Note* ret;
     // call the implementation
     try {
         ret = obj->getNote(index);
@@ -2008,7 +2012,7 @@ SQInteger MidiTunetimeSignature(HSQUIRRELVM vm)
         return sq_throwerror(vm, "timeSignature method called before Midi.Tune constructor");
     }
     // return value
-    TimeSignature* ret;
+    transport::TimeSignature* ret;
     // call the implementation
     try {
         ret = obj->getTimeSignature();
@@ -2090,7 +2094,7 @@ SQInteger MidiTunetrack(HSQUIRRELVM vm)
     }
 
     // return value
-    Pattern* ret;
+    midi::Pattern* ret;
     // call the implementation
     try {
         ret = obj->track(number);
@@ -2256,7 +2260,7 @@ SQInteger MidiSystemOutmidiChannel(HSQUIRRELVM vm)
 SQInteger MidiSystemOutschedule(HSQUIRRELVM vm)
 {
     SQObjectType overrideType = sq_gettype(vm, 2);
-    if(Note *note = getMidiNote(vm, 2)) {
+    if(midi::Note *note = getMidiNote(vm, 2)) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
         if(numargs > 6) {
@@ -2365,7 +2369,7 @@ SQInteger MidiSystemOutschedule(HSQUIRRELVM vm)
         // void method, returns no value
         return 0;
     }
-    else if(Pattern *pattern = getMidiPattern(vm, 2)) {
+    else if(midi::Pattern *pattern = getMidiPattern(vm, 2)) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
         if(numargs > 6) {
@@ -2474,7 +2478,7 @@ SQInteger MidiSystemOutschedule(HSQUIRRELVM vm)
         // void method, returns no value
         return 0;
     }
-    else if(MidiMessage *message = getMidiMessage(vm, 2)) {
+    else if(midi::MidiMessage *message = getMidiMessage(vm, 2)) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
         if(numargs > 6) {
@@ -2788,7 +2792,7 @@ SQInteger MidiBeatTrackerconnectMidi(HSQUIRRELVM vm)
         return sq_throwerror(vm, "connectMidi method called before Midi.BeatTracker constructor");
     }
     // get parameter 1 "source" as Midi.Source
-    MidiSource *source = getMidiSource(vm, 2);
+    midi::MidiSource *source = getMidiSource(vm, 2);
     if(source == 0) {
         return sq_throwerror(vm, "argument 1 \"source\" is not of type Midi.Source");
     }
@@ -3492,4 +3496,4 @@ void bindMidi(HSQUIRRELVM vm)
     // push package "Midi" to root table
     sq_newslot(vm, -3, false);
 }
-}
+}}

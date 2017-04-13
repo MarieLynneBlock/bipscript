@@ -25,6 +25,8 @@
 
 #define UPDATE_MAX_EVENTS 32
 
+namespace bipscript {
+
 template <class T> class EventBuffer
 {
     boost::lockfree::spsc_queue<T*> eventQueue; // script thread -> process thread
@@ -95,6 +97,8 @@ void EventBuffer<T>::recycleRemaining()
     // clear existing events
     collector.recycleAll(sortedEvents);
     sortedEvents.clear();
+}
+
 }
 
 #endif // EVENTBUFFER_H

@@ -18,6 +18,9 @@
 #include "audioengine.h"
 #include <iostream>
 
+using namespace bipscript;
+using namespace midi;
+
 ABCReader *ABCReader::activeParser;
 
 extern "C"
@@ -80,6 +83,9 @@ void add_warning(char *s, int lineno, int linepos)
     ABCReader::getActiveParser()->addWarning(s, lineno, linepos);
 }
 
+namespace bipscript {
+namespace midi {
+
 std::string ABCReader::error()
 {
     ABCError &error = errors.front();
@@ -93,7 +99,7 @@ std::string ABCReader::error()
 }
 
 Pattern *ABCReader::read(const char *abc, const char *key, const char *noteLength) {
-    TimeSignature &time = AudioEngine::instance().getTimeSignature();
+    transport::TimeSignature &time = bipscript::AudioEngine::instance().getTimeSignature();
     if(time.isValid()) {
         std::string timeString;
         timeString += std::to_string(time.getNumerator());
@@ -232,3 +238,5 @@ void ABCReader::addWarning(const char *mesg, int lineno, int linepos)
         std::cerr << message << std::endl;
     }
 }
+
+}}

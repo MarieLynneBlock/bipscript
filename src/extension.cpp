@@ -6,6 +6,8 @@
 
 namespace fs = boost::filesystem;
 
+namespace bipscript {
+
 Extension::Extension(const std::string &path)
 {
     handle = dlopen(path.c_str(), RTLD_LAZY);
@@ -77,4 +79,6 @@ bool ExtensionManager::scriptComplete()
     bool active = false;
     // TODO: call on extensions
     return active;
+}
+
 }

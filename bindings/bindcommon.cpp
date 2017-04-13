@@ -16,6 +16,7 @@
  */
 #include "bindcommon.h"
 
+using namespace bipscript;
 
 SQInteger binding::unclonable(HSQUIRRELVM vm)
 {

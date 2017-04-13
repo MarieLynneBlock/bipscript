@@ -17,6 +17,8 @@
 #include "onsetdetector.h"
 #include "audioengine.h"
 
+namespace bipscript {
+namespace audio {
 
 OnsetDetector::OnsetDetector() :
     odf(512,1024,ComplexSpectralDifferenceHWR,HanningWindow),
@@ -87,7 +89,7 @@ void OnsetDetector::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t
                 ScriptFunction *handler = onOnsetHandler.load();
                 if(handler) {
                     // TODO: compute position from interpolation?
-                    TimePosition position(pos);
+                    transport::TimePosition position(pos);
                     (new OnOnsetClosure(*handler, position))->dispatch();
                 }
                 lastOnsetFrame = time;
@@ -117,3 +119,5 @@ OnsetDetector *OnsetDetectorCache::getOnsetDetector()
     }
     return detector;
 }
+
+}}

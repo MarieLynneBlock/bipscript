@@ -19,6 +19,9 @@
 
 #include "event.h"
 
+namespace bipscript {
+namespace midi {
+
 class MidiEvent : public Event
 {
     unsigned char type;
@@ -58,5 +61,7 @@ public:
     bool matches(int type);
     bool matches(int type, int databyte1, int low, int high);
 };
+
+}}
 
 #endif // MIDIEVENT_H

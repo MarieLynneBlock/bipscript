@@ -21,6 +21,9 @@
 #include <time.h>
 #include <stdexcept>
 
+namespace bipscript {
+namespace math {
+
 class Random
 {
 public:
@@ -34,5 +37,7 @@ public:
         return rand() % max;
     }
 };
+
+}}
 
 #endif // RANDOM_H

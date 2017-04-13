@@ -21,6 +21,8 @@
 #include <stdint.h>
 #include "methodqueue.h"
 
+namespace bipscript {
+
 enum ScriptValueType {
     NULLVALUE, BOOL, INTEGER, FLOAT, STRING, ARRAY
 };
@@ -119,5 +121,7 @@ protected:
     }
     virtual void addParameters() = 0;
 };
+
+}
 
 #endif // SCRIPTTYPES_H

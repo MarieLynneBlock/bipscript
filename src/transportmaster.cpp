@@ -20,6 +20,9 @@
 
 #include <cmath>
 
+namespace bipscript {
+namespace transport {
+
 TransportMaster::~TransportMaster()
 {
     AudioEngine::instance().releaseTransportMaster();
@@ -112,3 +115,4 @@ bool TransportMasterCache::scriptComplete()
     return false;
 }
 
+}}

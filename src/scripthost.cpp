@@ -29,6 +29,8 @@
 #include "objectcollector.h"
 #include <iostream>
 
+namespace bipscript {
+
 static void squirrel_print_function(HSQUIRRELVM sqvm, const SQChar *format, ...)
 {
     va_list args;
@@ -127,4 +129,6 @@ int ScriptHost::run() {
     // shut down squirrel
     sq_close(vm);
     return 0;
+}
+
 }

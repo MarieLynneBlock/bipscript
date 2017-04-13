@@ -22,6 +22,9 @@
 
 namespace fs = boost::filesystem;
 
+namespace bipscript {
+namespace io {
+
 class File {
     std::string name;
     char *buffer;
@@ -36,5 +39,7 @@ public:
     bool isFolder() { return fs::is_directory(name); }
     const char *readAll();
 };
+
+}}
 
 #endif // IO_H

@@ -21,6 +21,9 @@
 #include <vector>
 #include <map>
 
+namespace bipscript {
+namespace midi {
+
 struct ABCError
 {
     const char *mesg;
@@ -75,5 +78,7 @@ public:
     void addError(const char *mesg, int lineno, int linepos);
     void addWarning(const char *mesg, int lineno, int linepos);
 };
+
+}}
 
 #endif // ABCREADER_H

@@ -22,6 +22,9 @@
 #include <cstring>
 #include <stdexcept>
 
+namespace bipscript {
+namespace audio {
+
 /**
  * Process a control connection: calls process on the underlying EventConnection and resets that
  * connection's eventCount and eventIndex for this period.
@@ -45,9 +48,9 @@ void MixerControlConnection::process(bool rolling, jack_position_t &pos, jack_nf
 void MixerControlConnection::updateGains(jack_nframes_t frame, float **gain)
 {
     if(eventCount && eventIndex < eventCount) {
-        MidiEvent *nextEvent = connection->getEvent(eventIndex);
+        midi::MidiEvent *nextEvent = connection->getEvent(eventIndex);
         while(nextEvent && nextEvent->getFrameOffset() == frame) {
-            if(nextEvent->matches(MidiEvent::TYPE_CONTROL)) {
+            if(nextEvent->matches(midi::MidiEvent::TYPE_CONTROL)) {
                 // check mappings
                 MixerControlMapping *mapping = mappings.getFirst();
                 while(mapping) {
@@ -219,7 +222,7 @@ void Mixer::connect(AudioSource &source, float initialGain)
  *
  * Allocates MixerControlMapping, MixerControlConnection objects.
  */
-void Mixer::addGainController(MidiSource &source, unsigned int cc, unsigned int input, unsigned int output)
+void Mixer::addGainController(midi::MidiSource &source, unsigned int cc, unsigned int input, unsigned int output)
 {
     if(cc == 0) {
         throw std::logic_error("There is no MIDI control number zero");
@@ -229,7 +232,7 @@ void Mixer::addGainController(MidiSource &source, unsigned int cc, unsigned int 
     }
     validateInputChannel(input);
     validateOutputChannel(output);
-    MidiConnection *connection = source.getMidiConnection(0); // TODO: how to specify other connections
+    midi::MidiConnection *connection = source.getMidiConnection(0); // TODO: how to specify other connections
     // check hash for existing connection
     MixerControlConnection *mixerConnection = controlConnectionMap[connection];
     if(!mixerConnection) {
@@ -424,3 +427,5 @@ Mixer *MixerCache::getMixer(uint16_t inputs, uint16_t outputs)
     registerObject(key, mixer);
     return mixer;
 }
+
+}}

@@ -18,7 +18,12 @@
 #define BINDOSC_H
 
 #include "squirrel.h"
+
+namespace bipscript {
+
+namespace osc {
 class OscMessage;
+}
 
 namespace binding
 {
@@ -26,11 +31,11 @@ namespace binding
     extern HSQOBJECT OscInputObject;
     extern HSQOBJECT OscMessageObject;
     extern HSQOBJECT OscOutputObject;
-    OscMessage *getOscMessage(HSQUIRRELVM &vm, int index);
+    osc::OscMessage *getOscMessage(HSQUIRRELVM &vm, int index);
     // release hooks for types in this package
     SQInteger OscMessageRelease(SQUserPointer p, SQInteger size);
     // method to bind this package
     void bindOsc(HSQUIRRELVM vm);
-}
+}}
 
 #endif // BINDOSC_H

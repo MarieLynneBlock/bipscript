@@ -19,21 +19,23 @@
 #include "audioengine.h"
 #include <iostream>
 
+namespace bipscript {
+
 void BeatTracker::reset(double bpm, float beatsPerBar, float beatUnit) {
-    master = TransportMasterCache::instance().getTransportMaster(bpm, beatsPerBar, beatUnit);
+    master = transport::TransportMasterCache::instance().getTransportMaster(bpm, beatsPerBar, beatUnit);
     btrack.setTempo(bpm);
 }
 
 void BeatTracker::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
 {
     // get incoming audio
-    AudioConnection *connection = audioInput.load();
+    audio::AudioConnection *connection = audioInput.load();
     float *audio;
     if(connection) {
         connection->getSource()->process(rolling, pos, nframes, time);
         audio = connection->getAudio();
     } else {
-        audio = AudioConnection::getDummyBuffer();
+        audio = audio::AudioConnection::getDummyBuffer();
     }
 
     // add new audio to buffer
@@ -71,7 +73,7 @@ BeatTracker *BeatTrackerCache::getBeatTracker(float bpm, float beatsPerBar, floa
 /**
  * process thread
  */
-void MidiBeatTracker::countInEvent(MidiEvent *nextEvent, jack_position_t &pos, jack_nframes_t time)
+void MidiBeatTracker::countInEvent(midi::MidiEvent *nextEvent, jack_position_t &pos, jack_nframes_t time)
 {
     if(countInCount) {
 
@@ -113,7 +115,7 @@ void MidiBeatTracker::countInEvent(MidiEvent *nextEvent, jack_position_t &pos, j
 /**
  * process thread
  */
-void MidiBeatTracker::detectCountIn(jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time, uint32_t eventCount, MidiConnection *connection)
+void MidiBeatTracker::detectCountIn(jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time, uint32_t eventCount, midi::MidiConnection *connection)
 {
     // count-in scheduled start
     if(countInCount == 4 && time + nframes >= countStartTime) {
@@ -133,11 +135,11 @@ void MidiBeatTracker::detectCountIn(jack_position_t &pos, jack_nframes_t nframes
     else {
         uint8_t note = countInNote.load();
         if(note && countInCount < 4) {
-            MidiEvent *nextEvent = eventCount ? connection->getEvent(0) : 0;
+            midi::MidiEvent *nextEvent = eventCount ? connection->getEvent(0) : 0;
             uint32_t eventIndex = 1;
             while(nextEvent) {
                 // TODO: configurable velocity
-                if(nextEvent->matches(MidiEvent::TYPE_NOTE_ON, note, 72, 127)) {
+                if(nextEvent->matches(midi::MidiEvent::TYPE_NOTE_ON, note, 72, 127)) {
                     countInEvent(nextEvent, pos, time);
                 }
                 nextEvent = eventIndex < eventCount ? connection->getEvent(eventIndex++) : 0;
@@ -181,7 +183,7 @@ void MidiBeatTracker::onBeat(ScriptFunction &handler)
 void MidiBeatTracker::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
 {
     // process MIDI input
-    MidiConnection *connection = midiInput.load();
+    midi::MidiConnection *connection = midiInput.load();
     uint32_t eventCount = 0;
     if(connection) {
         connection->getSource()->process(rolling, pos, nframes, time);
@@ -194,13 +196,13 @@ void MidiBeatTracker::doProcess(bool rolling, jack_position_t &pos, jack_nframes
     }
 
     // loop over frames
-    MidiEvent *nextEvent = eventCount ? connection->getEvent(0) : 0;
+    midi::MidiEvent *nextEvent = eventCount ? connection->getEvent(0) : 0;
     uint32_t eventIndex = 1;
     for(jack_nframes_t i = 0; i < nframes; i++) {
 
         // add events at this frame to current onset
         while(nextEvent && nextEvent->getFrameOffset() == i) {
-            if(nextEvent->matches(MidiEvent::TYPE_NOTE_ON)) {
+            if(nextEvent->matches(midi::MidiEvent::TYPE_NOTE_ON)) {
                 currentOnset += nextEvent->getDatabyte2() * noteWeight[nextEvent->getDatabyte1()];
                 lastEventTime = time;
             }
@@ -258,7 +260,7 @@ void MidiBeatTracker::onCount(ScriptFunction &handler)
 void MidiBeatTracker::reset(double bpm, float beatsPerBar, float beatUnit)
 {
     // set bpm on btrack and transport master
-    master = TransportMasterCache::instance().getTransportMaster(bpm, beatsPerBar, beatUnit);
+    master = transport::TransportMasterCache::instance().getTransportMaster(bpm, beatsPerBar, beatUnit);
     btrack.setTempo(bpm);
     // reset note weights
     for(int i = 0; i < 128; i++) {
@@ -286,4 +288,6 @@ MidiBeatTracker *MidiBeatTrackerCache::getMidiBeatTracker(float bpm, float beats
         registerObject(1, tracker);
     }    
     return tracker;
+}
+
 }

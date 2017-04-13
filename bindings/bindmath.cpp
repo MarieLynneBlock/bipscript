@@ -23,6 +23,10 @@
 #include <stdexcept>
 #include <cstring>
 
+namespace bipscript {
+
+using namespace math;
+
 namespace binding {
 
 // object references to types in this package
@@ -146,4 +150,4 @@ void bindMath(HSQUIRRELVM vm)
     // push package "Math" to root table
     sq_newslot(vm, -3, false);
 }
-}
+}}

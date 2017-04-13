@@ -23,6 +23,10 @@
 #include <stdexcept>
 #include <cstring>
 
+namespace bipscript {
+
+using namespace io;
+
 namespace binding {
 
 // object references to types in this package
@@ -260,4 +264,4 @@ void bindIO(HSQUIRRELVM vm)
     // push package "IO" to root table
     sq_newslot(vm, -3, false);
 }
-}
+}}

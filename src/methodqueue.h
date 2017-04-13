@@ -3,6 +3,8 @@
 
 #include <boost/lockfree/spsc_queue.hpp>
 
+namespace bipscript {
+
 class ScriptFunctionClosure;
 
 /**
@@ -22,5 +24,7 @@ public:
     void dispatch(ScriptFunctionClosure *function);
     ScriptFunctionClosure *next();
 };
+
+}
 
 #endif // METHODQUEUE_H

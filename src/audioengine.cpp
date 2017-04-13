@@ -26,8 +26,14 @@
 
 using namespace std;
 
+namespace bipscript {
+
+namespace audio {
+
 float *AudioConnection::dummyBuffer = 0;
 jack_nframes_t AudioConnection::bufferSize;
+
+}
 
 void printPosition(jack_transport_state_t state, jack_position_t *pos, jack_nframes_t runningFrame)
 {
@@ -76,20 +82,20 @@ int buffersize_callback(jack_nframes_t nframes, void* arg)
     return 0;
 }
 
-TimeSignature &AudioEngine::getTimeSignature()
+transport::TimeSignature &AudioEngine::getTimeSignature()
 {
     jack_position_t pos;
     jack_transport_query(client, &pos);
     bool valid = pos.valid & JackTransportBBT;
-    currentTimeSignature = TimeSignature(valid, pos.beats_per_bar, pos.beat_type);
+    currentTimeSignature = transport::TimeSignature(valid, pos.beats_per_bar, pos.beat_type);
     return currentTimeSignature;
 }
 
 void AudioEngine::setBufferSize(jack_nframes_t size)
 {
     // TODO: generic size listener?
-    AudioConnection::setBufferSize(size);
-    Lv2PluginCache::instance().setBufferSize(size);
+    audio::AudioConnection::setBufferSize(size);
+    lv2::Lv2PluginCache::instance().setBufferSize(size);
 }
 
 int AudioEngine::activate(const char *clientName)
@@ -132,13 +138,13 @@ void printPorts(jack_client_t *client) {
 void timebase_callback(jack_transport_state_t state, jack_nframes_t nframes,
      jack_position_t *pos, int new_pos, void *arg)
 {
-    ((TransportMaster*)arg)->setTime(state, nframes, pos, new_pos);
+    ((transport::TransportMaster*)arg)->setTime(state, nframes, pos, new_pos);
 }
 
-TransportMaster *AudioEngine::getTransportMaster(double bpm, float beatsPerBar, float beatUnit)
+transport::TransportMaster *AudioEngine::getTransportMaster(double bpm, float beatsPerBar, float beatUnit)
 {
     if(!transportMaster) {
-        transportMaster = new TransportMaster(bpm, beatsPerBar, beatUnit);
+        transportMaster = new transport::TransportMaster(bpm, beatsPerBar, beatUnit);
         int error = jack_set_timebase_callback(client, 0, &timebase_callback, transportMaster);
         if (error) {
             throw std::logic_error("Cannot create transport master");
@@ -259,4 +265,6 @@ int AudioEngine::process(jack_nframes_t nframes)
     ObjectCollector::processCollector().free();
 
     return 0;
+}
+
 }

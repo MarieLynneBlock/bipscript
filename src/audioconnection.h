@@ -22,6 +22,9 @@
 #include <stdexcept>
 #include <cstring>
 
+namespace bipscript {
+namespace audio {
+
 class AudioSource;
 
 /**
@@ -87,5 +90,7 @@ public:
         return connection.load();
     }
 };
+
+}}
 
 #endif // AUDIOCONNECTION_H

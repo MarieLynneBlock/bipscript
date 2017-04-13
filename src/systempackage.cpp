@@ -17,5 +17,11 @@
 
 #include "systempackage.h"
 
+namespace bipscript {
+namespace system {
+
 int System::argumentCount;
 char **System::argumentVector;
+
+}
+}

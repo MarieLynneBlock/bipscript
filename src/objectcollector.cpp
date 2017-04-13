@@ -17,6 +17,8 @@
 
 #include "objectcollector.h"
 
+namespace bipscript {
+
 // called by process thread to recycle a single event
 void ObjectCollector::recycle(Listable *evt) {
     // try to push to queue
@@ -51,4 +53,6 @@ void ObjectCollector::free() {
     while (objectQueue.pop(event)) {
         delete event;
     }
+}
+
 }

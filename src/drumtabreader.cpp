@@ -21,6 +21,9 @@
 #include <stdio.h>
 #include <ctype.h>
 
+namespace bipscript {
+namespace midi {
+
 DrumTabReader::DrumTabReader()
 {
     noteValue["SDo"] = 38;
@@ -170,3 +173,4 @@ Pattern* DrumTabReader::read(const char*tab)
     return pattern;
 }
 
+}}

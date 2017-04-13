@@ -37,6 +37,9 @@
 #include "scripttypes.h"
 #include "objectcache.h"
 
+namespace bipscript {
+namespace lv2 {
+
 typedef std::map<std::string, uint32_t> Lv2UridMap;
 
 class Lv2UridMapper
@@ -104,8 +107,8 @@ class Lv2MidiInput : public Listable
 {
     const u_int32_t CAPACITY = 1024;
     LV2_Atom_Sequence *atomSequence;
-    MidiConnector eventConnector;
-    EventBuffer<MidiEvent> eventBuffer;
+    midi::MidiConnector eventConnector;
+    EventBuffer<midi::MidiEvent> eventBuffer;
     bool localRolling;
 public:
     Lv2MidiInput() : localRolling(false) {
@@ -114,14 +117,14 @@ public:
     LV2_Atom_Sequence *getAtomSequence() {
         return atomSequence;
     }
-    void connect(MidiConnection *connection, Source *source) {
+    void connect(midi::MidiConnection *connection, Source *source) {
         eventConnector.setConnection(connection, source);
     }
     bool connectsTo(Source *source) {
-        MidiConnection *connection = eventConnector.getConnection();
+        midi::MidiConnection *connection = eventConnector.getConnection();
         return connection && connection->getSource()->connectsTo(source);
     }
-    void addEvent(MidiEvent *evt) {
+    void addEvent(midi::MidiEvent *evt) {
         eventBuffer.addEvent(evt);
     }
     void reset() {
@@ -133,13 +136,13 @@ public:
     }
 };
 
-class Lv2MidiOutput : public Listable, public MidiConnection 
+class Lv2MidiOutput : public Listable, public midi::MidiConnection
 {
     const u_int32_t CAPACITY = 1024;
     LV2_Atom_Sequence *atomSequence;    
-    MidiEvent event;
+    midi::MidiEvent event;
 public:
-    Lv2MidiOutput(MidiSource *source) : MidiConnection(source) {
+    Lv2MidiOutput(midi::MidiSource *source) : midi::MidiConnection(source) {
         atomSequence = (LV2_Atom_Sequence *)malloc(sizeof(LV2_Atom_Sequence) + CAPACITY);
         atomSequence->atom.size = CAPACITY;
     }
@@ -151,7 +154,7 @@ public:
     }
     // EventConnection interface
     uint32_t getEventCount();
-    MidiEvent *getEvent(uint32_t i);
+    midi::MidiEvent *getEvent(uint32_t i);
 };
 
 class Lv2ControlPort {
@@ -207,9 +210,9 @@ public:
 class Lv2ControlConnection : public Listable
 {
     List<Lv2ControlMapping> mappings;
-    MidiConnection *connection;
+    midi::MidiConnection *connection;
 public:
-    Lv2ControlConnection(MidiConnection *connection) :
+    Lv2ControlConnection(midi::MidiConnection *connection) :
         connection(connection) {}
     void addMapping(Lv2ControlMapping *mapping) { mappings.add(mapping); }
     void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
@@ -245,7 +248,7 @@ public:
     void setInstance(LilvInstance *instance);
 };
 
-class Lv2Plugin : public AudioSource, public MidiSource, public MidiSink
+class Lv2Plugin : public audio::AudioSource, public midi::MidiSource, public midi::MidiSink
 {
     const LilvPlugin *plugin;
     LilvInstance *instance;
@@ -257,18 +260,18 @@ class Lv2Plugin : public AudioSource, public MidiSource, public MidiSink
     // audio inputs
     uint32_t audioInputCount;
     uint32_t *audioInputIndex;
-    AudioConnector *audioInput;
+    audio::AudioConnector *audioInput;
     // audio outputs
     uint32_t audioOutputCount;
     uint32_t *audioOutputIndex;
-    AudioConnection **audioOutput;
+    audio::AudioConnection **audioOutput;
     // control ports
     EventBuffer<Lv2ControlEvent> controlBuffer;
     std::map<std::string, Lv2ControlPort *> controlMap;
     // worker
     Lv2Worker *worker;
     // control connections
-    std::map<MidiConnection*,Lv2ControlConnection*> controlConnectionMap;
+    std::map<midi::MidiConnection*,Lv2ControlConnection*> controlConnectionMap;
     QueueList<Lv2ControlConnection> controlConnections;
     boost::lockfree::spsc_queue<Lv2ControlMapping*> newControlMappingsQueue;
 public:
@@ -277,7 +280,7 @@ public:
     ~Lv2Plugin();
     // public methods
     void connect(AudioSource &source);
-    void connect(AudioConnection *connection, uint32_t channel);
+    void connect(audio::AudioConnection *connection, uint32_t channel);
     void connectMidi(MidiSource &source);
     void setPortValue(const char*, const void*, uint32_t);
     void setControlValue(const char *symbol, float value);
@@ -287,7 +290,7 @@ public:
     void addController(MidiSource &source, unsigned int cc, const char *symbol);
     void restore();
     // MidiSink
-    void addMidiEvent(MidiEvent* evt);
+    void addMidiEvent(midi::MidiEvent* evt);
     // Source interface
     bool connectsTo(Source *source);
     // Processor interface
@@ -295,12 +298,12 @@ public:
     void reposition();
     // AudioSource interface
     unsigned int getAudioOutputCount() { return audioOutputCount; }
-    AudioConnection *getAudioConnection(unsigned int index) {
+    audio::AudioConnection *getAudioConnection(unsigned int index) {
         return audioOutput[index];
     }
     // MidiSource interface
     unsigned int getMidiOutputCount() { return midiOutputCount; }
-    MidiConnection *getMidiConnection(unsigned int index);
+    midi::MidiConnection *getMidiConnection(unsigned int index);
 private:
     Lv2ControlPort *getPort(const char *symbol);
     void connectPort(int index, Lv2Plugin *other, int otherIndex);
@@ -358,5 +361,7 @@ public:
         return getPlugin(uri, 0, 0);
     }
 };
+
+}}
 
 #endif // AUDIOPLUGIN_H

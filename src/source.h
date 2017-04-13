@@ -19,9 +19,13 @@
 
 #include "processor.h"
 
+namespace bipscript {
+
 class Source : public Processor {
 public:
     virtual bool connectsTo(Source *) = 0;
 };
+
+}
 
 #endif // SOURCE_H

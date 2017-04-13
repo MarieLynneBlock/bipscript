@@ -19,6 +19,8 @@
 
 #include "listable.h"
 
+namespace bipscript {
+
 template <class T> class EventList : public List<Listable>
 {
 public:
@@ -55,5 +57,7 @@ public:
         return (T*)List::pop();
     }
 };
+
+}
 
 #endif // EVENTLIST_H

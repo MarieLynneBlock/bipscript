@@ -19,8 +19,9 @@
 
 #include "squirrel.h"
 
+namespace bipscript {
 namespace binding {
     SQInteger unclonable(HSQUIRRELVM vm);
-}
+}}
 
 #endif // BINDCOMMON_H

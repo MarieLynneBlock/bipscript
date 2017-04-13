@@ -4,6 +4,9 @@
 #include "mml.h"
 #include "midipattern.h"
 
+namespace bipscript {
+namespace midi {
+
 class MMLReader
 {
     MML mml;
@@ -21,5 +24,7 @@ public:
     void processRest(MML_INFO *p);
     Pattern *read(const char *mml);
 };
+
+}}
 
 #endif // MMLREADER_H

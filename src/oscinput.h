@@ -11,6 +11,9 @@
 #include <string>
 #include <stdexcept>
 
+namespace bipscript {
+namespace osc {
+
 class OscInput : public Listable
 {
     lo_server_thread st;
@@ -55,5 +58,7 @@ public:
         input->cancel();
     }
 };
+
+}}
 
 #endif // OSCINPUT_H

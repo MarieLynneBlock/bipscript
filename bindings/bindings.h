@@ -26,19 +26,21 @@
 #include "bindsystem.h"
 #include "bindtransport.h"
 
-namespace binding
+namespace bipscript {
+namespace binding {
+
+void bindAll(HSQUIRRELVM vm)
 {
-    void bindAll(HSQUIRRELVM vm)
-    {
-        bindAudio(vm);
-        bindIO(vm);
-        bindLv2(vm);
-        bindMath(vm);
-        bindMidi(vm);
-        bindOsc(vm);
-        bindSystem(vm);
-        bindTransport(vm);
-    }
+    bindAudio(vm);
+    bindIO(vm);
+    bindLv2(vm);
+    bindMath(vm);
+    bindMidi(vm);
+    bindOsc(vm);
+    bindSystem(vm);
+    bindTransport(vm);
 }
+
+}}
 
 #endif // BINDINGS_H

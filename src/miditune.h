@@ -5,12 +5,15 @@
 #include "timesignature.h"
 #include <string>
 
+namespace bipscript {
+namespace midi {
+
 class MidiTune
 {
     std::string title;
     Pattern *tracks;
     uint32_t numTracks;
-    TimeSignature timeSignature;
+    transport::TimeSignature timeSignature;
 public:
     MidiTune(uint32_t numTracks) :
         numTracks(numTracks) {
@@ -29,11 +32,13 @@ public:
     }
     Pattern *track(uint32_t number);
     void setTimeSignature(float num, float denom) {
-        timeSignature = TimeSignature(true, num, denom);
+        timeSignature = transport::TimeSignature(true, num, denom);
     }
-    TimeSignature *getTimeSignature() {
-        return new TimeSignature(timeSignature);
+    transport::TimeSignature *getTimeSignature() {
+        return new transport::TimeSignature(timeSignature);
     }
 };
+
+}}
 
 #endif // MIDITUNE_H

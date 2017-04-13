@@ -22,6 +22,9 @@
 #include "midipattern.h"
 #include "midievent.h"
 
+namespace bipscript {
+namespace midi {
+
 class MidiSink {
     unsigned char defaultChannel;
 public:
@@ -85,5 +88,7 @@ public:
 private:
     void scheduleNote(const Note &note, Position &position, unsigned char channel);
 };
+
+}}
 
 #endif // MIDISINK_H

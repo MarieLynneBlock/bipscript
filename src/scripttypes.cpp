@@ -20,6 +20,8 @@
 #include <stdexcept>
 #include <cstring>
 
+namespace bipscript {
+
 ScriptHashIterator::ScriptHashIterator(HSQUIRRELVM &vm, HSQOBJECT &hash)
     : vm(vm)
 {
@@ -138,4 +140,6 @@ bool ScriptFunctionClosure::execute(HSQOBJECT &context)
     // pop closure
     sq_pop(vm, 1);
     return success;
+}
+
 }

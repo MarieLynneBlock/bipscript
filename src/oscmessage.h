@@ -23,6 +23,9 @@
 #include <string>
 #include <cstring>
 
+namespace bipscript {
+namespace osc {
+
 struct OscParameter
 {
     char type;
@@ -134,5 +137,7 @@ public:
         return message;
     }
 };
+
+}}
 
 #endif // OSCMESSAGE_H

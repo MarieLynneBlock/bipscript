@@ -28,6 +28,9 @@
 #include <map>
 #include <set>
 
+namespace bipscript {
+namespace midi {
+
 class MidiInputConnection : public MidiConnection
 {
     jack_port_t* jackPort;
@@ -110,5 +113,7 @@ public:
         return getMidiOutputPort(portName, 0);
     }
 };
+
+}}
 
 #endif // MIDIPORT_H

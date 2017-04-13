@@ -20,6 +20,9 @@
 
 #include <cstring>
 
+namespace bipscript {
+namespace audio {
+
 AudioInputPort *AudioInputPortCache::getAudioInputPort(const char *name, const char *connection)
 {
     // see if port already exists in map
@@ -139,3 +142,5 @@ AudioStereoInput *AudioStereoInputCache::getAudioStereoInput(const char *name, c
     }
     return input;
 }
+
+}}

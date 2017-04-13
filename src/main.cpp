@@ -41,11 +41,13 @@
 
 namespace fs = boost::filesystem;
 
+using namespace bipscript;
+
 void signal_handler(int sig)
 {
     std::cerr << "caught signal " << sig << ", exiting" << std::endl;
     ExtensionManager::instance().shutdown();
-    OscOutputFactory::instance().shutdown();
+    osc::OscOutputFactory::instance().shutdown();
     AudioEngine::instance().shutdown();
     exit(0);
 }
@@ -70,7 +72,7 @@ int main(int argc, char **argv)
     fs::path parentPath = system_complete(filePath).parent_path();
 
     // initialize system
-    System::setArguments(argc, argv);
+    system::System::setArguments(argc, argv);
 
     // create script host
     ScriptHost &host = ScriptHost::instance();
@@ -78,19 +80,19 @@ int main(int argc, char **argv)
 
     // add object caches
     ObjectCache *caches[] = {
-                            &AudioInputPortCache::instance(),
-                            &AudioOutputPortCache::instance(),
-                            &AudioStereoInputCache::instance(),
-                            &MixerCache::instance(),
-                            &Lv2PluginCache::instance(),
-                            &MidiInputPortCache::instance(),
-                            &MidiOutputPortCache::instance(),
-                            &TransportMasterCache::instance(),
+                            &audio::AudioInputPortCache::instance(),
+                            &audio::AudioOutputPortCache::instance(),
+                            &audio::AudioStereoInputCache::instance(),
+                            &audio::MixerCache::instance(),
+                            &lv2::Lv2PluginCache::instance(),
+                            &midi::MidiInputPortCache::instance(),
+                            &midi::MidiOutputPortCache::instance(),
+                            &transport::TransportMasterCache::instance(),
                             &BeatTrackerCache::instance(),
                             &MidiBeatTrackerCache::instance(),
-                            &OscInputFactory::instance(),
-                            &OscOutputFactory::instance(),
-                            &OnsetDetectorCache::instance()
+                            &osc::OscInputFactory::instance(),
+                            &osc::OscOutputFactory::instance(),
+                            &audio::OnsetDetectorCache::instance()
                             };
     host.setObjectCaches(13, caches);
 
@@ -111,14 +113,14 @@ int main(int argc, char **argv)
 
     // sample rate now valid
     jack_nframes_t sampleRate = audioEngine.getSampleRate();
-    Lv2PluginCache::instance().setSampleRate(sampleRate);
+    lv2::Lv2PluginCache::instance().setSampleRate(sampleRate);
 
     // run script
     status = host.run();
 
     // script has ended
     ExtensionManager::instance().shutdown();
-    OscOutputFactory::instance().shutdown();
+    osc::OscOutputFactory::instance().shutdown();
     audioEngine.shutdown();
     return status;
 }

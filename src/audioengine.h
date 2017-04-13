@@ -22,7 +22,11 @@
 #include "timesignature.h"
 #include "processor.h"
 
+namespace bipscript {
+
+namespace transport {
 class TransportMaster;
+}
 
 class AudioEngine
 {
@@ -34,9 +38,9 @@ class AudioEngine
     jack_nframes_t runningFrame;
 
     // transport
-    TransportMaster *transportMaster;
+    transport::TransportMaster *transportMaster;
     unsigned int multiplePeriodRestart;
-    TimeSignature currentTimeSignature;
+    transport::TimeSignature currentTimeSignature;
 
     // processors
     QueueList<Processor> activeProcessors;
@@ -62,7 +66,7 @@ public:
     bool getPosition(jack_position_t &jack_pos) {
         return jack_transport_query(client, &jack_pos) == JackTransportRolling;
     }
-    TimeSignature &getTimeSignature();
+    transport::TimeSignature &getTimeSignature();
     void setBufferSize(jack_nframes_t size);
     void addProcessor(Processor *obj) {
         activeProcessors.add(obj);
@@ -111,8 +115,10 @@ public:
     void transportRelocate(jack_nframes_t frame) {
         jack_transport_locate(client, frame);
     }
-    TransportMaster *getTransportMaster(double bpm, float beatsPerBar, float beatUnit);
+    transport::TransportMaster *getTransportMaster(double bpm, float beatsPerBar, float beatUnit);
     void releaseTransportMaster();
 };
+
+}
 
 #endif // AUDIOENGINE_H

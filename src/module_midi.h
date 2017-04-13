@@ -20,6 +20,9 @@
 #include "position.h"
 #include <stdexcept>
 
+namespace bipscript {
+namespace midi {
+
 class Note
 {
     uint8_t vel;
@@ -60,5 +63,7 @@ public:
         this->duration = duration;
     }
 };
+
+}}
 
 #endif // MIDIOUTPUT_H

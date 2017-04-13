@@ -20,6 +20,8 @@
 #include <stddef.h>
 #include "tlsf.h"
 
+namespace bipscript {
+
 class MemoryPool
 {
     tlsf_t tlsf;
@@ -42,5 +44,7 @@ public:
         tlsf_free(tlsf, p);
     }
 };
+
+}
 
 #endif // MEMORYPOOL_H

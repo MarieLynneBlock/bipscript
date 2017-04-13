@@ -23,6 +23,10 @@
 #include <stdexcept>
 #include <cstring>
 
+namespace bipscript {
+
+using namespace system;
+
 namespace binding {
 
 // object references to types in this package
@@ -80,4 +84,4 @@ void bindSystem(HSQUIRRELVM vm)
     // push package "System" to root table
     sq_newslot(vm, -3, false);
 }
-}
+}}

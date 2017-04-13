@@ -24,6 +24,9 @@
 #include "timeposition.h"
 #include "bindtransport.h"
 
+namespace bipscript {
+namespace audio {
+
 const unsigned int ONSET_HOP_SIZE = 512;
 const unsigned int HISTORY_SIZE = 8;
 
@@ -59,11 +62,11 @@ public:
 };
 
 class OnOnsetClosure : public EventClosure {
-    TimePosition pos;
+    transport::TimePosition pos;
 protected:
      void addParameters() { addObject(&pos, binding::TransportPositionObject); }
 public:
-    OnOnsetClosure(ScriptFunction function, TimePosition &pos) :
+    OnOnsetClosure(ScriptFunction function, transport::TimePosition &pos) :
         EventClosure(function), pos(pos) {}
 };
 
@@ -77,5 +80,6 @@ public:
     OnsetDetector *getOnsetDetector();
 };
 
+}}
 
 #endif // ONSETDETECTOR_H

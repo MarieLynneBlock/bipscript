@@ -20,6 +20,9 @@
 #include <fstream>
 #include <stdexcept>
 
+namespace bipscript {
+namespace io {
+
 const char *File::readAll()
 {
     std::ifstream stream;
@@ -37,3 +40,5 @@ const char *File::readAll()
     buffer[length] = '\0';
     return buffer;
 }
+
+}}

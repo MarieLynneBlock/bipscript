@@ -19,6 +19,9 @@
 
 #include "position.h"
 
+namespace bipscript {
+namespace transport {
+
 class TimePosition : public Position
 {
     jack_time_t time;
@@ -44,5 +47,7 @@ public:
     }
     jack_time_t getTime() { return time; }
 };
+
+}}
 
 #endif // TIMEPOSITION_H

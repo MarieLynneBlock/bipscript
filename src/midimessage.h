@@ -17,6 +17,9 @@
 #ifndef MIDIMESSAGE_H
 #define MIDIMESSAGE_H
 
+namespace bipscript {
+namespace midi {
+
 class MidiMessage
 {
 public:
@@ -92,5 +95,7 @@ public:
     char type() { return 0xC0; }
     char byte(char index) { return program; }
 };
+
+}}
 
 #endif // MIDIMESSAGE_H

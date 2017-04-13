@@ -23,6 +23,9 @@
 #include <chrono>
 #include <thread>
 
+namespace bipscript {
+namespace osc {
+
 void *run_output(void *arg)
 {
     ((OscOutput*)arg)->run();
@@ -110,3 +113,5 @@ OscOutput *OscOutputFactory::getOscOutput(const char *host, int port)
     }
     return obj;
 }
+
+}}

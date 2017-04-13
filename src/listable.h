@@ -19,6 +19,8 @@
 
 #include <boost/lockfree/spsc_queue.hpp>
 
+namespace bipscript {
+
 class Listable
 {
 public:
@@ -109,5 +111,7 @@ public:
         list.clear();
     }
 };
+
+}
 
 #endif // LISTABLE_H

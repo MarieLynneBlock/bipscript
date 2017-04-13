@@ -18,6 +18,9 @@
 
 #include <sstream>
 
+namespace bipscript {
+namespace midi {
+
 void Pattern::addNote(Note &note, int bar, int position, int division)
 {
     Position start(bar, position, division);
@@ -58,3 +61,5 @@ void Pattern::transpose(int amount)
         it->note.transpose(amount);
     }
 }
+
+}}

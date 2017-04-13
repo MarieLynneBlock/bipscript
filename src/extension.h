@@ -6,6 +6,8 @@
 #include <vector>
 #include <string>
 
+namespace bipscript {
+
 class Extension
 {
     void *handle;
@@ -30,5 +32,7 @@ public:
     void shutdown();
     bool scriptComplete();
 };
+
+}
 
 #endif // EXTENSION_H
