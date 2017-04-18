@@ -23,17 +23,17 @@
 namespace bipscript {
 namespace midi {
 
-MidiEvent::MidiEvent(const MidiEvent &other) :
-    Event(other), type(other.type),
+Event::Event(const Event &other) :
+    bipscript::Event(other), type(other.type),
     databyte1(other.databyte1),
     databyte2(other.databyte2),
     channel(other.channel) {}
 
-MidiEvent::MidiEvent(Position &position, int n, int vel, int t, unsigned char ch)
-    : Event(position), type(t), databyte1(n), databyte2(vel), channel(ch)  {}
+Event::Event(Position &position, int n, int vel, int t, unsigned char ch)
+    : bipscript::Event(position), type(t), databyte1(n), databyte2(vel), channel(ch)  {}
 
 
-uint8_t MidiEvent::dataSize() {
+uint8_t Event::dataSize() {
     switch(type) {
     case 0xC0:
         return 1;
@@ -41,7 +41,7 @@ uint8_t MidiEvent::dataSize() {
     return 2;
 }
 
-void MidiEvent::pack(void *space) {
+void Event::pack(void *space) {
     unsigned char *buffer = (unsigned char*)space;
     buffer[0] = this->type + this->channel;
     buffer[1] = this->databyte1;
@@ -50,7 +50,7 @@ void MidiEvent::pack(void *space) {
     }
 }
 
-void MidiEvent::unpack(const uint8_t *buffer, size_t size)
+void Event::unpack(const uint8_t *buffer, size_t size)
 {
     this->type = buffer[0] & 0xf0;
     this->channel = buffer[0] & 0x0f;
@@ -62,18 +62,18 @@ void MidiEvent::unpack(const uint8_t *buffer, size_t size)
     }
 }
 
-bool MidiEvent::matches(int type) { // TODO: what about channels
+bool Event::matches(int type) { // TODO: what about channels
     return type == this->type;
 }
 
-bool MidiEvent::matches(int type, int note, int low, int high) {
+bool Event::matches(int type, int note, int low, int high) {
     return type == this->type
             && note == this->databyte1;
 //            && low <= this->velocity
 //            && high >= this->velocity;
 }
 
-std::ostream& operator<< (std::ostream &out, MidiEvent &evt)
+std::ostream& operator<< (std::ostream &out, Event &evt)
 {
     switch(evt.type) {
     case 0x80:

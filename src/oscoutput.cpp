@@ -28,10 +28,10 @@ namespace osc {
 
 void *run_output(void *arg)
 {
-    ((OscOutput*)arg)->run();
+    ((Output*)arg)->run();
 }
 
-OscOutput::OscOutput(const char *host, int port) :
+Output::Output(const char *host, int port) :
     repositionNeeded(false), cancelled(false)
 {
     std::string portString = std::to_string(port);
@@ -45,13 +45,13 @@ OscOutput::OscOutput(const char *host, int port) :
     }
 }
 
-void OscOutput::schedule(OscMessage &message, int bar, int position, int division)
+void Output::schedule(Message &message, int bar, int position, int division)
 {
     Position pos(bar, position, division);
-    eventBuffer.addEvent(new OscEvent(pos, message));
+    eventBuffer.addEvent(new Event(pos, message));
 }
 
-void OscOutput::run()
+void Output::run()
 {
     while(!cancelled.load()) {
         // reset flag = dump all events
@@ -66,12 +66,12 @@ void OscOutput::run()
         // calculate window size
         jack_nframes_t nframes = 2048; // TODO: calculate from framerate
 
-        OscEvent *event = eventBuffer.getNextEvent(rolling, jack_pos, nframes);
+        Event *event = eventBuffer.getNextEvent(rolling, jack_pos, nframes);
         while(event) {
-            OscMessage &message = event->getMessage();
+            Message &message = event->getMessage();
             lo_message mesg = lo_message_new();
             for(int i = 0; i < message.getParameterCount(); i++) {
-                OscParameter param = message.getParameter(i);
+                Parameter param = message.getParameter(i);
                 if(param.type == 'i') {
                     lo_message_add_int32(mesg, param.value.intValue);
                 } else if(param.type == 'f') {
@@ -102,13 +102,13 @@ void OscOutput::run()
 /**
  * script thread
  */
-OscOutput *OscOutputFactory::getOscOutput(const char *host, int port)
+Output *OutputFactory::getOscOutput(const char *host, int port)
 {
     // TODO: needs better hash
     int key = std::hash<std::string>()(host) + port;
-    OscOutput *obj = findObject(key);
+    Output *obj = findObject(key);
     if (!obj) {
-        obj = new OscOutput(host, port);
+        obj = new Output(host, port);
         registerObject(key, obj);
     }
     return obj;

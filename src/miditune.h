@@ -8,18 +8,18 @@
 namespace bipscript {
 namespace midi {
 
-class MidiTune
+class Tune
 {
     std::string title;
     Pattern *tracks;
     uint32_t numTracks;
     transport::TimeSignature timeSignature;
 public:
-    MidiTune(uint32_t numTracks) :
+    Tune(uint32_t numTracks) :
         numTracks(numTracks) {
         tracks = new Pattern[numTracks];
     }
-    ~MidiTune() {
+    ~Tune() {
         delete[] tracks;
     }
     void setTitle(const char *t) { title = t; }

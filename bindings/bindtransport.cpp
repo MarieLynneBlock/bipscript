@@ -189,7 +189,7 @@ SQInteger TransportMasterCtor(HSQUIRRELVM vm)
         return sq_throwerror(vm, "argument 1 \"bpm\" is not of type float");
     }
 
-    TransportMaster *obj;
+    Master *obj;
     // 2 parameters passed in
     if(numargs == 3) {
 
@@ -201,7 +201,7 @@ SQInteger TransportMasterCtor(HSQUIRRELVM vm)
 
         // call the implementation
         try {
-            obj = TransportMasterCache::instance().getTransportMaster(bpm, numerator);
+            obj = transport::MasterCache::instance().getTransportMaster(bpm, numerator);
         }
         catch(std::exception const& e) {
             return sq_throwerror(vm, e.what());
@@ -225,7 +225,7 @@ SQInteger TransportMasterCtor(HSQUIRRELVM vm)
 
         // call the implementation
         try {
-            obj = TransportMasterCache::instance().getTransportMaster(bpm, numerator, denominator);
+            obj = transport::MasterCache::instance().getTransportMaster(bpm, numerator, denominator);
         }
         catch(std::exception const& e) {
             return sq_throwerror(vm, e.what());
@@ -235,7 +235,7 @@ SQInteger TransportMasterCtor(HSQUIRRELVM vm)
     else {
         // call the implementation
         try {
-            obj = TransportMasterCache::instance().getTransportMaster(bpm);
+            obj = transport::MasterCache::instance().getTransportMaster(bpm);
         }
         catch(std::exception const& e) {
             return sq_throwerror(vm, e.what());
@@ -267,7 +267,7 @@ SQInteger TransportMastertimeSignature(HSQUIRRELVM vm)
         if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
             return sq_throwerror(vm, "timeSignature method needs an instance of Master");
         }
-        TransportMaster *obj = static_cast<TransportMaster*>(userPtr);
+        Master *obj = static_cast<Master*>(userPtr);
         if(!obj) {
             return sq_throwerror(vm, "timeSignature method called before Transport.Master constructor");
         }
@@ -296,7 +296,7 @@ SQInteger TransportMastertimeSignature(HSQUIRRELVM vm)
         if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
             return sq_throwerror(vm, "timeSignature method needs an instance of Master");
         }
-        TransportMaster *obj = static_cast<TransportMaster*>(userPtr);
+        Master *obj = static_cast<Master*>(userPtr);
         if(!obj) {
             return sq_throwerror(vm, "timeSignature method called before Transport.Master constructor");
         }

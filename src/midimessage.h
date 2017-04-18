@@ -20,14 +20,14 @@
 namespace bipscript {
 namespace midi {
 
-class MidiMessage
+class Message
 {
 public:
   virtual char type() = 0;
   virtual char byte(char index) = 0;
 };
 
-class Control : public MidiMessage
+class Control : public Message
 {
     uint8_t controller;
     uint8_t value;
@@ -43,7 +43,7 @@ public:
     uint8_t getValue() { return value; }
 };
 
-class NoteOn : public MidiMessage
+class NoteOn : public Message
 {
     uint8_t pitch;
     uint8_t velocity;
@@ -59,7 +59,7 @@ public:
     uint8_t getVelocity() { return velocity; }
 };
 
-class NoteOff : public MidiMessage
+class NoteOff : public Message
 {
     uint8_t pitch;
     uint8_t velocity;
@@ -75,7 +75,7 @@ public:
     uint8_t getVelocity() { return velocity; }
 };
 
-class PitchBend : public MidiMessage
+class PitchBend : public Message
 {
     uint32_t value;
 public:
@@ -87,7 +87,7 @@ public:
     }
 };
 
-class ProgramChange : public MidiMessage
+class ProgramChange : public Message
 {
     uint8_t program;
 public:

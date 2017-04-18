@@ -44,11 +44,11 @@ class ABCReader
     Position currentPosition;
     std::map<int, Note> activeNote;
     std::map<int, Position> noteStart;
-    std::vector<MidiTune*> tunes;
+    std::vector<Tune*> tunes;
     std::vector<ABCError> errors;
     bool verbose; // TODO: parameterize
     std::string error();
-    MidiTune *currentTune() { return tunes.back(); }
+    Tune *currentTune() { return tunes.back(); }
 public:
     ABCReader() : beatsPerBar(4), beatUnit(4), verbose(true) {}
     static ABCReader *getActiveParser() {
@@ -67,7 +67,7 @@ public:
     Pattern *read(const char *abc) {
         return read(abc, "C");
     }
-    MidiTune *readTune(const char *abc);
+    Tune *readTune(const char *abc);
     void startTrack(uint32_t track);
     void startSequence(int format, int ntracks, int division);
     // callbacks

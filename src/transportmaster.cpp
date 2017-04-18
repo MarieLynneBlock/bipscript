@@ -23,18 +23,18 @@
 namespace bipscript {
 namespace transport {
 
-TransportMaster::~TransportMaster()
+Master::~Master()
 {
     AudioEngine::instance().releaseTransportMaster();
 }
 
-void TransportMaster::forceBeat(double bpm)
+void Master::forceBeat(double bpm)
 {
     this->bpm = bpm;
     doForceBeat = true;
 }
 
-void TransportMaster::setTime(jack_transport_state_t state, jack_nframes_t nframes, jack_position_t *pos, int new_pos)
+void Master::setTime(jack_transport_state_t state, jack_nframes_t nframes, jack_position_t *pos, int new_pos)
 {
 
     pos->valid = JackPositionBBT;
@@ -88,9 +88,9 @@ void TransportMaster::setTime(jack_transport_state_t state, jack_nframes_t nfram
 /**
  * runs in script thread
  */
-TransportMaster *TransportMasterCache::getTransportMaster(float bpm, float beatsPerBar, float beatUnit)
+Master *MasterCache::getTransportMaster(float bpm, float beatsPerBar, float beatUnit)
 {
-    TransportMaster *cached = cachedMaster.load();
+    Master *cached = cachedMaster.load();
     if(cached) {
         cached->setBpm(bpm);
     } else {
@@ -104,9 +104,9 @@ TransportMaster *TransportMasterCache::getTransportMaster(float bpm, float beats
 /**
  * runs in script thread
  */
-bool TransportMasterCache::scriptComplete()
+bool MasterCache::scriptComplete()
 {
-    TransportMaster *cached = cachedMaster.load();
+    Master *cached = cachedMaster.load();
     if(cached && !active) {
         cachedMaster.store(0);
         delete cached;

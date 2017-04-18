@@ -22,7 +22,7 @@
 namespace bipscript {
 
 namespace lv2 {
-class Lv2State;
+class State;
 }
 
 namespace binding
@@ -30,7 +30,7 @@ namespace binding
     // object references to types in this package
     extern HSQOBJECT Lv2PluginObject;
     extern HSQOBJECT Lv2StateObject;
-    lv2::Lv2State *getLv2State(HSQUIRRELVM &vm, int index);
+    lv2::State *getLv2State(HSQUIRRELVM &vm, int index);
     // release hooks for types in this package
     SQInteger Lv2StateRelease(SQUserPointer p, SQInteger size);
     // method to bind this package

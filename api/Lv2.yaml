@@ -24,17 +24,16 @@ classes :
         - Audio.Source
         - Midi.Source
         - Midi.Sink
-      cppname: Lv2Plugin
       include: lv2plugin
       ctor:
         - parameters:
             - {name: uri, type: string}
             - {name: preset, type: string, optional: true}
-          expression: Lv2PluginCache::instance().getPlugin
+          expression: lv2::PluginCache::instance().getPlugin
         - parameters:
             - {name: uri, type: string}
             - {name: state, type: Lv2.State, optional: true}
-          expression: Lv2PluginCache::instance().getPlugin
+          expression: lv2::PluginCache::instance().getPlugin
 
       methods:
         - name: connect
@@ -68,7 +67,6 @@ classes :
             - {name: maximum, type: integer, optional: true}
 
     - name: State
-      cppname: Lv2State
       ctor:
         - parameters:
             - {name: state, type: table}

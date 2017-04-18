@@ -30,45 +30,45 @@ namespace fs = boost::filesystem;
 namespace bipscript {
 namespace lv2 {
 
-uint32_t Lv2MidiEvent::midiEventTypeId;
+uint32_t MidiEvent::midiEventTypeId;
 
 static LV2_URID uridMap(LV2_URID_Map_Handle handle, const char *uri) {
-    return ((Lv2UridMapper*)handle)->uriToId(uri);
+    return ((UridMapper*)handle)->uriToId(uri);
 }
 
 static const char* uridUnmap(LV2_URID_Unmap_Handle handle, LV2_URID urid) {
-    return ((Lv2UridMapper*)handle)->idToUri(urid);
+    return ((UridMapper*)handle)->idToUri(urid);
 }
 
 static char *mapAbsolutePath(LV2_State_Map_Path_Handle handle, const char *abstractPath) {
-    return ((Lv2PathMapper*)handle)->mapAbsolutePath(abstractPath);
+    return ((PathMapper*)handle)->mapAbsolutePath(abstractPath);
 }
 
 static char *mapAbstractPath(LV2_State_Map_Path_Handle handle, const char *absolutePath) {
-    return ((Lv2PathMapper*)handle)->mapAbstractPath(absolutePath);
+    return ((PathMapper*)handle)->mapAbstractPath(absolutePath);
 }
 
 static void setPortValue(const char *port, void *data,
                          const void *value, uint32_t size, uint32_t type) {
-    ((Lv2Plugin*)data)->setPortValue(port, value, type);
+    ((Plugin*)data)->setPortValue(port, value, type);
 }
 
 static const void* stateRetrieve(LV2_State_Handle handle,
                                  uint32_t key, size_t* size, uint32_t* type, uint32_t* flags) {
-    return ((Lv2State*)handle)->retrieveState(key, size, type, flags);
+    return ((State*)handle)->retrieveState(key, size, type, flags);
 }
 
 static LV2_Worker_Status scheduleWork(LV2_Worker_Schedule_Handle handle, uint32_t size, const void* data)
 {
-    return ((Lv2Worker*)handle)->scheduleWork(data, size);
+    return ((Worker*)handle)->scheduleWork(data, size);
 }
 
 static LV2_Worker_Status workerRespond(LV2_Worker_Respond_Handle handle, uint32_t size, const void *data)
 {
-    return ((Lv2Worker*)handle)->queueResponse(data, size);
+    return ((Worker*)handle)->queueResponse(data, size);
 }
 
-LV2_URID Lv2UridMapper::uriToId(const char *uri) {
+LV2_URID UridMapper::uriToId(const char *uri) {
     const std::string uriString(uri);
     const Lv2UridMap::const_iterator iter = uridMap.find(uriString);
     if(iter == uridMap.end()) {
@@ -81,7 +81,7 @@ LV2_URID Lv2UridMapper::uriToId(const char *uri) {
     return iter->second;
 }
 
-const char *Lv2UridMapper::idToUri(LV2_URID urid) {
+const char *UridMapper::idToUri(LV2_URID urid) {
     Lv2UridMap::iterator iter;
     for(iter = uridMap.begin(); iter != uridMap.end(); iter++) {
         if(iter->second == urid) {
@@ -94,7 +94,7 @@ const char *Lv2UridMapper::idToUri(LV2_URID urid) {
 }
 
 
-char *Lv2PathMapper::mapAbsolutePath(const char *abstractPath)
+char *PathMapper::mapAbsolutePath(const char *abstractPath)
 {
     // get script folder and append incoming relative path
     fs::path absolutePath(ScriptHost::instance().getCurrentFolder());
@@ -107,7 +107,7 @@ char *Lv2PathMapper::mapAbsolutePath(const char *abstractPath)
     return ret;
 }
 
-char *Lv2PathMapper::mapAbstractPath(const char *absolutePath)
+char *PathMapper::mapAbstractPath(const char *absolutePath)
 {
     // TODO: implement before implementing state save
     char *ret = (char *)malloc(strlen(absolutePath) + 1);
@@ -115,7 +115,7 @@ char *Lv2PathMapper::mapAbstractPath(const char *absolutePath)
     return ret;
 }
 
-Lv2Constants::Lv2Constants(LilvWorld *world) {
+Constants::Constants(LilvWorld *world) {
     lv2AtomPort = lilv_new_uri(world, LV2_ATOM__AtomPort);
     lv2AudioPort = lilv_new_uri(world, LV2_CORE__AudioPort);
     lv2InputPort = lilv_new_uri(world, LV2_CORE__InputPort);
@@ -136,18 +136,18 @@ Lv2Constants::Lv2Constants(LilvWorld *world) {
 /**
  * process this MIDI input: pack LV2 input buffer from EventBuffer + EventConnection
  */
-void Lv2MidiInput::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time) {
+void MidiInput::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time) {
     // clear atom sequence
     lv2_atom_sequence_clear(atomSequence);
 
     // send all notes off messages if newly stopped
     if(localRolling && !rolling) {
-        Lv2MidiEvent lv2Event;
+        MidiEvent lv2Event;
         lv2Event.event.time.frames = 0;
         lv2Event.buffer[1] = 0x7b; // CC 123 = all notes off
         lv2Event.buffer[2] = 0;
         for(uint8_t channel = 0; channel < 16; channel++) {
-            lv2Event.buffer[0] = midi::MidiEvent::TYPE_CONTROL + channel;
+            lv2Event.buffer[0] = midi::Event::TYPE_CONTROL + channel;
             lv2_atom_sequence_append_event(atomSequence, CAPACITY, &lv2Event.event);
         }
     }
@@ -162,17 +162,17 @@ void Lv2MidiInput::process(bool rolling, jack_position_t &pos, jack_nframes_t nf
     }
 
     // get top events from buffer + connection
-    midi::MidiEvent* bufferEvent = eventBuffer.getNextEvent(rolling, pos, nframes);
-    midi::MidiEvent *connectionEvent = eventCount ? connection->getEvent(0) : 0;
+    midi::Event* bufferEvent = eventBuffer.getNextEvent(rolling, pos, nframes);
+    midi::Event *connectionEvent = eventCount ? connection->getEvent(0) : 0;
     uint32_t eventIndex = 1;
 
     // loop while events on either buffer or connection
     while(bufferEvent || connectionEvent) {
         bool bufferNext = bufferEvent &&
                 (!connectionEvent || bufferEvent->getFrameOffset() < connectionEvent->getFrameOffset());
-        midi::MidiEvent *event = bufferNext ? bufferEvent : connectionEvent;
+        midi::Event *event = bufferNext ? bufferEvent : connectionEvent;
         // lv2 event
-        Lv2MidiEvent lv2Event;
+        MidiEvent lv2Event;
         long frame = event->getFrameOffset();
         lv2Event.event.time.frames = frame >= 0 ? frame : 0;
         // copy event data
@@ -192,23 +192,23 @@ void Lv2MidiInput::process(bool rolling, jack_position_t &pos, jack_nframes_t nf
 
 // ----------------------------- Lv2MidiOutput
 
-uint32_t Lv2MidiOutput::getEventCount()
+uint32_t MidiOutput::getEventCount()
 {
     uint32_t counter = 0;
     LV2_ATOM_SEQUENCE_FOREACH(atomSequence, ev) {
-        if (ev->body.type == Lv2MidiEvent::midiEventTypeId) {
+        if (ev->body.type == MidiEvent::midiEventTypeId) {
             counter++;
         }
     }
     return counter;
 }
 
-midi::MidiEvent *Lv2MidiOutput::getEvent(uint32_t i)
+midi::Event *MidiOutput::getEvent(uint32_t i)
 {
     // TODO: direct access?
     uint32_t counter = 0;
     LV2_ATOM_SEQUENCE_FOREACH(atomSequence, ev) {
-        if (ev->body.type == Lv2MidiEvent::midiEventTypeId) {
+        if (ev->body.type == MidiEvent::midiEventTypeId) {
             if(counter == i) {
                 event.unpack((const uint8_t*)(ev + 1), ev->body.size);
                 event.setFrameOffset(ev->time.frames);
@@ -220,16 +220,16 @@ midi::MidiEvent *Lv2MidiOutput::getEvent(uint32_t i)
     return 0;
 }
 
-void Lv2ControlConnection::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
+void ControlConnection::process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
 {
     connection->getSource()->process(rolling, pos, nframes, time);
     u_int32_t eventIndex = 0;
     u_int32_t eventCount = connection->getEventCount();
     while(eventIndex < eventCount) {
-        midi::MidiEvent *nextEvent = connection->getEvent(eventIndex);
-        if(nextEvent->matches(midi::MidiEvent::TYPE_CONTROL)) {
+        midi::Event *nextEvent = connection->getEvent(eventIndex);
+        if(nextEvent->matches(midi::Event::TYPE_CONTROL)) {
             // check mappings
-            Lv2ControlMapping *mapping = mappings.getFirst();
+            ControlMapping *mapping = mappings.getFirst();
             while(mapping) {
                 mapping->update(nextEvent->getDatabyte1(), nextEvent->getDatabyte2());
                 mapping = mappings.getNext(mapping);
@@ -240,12 +240,12 @@ void Lv2ControlConnection::process(bool rolling, jack_position_t &pos, jack_nfra
     }
 }
 
-void Lv2ControlConnection::reset()
+void ControlConnection::reset()
 {
     // recycle mappings
-    Lv2ControlMapping *mapping = mappings.getFirst();
+    ControlMapping *mapping = mappings.getFirst();
     while (mapping) {
-        Lv2ControlMapping *done = mapping;
+        ControlMapping *done = mapping;
         mapping = mappings.pop();
         ObjectCollector::scriptCollector().recycle(done);
     }
@@ -253,8 +253,8 @@ void Lv2ControlConnection::reset()
 
 // ----------------------------- Lv2Plugin
 
-Lv2Plugin::Lv2Plugin(const LilvPlugin *plugin, LilvInstance *instance,
-                     const Lv2Constants &uris, Lv2Worker *worker) :
+Plugin::Plugin(const LilvPlugin *plugin, LilvInstance *instance,
+                     const Constants &uris, Worker *worker) :
     plugin(plugin), instance(instance), midiOutputCount(0),
     controlConnections(4), newControlMappingsQueue(16), worker(worker)
 {
@@ -292,7 +292,7 @@ Lv2Plugin::Lv2Plugin(const LilvPlugin *plugin, LilvInstance *instance,
             std::string portName(lilv_node_as_string(symbol));
 
             // create, connect and hash new control port object
-            Lv2ControlPort *newPort = new Lv2ControlPort();
+            ControlPort *newPort = new ControlPort();
             LilvNode *dfault, *minimum, *maximum;
             lilv_port_get_range(plugin, port, &dfault, &minimum, &maximum);
             newPort->dfault = dfault ? lilv_node_as_float(dfault) : 0;
@@ -309,13 +309,13 @@ Lv2Plugin::Lv2Plugin(const LilvPlugin *plugin, LilvInstance *instance,
                     lilv_nodes_contains(atomBufferType, uris.lv2AtomSequence)
                     && lilv_nodes_contains(atomSupports, uris.lv2MidiEvent)) {
                 // create new inputs and connect to atom sequence location
-                Lv2MidiInput *newAtomPort = new Lv2MidiInput();
+                MidiInput *newAtomPort = new MidiInput();
                 lilv_instance_connect_port(instance, i, newAtomPort->getAtomSequence());
                 midiInputList.add(newAtomPort);
             }
             else if (lilv_port_is_a(plugin, port, uris.lv2OutputPort)) {
                 //atomSequence->atom.type = Lv2PluginFactory::instance()->uridMapper.uriToId(LV2_ATOM__Sequence);
-                Lv2MidiOutput *midiOutput = new Lv2MidiOutput(this);
+                MidiOutput *midiOutput = new MidiOutput(this);
                 lilv_instance_connect_port(instance, i, midiOutput->getAtomSequence());
                 midiOutputList.add(midiOutput);
                 midiOutputCount++;
@@ -333,12 +333,12 @@ Lv2Plugin::Lv2Plugin(const LilvPlugin *plugin, LilvInstance *instance,
     }
 }
 
-Lv2Plugin::~Lv2Plugin()
+Plugin::~Plugin()
 {
     lilv_instance_free(instance);
 }
 
-void Lv2Plugin::connect(AudioSource &source)
+void Plugin::connect(audio::Source &source)
 {
     if(audioInputCount == 0) {
         throw std::logic_error("cannot connect: this plugin has no audio inputs");
@@ -357,7 +357,7 @@ void Lv2Plugin::connect(AudioSource &source)
     }
 }
 
-void Lv2Plugin::connect(audio::AudioConnection *connection, uint32_t channel)
+void Plugin::connect(audio::AudioConnection *connection, uint32_t channel)
 {
     if(channel == 0) {
         throw std::logic_error("cannot connect: there is no channel zero");
@@ -368,12 +368,12 @@ void Lv2Plugin::connect(audio::AudioConnection *connection, uint32_t channel)
     audioInput[channel - 1].setConnection(connection, this);
 }
 
-void Lv2Plugin::connectMidi(MidiSource &source)
+void Plugin::connectMidi(midi::Source &source)
 {
     if(source.getMidiOutputCount() == 0) {
         throw std::logic_error("cannot connect: the source has no MIDI outputs");
     }
-    Lv2MidiInput *input = midiInputList.getFirst();
+    MidiInput *input = midiInputList.getFirst();
     if(input) {
         input->connect(source.getMidiConnection(0), this);
     }
@@ -382,14 +382,14 @@ void Lv2Plugin::connectMidi(MidiSource &source)
     }
 }
 
-Lv2State::Lv2State(const char *filename)
+State::State(const char *filename)
 {
     throw std::logic_error("LV2 State from file not yet implemented"); // TODO implement
 }
 
-Lv2State::Lv2State(ScriptHashIterator &stateHash)
+State::State(ScriptHashIterator &stateHash)
 {
-    Lv2UridMapper &uridMapper = Lv2PluginCache::instance().uridMapper;
+    UridMapper &uridMapper = PluginCache::instance().uridMapper;
     while(stateHash.hasNext()) {
         ScriptHashPair &pair = stateHash.next();
         if(pair.key.type != STRING || pair.value.type != STRING) {
@@ -400,9 +400,9 @@ Lv2State::Lv2State(ScriptHashIterator &stateHash)
     }
 }
 
-const void *Lv2State::retrieveState(uint32_t key, size_t *size, uint32_t *type, uint32_t *flags)
+const void *State::retrieveState(uint32_t key, size_t *size, uint32_t *type, uint32_t *flags)
 {
-    *type = Lv2Plugin::atomTypes.stringType;
+    *type = Plugin::atomTypes.stringType;
     if(stateMap.find( key ) != stateMap.end()) {
         std::string &value = stateMap[key];
         *size = value.length();
@@ -413,7 +413,7 @@ const void *Lv2State::retrieveState(uint32_t key, size_t *size, uint32_t *type, 
     }
 }
 
-const int Lv2State::getHash()
+const int State::getHash()
 {
     int hash = 0;
     for(auto const &entry : stateMap) {
@@ -426,10 +426,10 @@ const int Lv2State::getHash()
 
 void *run_worker(void *arg)
 {
-    ((Lv2Worker*)arg)->run();
+    ((Worker*)arg)->run();
 }
 
-Lv2Worker::Lv2Worker() {
+Worker::Worker() {
     requestBuffer = jack_ringbuffer_create(4096);
     responseBuffer = jack_ringbuffer_create(4096);
     sem_init(&semaphore, 0, 0);
@@ -439,7 +439,7 @@ Lv2Worker::Lv2Worker() {
     }
 }
 
-void Lv2Worker::run()
+void Worker::run()
 {
     void *buffer = 0;
     while (true) { // TODO: needs break
@@ -460,7 +460,7 @@ void Lv2Worker::run()
     free(buffer);
 }
 
-LV2_Worker_Status Lv2Worker::scheduleWork(const void *data, uint32_t size)
+LV2_Worker_Status Worker::scheduleWork(const void *data, uint32_t size)
 {
     printf("scheduling work of size %d\n", size);
     jack_ringbuffer_write(requestBuffer, (const char*)&size, sizeof(size));
@@ -469,14 +469,14 @@ LV2_Worker_Status Lv2Worker::scheduleWork(const void *data, uint32_t size)
     return LV2_WORKER_SUCCESS;
 }
 
-LV2_Worker_Status Lv2Worker::queueResponse(const void *data, uint32_t size)
+LV2_Worker_Status Worker::queueResponse(const void *data, uint32_t size)
 {
     jack_ringbuffer_write(responseBuffer, (const char*)&size, sizeof(size));
     jack_ringbuffer_write(responseBuffer, (const char*)data, size);
     return LV2_WORKER_SUCCESS;
 }
 
-void Lv2Worker::respond()
+void Worker::respond()
 {
     uint32_t read_space = jack_ringbuffer_read_space(responseBuffer);
     while (read_space) {
@@ -488,14 +488,14 @@ void Lv2Worker::respond()
     }
 }
 
-void Lv2Worker::setInstance(LilvInstance *instance)
+void Worker::setInstance(LilvInstance *instance)
 {
     handle = instance->lv2_handle;
     interface = (LV2_Worker_Interface*)lilv_instance_get_extension_data(instance, LV2_WORKER__interface);
 }
 
-void Lv2Plugin::setPortValue(const char *portname, const void *value, uint32_t type) {
-    Lv2ControlPort *lv2Port = controlMap[portname];
+void Plugin::setPortValue(const char *portname, const void *value, uint32_t type) {
+    ControlPort *lv2Port = controlMap[portname];
     if(lv2Port) {
         if (type == atomTypes.floatType) {
             lv2Port->value = *(const float *)value;
@@ -518,8 +518,8 @@ void Lv2Plugin::setPortValue(const char *portname, const void *value, uint32_t t
  *
  * Runs in the script thread.
  */
-Lv2ControlPort *Lv2Plugin::getPort(const char *symbol) {
-    Lv2ControlPort *port = controlMap[symbol];
+ControlPort *Plugin::getPort(const char *symbol) {
+    ControlPort *port = controlMap[symbol];
     if(!port) {
         throw std::logic_error(std::string("Plugin has no such port: ") + symbol);
     }
@@ -531,7 +531,7 @@ Lv2ControlPort *Lv2Plugin::getPort(const char *symbol) {
  *
  * Runs in the script thread.
  */
-void Lv2Plugin::setControlValue(const char *symbol, float value) {
+void Plugin::setControlValue(const char *symbol, float value) {
     getPort(symbol)->value = value;
 }
 
@@ -542,16 +542,16 @@ void Lv2Plugin::setControlValue(const char *symbol, float value) {
  *
  * Allocates Lv2ControlEvent objects.
  */
-void Lv2Plugin::scheduleControl(const char *symbol, float value, int bar, int position, int division) {
-    Lv2ControlPort *port = getPort(symbol);
-    controlBuffer.addEvent(new Lv2ControlEvent(port, value, bar, position, division));
+void Plugin::scheduleControl(const char *symbol, float value, int bar, int position, int division) {
+    ControlPort *port = getPort(symbol);
+    controlBuffer.addEvent(new ControlEvent(port, value, bar, position, division));
 }
 
 /**
  * Add a control
  */
 
-void Lv2Plugin::addController(MidiSource &source, unsigned int cc, const char *symbol, float minimum, float maximum) {
+void Plugin::addController(midi::Source &source, unsigned int cc, const char *symbol, float minimum, float maximum) {
     if(cc == 0) {
         throw std::logic_error("There is no MIDI control number zero");
     }
@@ -561,27 +561,27 @@ void Lv2Plugin::addController(MidiSource &source, unsigned int cc, const char *s
     if(minimum > maximum) {
         throw std::logic_error("Minimum cannot be greater than maximum");
     }
-    Lv2ControlPort *port = getPort(symbol);
+    ControlPort *port = getPort(symbol);
     midi::MidiConnection *connection = source.getMidiConnection(0); // TODO: how to specify other connections
     // check hash for existing connection
-    Lv2ControlConnection *controlConnection = controlConnectionMap[connection];
+    ControlConnection *controlConnection = controlConnectionMap[connection];
     if(!controlConnection) {
         // push new connection
-        controlConnection = new Lv2ControlConnection(connection);
+        controlConnection = new ControlConnection(connection);
         controlConnectionMap[connection] = controlConnection;
         controlConnections.add(controlConnection);
     }
     // push new mapping
-    while(!newControlMappingsQueue.push(new Lv2ControlMapping(controlConnection, cc, port, minimum, maximum)));
+    while(!newControlMappingsQueue.push(new ControlMapping(controlConnection, cc, port, minimum, maximum)));
 }
 
-void Lv2Plugin::addController(MidiSource &source, unsigned int cc, const char *symbol, float minimum) {    
-    Lv2ControlPort *port = getPort(symbol);
+void Plugin::addController(midi::Source &source, unsigned int cc, const char *symbol, float minimum) {
+    ControlPort *port = getPort(symbol);
     addController(source, cc, symbol, minimum, port->maximum);
 }
 
-void Lv2Plugin::addController(MidiSource &source, unsigned int cc, const char *symbol) {
-    Lv2ControlPort *port = getPort(symbol);
+void Plugin::addController(midi::Source &source, unsigned int cc, const char *symbol) {
+    ControlPort *port = getPort(symbol);
     addController(source, cc, symbol, port->minimum, port->maximum);
 }
 
@@ -590,23 +590,23 @@ void Lv2Plugin::addController(MidiSource &source, unsigned int cc, const char *s
  *
  * Runs in script thread.
  */
-void Lv2Plugin::restore()
+void Plugin::restore()
 {
     controlConnectionMap.clear();
 	// TODO: reset control values
 }
 
-void Lv2Plugin::addMidiEvent(midi::MidiEvent *evt) {
+void Plugin::addMidiEvent(midi::Event *evt) {
     // for now just add to first midi port
-    Lv2MidiInput *midiInput = midiInputList.getFirst();
+    MidiInput *midiInput = midiInputList.getFirst();
     if(midiInput) {
         midiInput->addEvent(evt);
     }
 }
 
-bool Lv2Plugin::connectsTo(Source *source) {
+bool Plugin::connectsTo(AbstractSource *source) {
     // event inputs
-    Lv2MidiInput *midiInput = midiInputList.getFirst();
+    MidiInput *midiInput = midiInputList.getFirst();
     while(midiInput) {
         if(midiInput->connectsTo(source)) {
             return true;
@@ -623,9 +623,9 @@ bool Lv2Plugin::connectsTo(Source *source) {
     return false;
 }
 
-midi::MidiConnection *Lv2Plugin::getMidiConnection(unsigned int index) {
+midi::MidiConnection *Plugin::getMidiConnection(unsigned int index) {
     unsigned int count = 0;
-    Lv2MidiOutput *output = midiOutputList.getFirst();
+    MidiOutput *output = midiOutputList.getFirst();
     while(output && count < index) {
         output = midiOutputList.getNext(output);
         count++;
@@ -633,16 +633,16 @@ midi::MidiConnection *Lv2Plugin::getMidiConnection(unsigned int index) {
     return output;
 }
 
-void Lv2Plugin::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time) {
+void Plugin::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time) {
 
     // pull in new control mappings
-    Lv2ControlMapping *freshMapping;
+    ControlMapping *freshMapping;
     while(newControlMappingsQueue.pop(freshMapping)) {
         freshMapping->getConnection()->addMapping(freshMapping);
     }
 
     // process MIDI inputs
-    Lv2MidiInput *midiInput = midiInputList.getFirst();
+    MidiInput *midiInput = midiInputList.getFirst();
     while(midiInput) {
         midiInput->process(rolling, pos, nframes, time);
         midiInput = midiInputList.getNext(midiInput);
@@ -660,7 +660,7 @@ void Lv2Plugin::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nfr
     }
 
     // update control port values from scheduled control events
-    Lv2ControlEvent* evt = controlBuffer.getNextEvent(rolling, pos, nframes);
+    ControlEvent* evt = controlBuffer.getNextEvent(rolling, pos, nframes);
     while(evt) {
         evt->getPort()->value = evt->getValue();
         ObjectCollector::scriptCollector().recycle(evt);
@@ -668,14 +668,14 @@ void Lv2Plugin::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nfr
     }
 
     // process control connections
-    Lv2ControlConnection *connection = this->controlConnections.getFirst();
+    ControlConnection *connection = this->controlConnections.getFirst();
     while(connection) {
         connection->process(rolling, pos, nframes, time);
         connection = controlConnections.getNext(connection);
     }
 
     // clear event output buffers
-    Lv2MidiOutput *midiOutput = midiOutputList.getFirst();
+    MidiOutput *midiOutput = midiOutputList.getFirst();
     while(midiOutput) {
         midiOutput->clear();
         midiOutput = midiOutputList.getNext(midiOutput);
@@ -698,19 +698,19 @@ void Lv2Plugin::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nfr
     }
 }
 
-void Lv2Plugin::reposition() {
+void Plugin::reposition() {
     // reset MIDI inputs
-    Lv2MidiInput *midiInput = midiInputList.getFirst();
+    MidiInput *midiInput = midiInputList.getFirst();
     while(midiInput) {
         midiInput->reset();
         midiInput = midiInputList.getNext(midiInput);
     }
 
     // recycle control connection
-    Lv2ControlConnection *connection = controlConnections.getFirst();
+    ControlConnection *connection = controlConnections.getFirst();
     while(connection) {
         connection->reset();
-        Lv2ControlConnection *done = connection;
+        ControlConnection *done = connection;
         connection = controlConnections.pop();
         ObjectCollector::scriptCollector().recycle(done);
     }
@@ -719,7 +719,7 @@ void Lv2Plugin::reposition() {
     controlBuffer.recycleRemaining();
 }
 
-void Lv2Plugin::print() {
+void Plugin::print() {
 
     std::cout << "----------- plugin " << this << std::endl;
     //std::cout << atomMidiInputs.size() << " event inputs and zero outputs" << std::endl;
@@ -739,9 +739,9 @@ void Lv2Plugin::print() {
 }
 
 
-Lv2AtomTypes Lv2Plugin::atomTypes;
+AtomTypes Plugin::atomTypes;
 
-Lv2PluginCache::Lv2PluginCache() : world(lilv_world_new()), lv2Constants(world) {
+PluginCache::PluginCache() : world(lilv_world_new()), lv2Constants(world) {
 
     // plugins
     lilv_world_load_all(world);
@@ -796,16 +796,16 @@ Lv2PluginCache::Lv2PluginCache() : world(lilv_world_new()), lv2Constants(world) 
     lv2Features[6] = 0;
 
     // URIDs
-    Lv2Plugin::atomTypes.intType = uridMapper.uriToId(LV2_ATOM__Int);
-    Lv2Plugin::atomTypes.longType = uridMapper.uriToId(LV2_ATOM__Long);
-    Lv2Plugin::atomTypes.floatType = uridMapper.uriToId(LV2_ATOM__Float);
-    Lv2Plugin::atomTypes.doubleType = uridMapper.uriToId(LV2_ATOM__Double);
-    Lv2Plugin::atomTypes.stringType = uridMapper.uriToId(LV2_ATOM__String);
-    Lv2MidiEvent::midiEventTypeId = uridMapper.uriToId(LILV_URI_MIDI_EVENT);
+    Plugin::atomTypes.intType = uridMapper.uriToId(LV2_ATOM__Int);
+    Plugin::atomTypes.longType = uridMapper.uriToId(LV2_ATOM__Long);
+    Plugin::atomTypes.floatType = uridMapper.uriToId(LV2_ATOM__Float);
+    Plugin::atomTypes.doubleType = uridMapper.uriToId(LV2_ATOM__Double);
+    Plugin::atomTypes.stringType = uridMapper.uriToId(LV2_ATOM__String);
+    MidiEvent::midiEventTypeId = uridMapper.uriToId(LILV_URI_MIDI_EVENT);
 }
 
 
-Lv2Plugin *Lv2PluginCache::getPlugin(const char *uri, const char *preset, Lv2State *state) {
+Plugin *PluginCache::getPlugin(const char *uri, const char *preset, State *state) {
     // create a unique key for uri/preset/state
     std::string keyString(uri);
     if(preset) {
@@ -822,7 +822,7 @@ Lv2Plugin *Lv2PluginCache::getPlugin(const char *uri, const char *preset, Lv2Sta
 
     // return cached plugin instance if available
     int key = hash + count;
-    Lv2Plugin *cachedPlugin = findObject(key);
+    Plugin *cachedPlugin = findObject(key);
     if(cachedPlugin) {
         cachedPlugin->restore();
         return cachedPlugin;
@@ -854,10 +854,10 @@ Lv2Plugin *Lv2PluginCache::getPlugin(const char *uri, const char *preset, Lv2Sta
     }
 
     // create worker if required
-    Lv2Worker *worker = 0;
+    Worker *worker = 0;
     if (lilv_plugin_has_feature(lilvPlugin, lv2Constants.lv2WorkerSchedule)
         && lilv_plugin_has_extension_data(lilvPlugin, lv2Constants.lv2WorkerInterface)) {
-        worker = new Lv2Worker();
+        worker = new Worker();
         ((LV2_Worker_Schedule*)lv2Features[5]->data)->handle = worker;
     }
 
@@ -870,7 +870,7 @@ Lv2Plugin *Lv2PluginCache::getPlugin(const char *uri, const char *preset, Lv2Sta
     }
 
     // create plugin object
-    Lv2Plugin *plugin = new Lv2Plugin(lilvPlugin, instance, lv2Constants, worker);
+    Plugin *plugin = new Plugin(lilvPlugin, instance, lv2Constants, worker);
 
     // restore baseline default state
     LilvState *defaultState =  lilv_state_new_from_world(world, &map, lilv_plugin_get_uri(lilvPlugin));
@@ -925,7 +925,7 @@ Lv2Plugin *Lv2PluginCache::getPlugin(const char *uri, const char *preset, Lv2Sta
     return plugin;
 }
 
-Lv2PluginCache::~Lv2PluginCache()
+PluginCache::~PluginCache()
 {
     lilv_world_free(world);
 }

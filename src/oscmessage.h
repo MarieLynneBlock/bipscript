@@ -26,7 +26,7 @@
 namespace bipscript {
 namespace osc {
 
-struct OscParameter
+struct Parameter
 {
     char type;
     union {
@@ -34,17 +34,17 @@ struct OscParameter
         float floatValue;
         const char *stringValue;
     } value;
-    OscParameter(char type) : type(type) {}
+    Parameter(char type) : type(type) {}
 };
 
-class OscMessage
+class Message
 {
     std::string path;
-    std::vector<OscParameter> parameters;
+    std::vector<Parameter> parameters;
 public:
-    OscMessage(std::string path)
+    Message(std::string path)
         : path(path) {}
-    OscMessage(OscMessage &copy) :
+    Message(Message &copy) :
       path(copy.path), parameters(copy.parameters)
     {
         for (auto & param: parameters) {
@@ -56,7 +56,7 @@ public:
             }
         }
     }
-    ~OscMessage() {
+    ~Message() {
         for (auto & param: parameters) {
             if(param.type == 's') {
                 delete[] param.value.stringValue;
@@ -65,17 +65,17 @@ public:
     }
     const char *getPath() { return path.c_str(); }
     void addInteger(int value) {
-        OscParameter param('i');
+        Parameter param('i');
         param.value.intValue = value;
         parameters.push_back(param);
     }
     void addFloat(float value) {
-        OscParameter param('f');
+        Parameter param('f');
         param.value.floatValue = value;
         parameters.push_back(param);
     }
     void addString(const char *value) {
-        OscParameter param('s');
+        Parameter param('s');
         size_t len = std::strlen(value) + 1;
         char* const copy = new char[len];
         std::strncpy(copy, value, len);
@@ -83,17 +83,17 @@ public:
         parameters.push_back(param);
     }
     void addBoolean(bool value) {
-        OscParameter param(value ? 'T' : 'F');
+        Parameter param(value ? 'T' : 'F');
         parameters.push_back(param);
     }
     void addNull(const char*) {
-        OscParameter param('N');
+        Parameter param('N');
         parameters.push_back(param);
     }
     int getParameterCount() {
         return parameters.size();
     }
-    OscParameter getParameter(int i) {
+    Parameter getParameter(int i) {
         return parameters[i];
     }
     ScriptValue arg(int i) {
@@ -127,13 +127,13 @@ public:
     }
 };
 
-class OscEvent : public Event
+class Event : public bipscript::Event
 {
-    OscMessage message;
+    Message message;
 public:
-    OscEvent(Position &pos, OscMessage &message)
-        : Event(pos), message(message) {}
-    OscMessage &getMessage() {
+    Event(Position &pos, Message &message)
+        : bipscript::Event(pos), message(message) {}
+    Message &getMessage() {
         return message;
     }
 };

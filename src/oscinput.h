@@ -14,13 +14,13 @@
 namespace bipscript {
 namespace osc {
 
-class OscInput : public Listable
+class Input : public Listable
 {
     lo_server_thread st;
     std::atomic<ScriptFunction*> onReceiveHandler;
 public:
-    OscInput(int port);
-    OscInput(int port, const char *protocol);
+    Input(int port);
+    Input(int port, const char *protocol);
     int handle(const char *path, const char *types,
                 lo_arg ** argv, int argc, void *data);
     const char *getUrl();
@@ -31,30 +31,30 @@ public:
 };
 
 class OnReceiveClosure : public ScriptFunctionClosure {
-    OscMessage *message;
+    Message *message;
 protected:
     void addParameters() {
         addObject(message, binding::OscMessageObject);
     }
 public:
-    OnReceiveClosure(ScriptFunction function, OscMessage *message) :
+    OnReceiveClosure(ScriptFunction function, Message *message) :
         ScriptFunctionClosure(function), message(message) {}
     void recycle() { delete this; }
 };
 
-class OscInputFactory : public ActiveCache<OscInput>
+class InputFactory : public ActiveCache<Input>
 {
 public:
-    static OscInputFactory &instance() {
-        static OscInputFactory instance;
+    static InputFactory &instance() {
+        static InputFactory instance;
         return instance;
     }
-    OscInput *getOscInput(int port, const char *protocol);
-    OscInput *getOscInput(int port) {
+    Input *getOscInput(int port, const char *protocol);
+    Input *getOscInput(int port) {
         return getOscInput(port, 0);
     }
-    void newObject(OscInput *) {}
-    void removeObject(OscInput *input) {
+    void newObject(Input *) {}
+    void removeObject(Input *input) {
         input->cancel();
     }
 };

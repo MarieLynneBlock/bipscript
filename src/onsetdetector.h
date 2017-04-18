@@ -44,7 +44,7 @@ public:
     OnsetDetector();
     ~OnsetDetector();
     void onOnset(ScriptFunction &handler);
-    void connect(AudioSource &source) {
+    void connect(Source &source) {
         this->audioInput.store(source.getAudioConnection(0));
     }
     void connect(AudioConnection &connection) {

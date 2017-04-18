@@ -15,10 +15,10 @@ void osc_error(int num, const char *msg, const char *path)
 int osc_handler(const char *path, const char *types, lo_arg ** argv,
                     int argc, void *data, void *user_data)
 {
-   return ((OscInput*)user_data)->handle(path, types, argv, argc, data);
+   return ((Input*)user_data)->handle(path, types, argv, argc, data);
 }
 
-OscInput::OscInput(int port, const char *protocol)
+Input::Input(int port, const char *protocol)
 {
     if(protocol) {
         // TODO: implement
@@ -30,9 +30,9 @@ OscInput::OscInput(int port, const char *protocol)
     lo_server_thread_start(st);
 }
 
-int OscInput::handle(const char *path, const char *types, lo_arg **argv, int argc, void *data)
+int Input::handle(const char *path, const char *types, lo_arg **argv, int argc, void *data)
 {
-    OscMessage *message = new OscMessage(path);
+    Message *message = new Message(path);
     for (int i = 0; i < argc; i++) {
         switch(types[i]) {
         case 'i':
@@ -63,12 +63,12 @@ int OscInput::handle(const char *path, const char *types, lo_arg **argv, int arg
     }
 }
 
-const char *OscInput::getUrl()
+const char *Input::getUrl()
 {
     return lo_server_thread_get_url(st);
 }
 
-void OscInput::onReceive(ScriptFunction &handler)
+void Input::onReceive(ScriptFunction &handler)
 {
     if(handler.getNumargs() != 2) {
         throw std::logic_error("onReceive handler should take one argument");
@@ -79,13 +79,13 @@ void OscInput::onReceive(ScriptFunction &handler)
 /**
  * script thread
  */
-OscInput *OscInputFactory::getOscInput(int port, const char *protocol)
+Input *InputFactory::getOscInput(int port, const char *protocol)
 {
     // TODO: needs better hash
     int key = protocol ? std::hash<std::string>()(protocol) : port;
-    OscInput *obj = findObject(key);
+    Input *obj = findObject(key);
     if (!obj) {
-        obj = new OscInput(port, protocol);
+        obj = new Input(port, protocol);
         registerObject(key, obj);
     }
     return obj;

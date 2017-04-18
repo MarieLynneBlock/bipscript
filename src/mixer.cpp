@@ -48,9 +48,9 @@ void MixerControlConnection::process(bool rolling, jack_position_t &pos, jack_nf
 void MixerControlConnection::updateGains(jack_nframes_t frame, float **gain)
 {
     if(eventCount && eventIndex < eventCount) {
-        midi::MidiEvent *nextEvent = connection->getEvent(eventIndex);
+        midi::Event *nextEvent = connection->getEvent(eventIndex);
         while(nextEvent && nextEvent->getFrameOffset() == frame) {
-            if(nextEvent->matches(midi::MidiEvent::TYPE_CONTROL)) {
+            if(nextEvent->matches(midi::Event::TYPE_CONTROL)) {
                 // check mappings
                 MixerControlMapping *mapping = mappings.getFirst();
                 while(mapping) {
@@ -134,7 +134,7 @@ Mixer::~Mixer()
  *
  * No allocations.
  */
-void Mixer::connect(AudioSource &source, ScriptArray &gainsArray)
+void Mixer::connect(Source &source, ScriptArray &gainsArray)
 {
     uint32_t sourceOutputCount = source.getAudioOutputCount();
     // set gains from array
@@ -191,7 +191,7 @@ void Mixer::connect(AudioSource &source, ScriptArray &gainsArray)
  *
  * No allocations.
  */
-void Mixer::connect(AudioSource &source, float initialGain)
+void Mixer::connect(Source &source, float initialGain)
 {
     unsigned int inputOutputCount = source.getAudioOutputCount();
     // source has no audio outputs
@@ -222,7 +222,7 @@ void Mixer::connect(AudioSource &source, float initialGain)
  *
  * Allocates MixerControlMapping, MixerControlConnection objects.
  */
-void Mixer::addGainController(midi::MidiSource &source, unsigned int cc, unsigned int input, unsigned int output)
+void Mixer::addGainController(midi::Source &source, unsigned int cc, unsigned int input, unsigned int output)
 {
     if(cc == 0) {
         throw std::logic_error("There is no MIDI control number zero");
@@ -276,7 +276,7 @@ void Mixer::restore()
  *
  * Runs in script thread.
  */
-bool Mixer::connectsTo(Source *source) {
+bool Mixer::connectsTo(AbstractSource *source) {
     // TODO: event inputs
     // audio inputs
     for(uint32_t i = 0; i < connectedInputs; i++) {

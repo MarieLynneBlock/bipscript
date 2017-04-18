@@ -25,7 +25,7 @@
 namespace bipscript {
 namespace transport {
 
-class TransportMaster
+class Master
 {
     double lastTick;
     float beatsPerBar;
@@ -34,10 +34,10 @@ class TransportMaster
     double bpm;
     bool doForceBeat;
 public:
-    TransportMaster(double bpm, float beatsPerBar, float beatUnit) :
+    Master(double bpm, float beatsPerBar, float beatUnit) :
         beatsPerBar(beatsPerBar), beatUnit(beatUnit),
         ticksPerBeat(1920.0), bpm(bpm), doForceBeat(false) {}
-    ~TransportMaster();
+    ~Master();
     // void scheduleBpm(bpm, bar, position, division)
     void setBpm(double bpm) {
         this->bpm = bpm;
@@ -54,21 +54,21 @@ public:
     void setTime(jack_transport_state_t state, jack_nframes_t nframes, jack_position_t *pos, int new_pos);
 };
 
-class TransportMasterCache : public ObjectCache
+class MasterCache : public ObjectCache
 {
     bool active;
-    std::atomic<TransportMaster *> cachedMaster;
-    TransportMasterCache() : active(false) {}
+    std::atomic<Master *> cachedMaster;
+    MasterCache() : active(false) {}
 public:
-    static TransportMasterCache &instance() {
-        static TransportMasterCache instance;
+    static MasterCache &instance() {
+        static MasterCache instance;
         return instance;
     }
-    TransportMaster *getTransportMaster(float bpm, float beatsPerBar, float beatUnit);
-    TransportMaster *getTransportMaster(float bpm, float beatsPerBar) {
+    Master *getTransportMaster(float bpm, float beatsPerBar, float beatUnit);
+    Master *getTransportMaster(float bpm, float beatsPerBar) {
         return getTransportMaster(bpm, beatsPerBar, 4);
     }
-    TransportMaster *getTransportMaster(float bpm) {
+    Master *getTransportMaster(float bpm) {
         return getTransportMaster(bpm, 4);
     }
     // object cache interface

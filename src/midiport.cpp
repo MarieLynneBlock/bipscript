@@ -22,7 +22,7 @@
 namespace bipscript {
 namespace midi {
 
-MidiEvent *MidiInputConnection::getEvent(uint32_t i) {
+Event *MidiInputConnection::getEvent(uint32_t i) {
     jack_midi_event_t in_event;
     jack_midi_event_get(&in_event, buffer, i);
     lastEvent.unpack(in_event.buffer, in_event.size);
@@ -64,7 +64,7 @@ void MidiOutputPort::doProcess(bool rolling, jack_position_t &pos, jack_nframes_
     void* port_buf = jack_port_get_buffer(jackPort, nframes);
     jack_midi_clear_buffer(port_buf);
     // schedule events that are waiting in the buffer
-    MidiEvent* nextEvent = buffer.getNextEvent(rolling, pos, nframes);
+    Event* nextEvent = buffer.getNextEvent(rolling, pos, nframes);
     while(nextEvent) {
         long frame = nextEvent->getFrameOffset();
         size_t size = nextEvent->dataSize() + 1;

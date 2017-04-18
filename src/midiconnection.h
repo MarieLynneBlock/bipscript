@@ -72,21 +72,21 @@ public:
       : EventClosure(function), noteOff(noteOff), position(position) {}
 };
 
-class MidiSource;
+class Source;
 
 class MidiConnection {
-    MidiSource *source;
+    Source *source;
     std::atomic<bool> handlerDefined;
     std::atomic<ScriptFunction*> onControlHandler;
     std::atomic<ScriptFunction*> onNoteOnHandler;
     std::atomic<ScriptFunction*> onNoteOffHandler;
 public:
-    MidiConnection(MidiSource *source) :
+    MidiConnection(Source *source) :
       source(source), handlerDefined(false), onControlHandler(0),
       onNoteOnHandler(0), onNoteOffHandler(0) {}
-    MidiSource *getSource() { return source; }
+    Source *getSource() { return source; }
     virtual uint32_t getEventCount() = 0;
-    virtual MidiEvent *getEvent(uint32_t i) = 0;
+    virtual Event *getEvent(uint32_t i) = 0;
     void onControl(ScriptFunction &handler) {
         if(handler.getNumargs() != 3) {
             throw std::logic_error("onControl handler should take two arguments");
@@ -114,18 +114,18 @@ public:
             ScriptFunction *onHandler = onNoteOnHandler.load();
             ScriptFunction *offHandler = onNoteOffHandler.load();
             for(int j = 0; j < getEventCount(); j++) {
-                MidiEvent *evt = getEvent(j);
-                if(evt->getType() == MidiEvent::TYPE_CONTROL && ccHandler) {
+                Event *evt = getEvent(j);
+                if(evt->getType() == Event::TYPE_CONTROL && ccHandler) {
                     transport::TimePosition position(pos, evt->getFrameOffset());
                     Control control(evt->getDatabyte1(), evt->getDatabyte2());
                     (new MidiControlEventClosure(*ccHandler, control, position))->dispatch();
                 }
-                else if(evt->getType() == MidiEvent::TYPE_NOTE_ON && onHandler) {
+                else if(evt->getType() == Event::TYPE_NOTE_ON && onHandler) {
                     transport::TimePosition position(pos, evt->getFrameOffset());
                     NoteOn noteOn(evt->getDatabyte1(), evt->getDatabyte2());
                     (new MidiNoteOnEventClosure(*onHandler, noteOn, position))->dispatch();
                 }
-                else if(evt->getType() == MidiEvent::TYPE_NOTE_OFF && offHandler) {
+                else if(evt->getType() == Event::TYPE_NOTE_OFF && offHandler) {
                     transport::TimePosition position(pos, evt->getFrameOffset());
                     NoteOff noteOff(evt->getDatabyte1(), evt->getDatabyte2());
                     (new MidiNoteOffEventClosure(*offHandler, noteOff, position))->dispatch();
@@ -135,7 +135,7 @@ public:
     }
 };
 
-class MidiSource : virtual public Source
+class Source : virtual public AbstractSource
 {
 public:
     virtual unsigned int getMidiOutputCount() = 0;

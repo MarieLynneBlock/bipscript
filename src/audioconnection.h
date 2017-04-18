@@ -25,7 +25,7 @@
 namespace bipscript {
 namespace audio {
 
-class AudioSource;
+class Source;
 
 /**
  * Represents a mono audio connection
@@ -33,7 +33,7 @@ class AudioSource;
 class AudioConnection {
     static float *dummyBuffer;
     static jack_nframes_t bufferSize;
-    AudioSource *source;    
+    Source *source;    
     float *buffer;
 public:
     // static
@@ -48,14 +48,14 @@ public:
         return dummyBuffer;
     }
     // instance
-    AudioConnection(AudioSource *source, bool allocate = true)
+    AudioConnection(Source *source, bool allocate = true)
         : source(source) {
         if(allocate) {
             buffer = new float[bufferSize];
         }
     }
     void setBuffer(float *buffer) { this->buffer = buffer; }
-    AudioSource *getSource() { return source; }
+    Source *getSource() { return source; }
     float *getAudio() { return buffer; }
     void clear() {
         std::memset(buffer, 0, sizeof(float) * bufferSize);
@@ -65,7 +65,7 @@ public:
 /**
  * Base for all classes that produce audio
  */
-class AudioSource : virtual public Source {
+class Source : virtual public AbstractSource {
 public:
     virtual unsigned int getAudioOutputCount() = 0;
     virtual AudioConnection *getAudioConnection(unsigned int index) = 0;

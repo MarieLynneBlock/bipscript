@@ -22,7 +22,7 @@
 namespace bipscript {
 namespace midi {
 
-class MidiEvent : public Event
+class Event : public bipscript::Event
 {
     unsigned char type;
     unsigned char databyte1;
@@ -33,10 +33,10 @@ public:
     static const unsigned char TYPE_CONTROL = 0xB0;
     static const unsigned char TYPE_PITCH_BEND = 0xE0;
     uint8_t channel;
-    MidiEvent() : Event(1, 1, 1) {}
-    MidiEvent(Position &position, int databyte1, int databyte2, int type, unsigned char channel);
-    MidiEvent(const MidiEvent&);
-    friend std::ostream& operator<< (std::ostream &out, MidiEvent &evt);
+    Event() : bipscript::Event(1, 1, 1) {}
+    Event(Position &position, int databyte1, int databyte2, int type, unsigned char channel);
+    Event(const Event&);
+    friend std::ostream& operator<< (std::ostream &out, Event &evt);
     void setPosition(int bar, int position, int division) {
         Position(bar, position, division);
     }

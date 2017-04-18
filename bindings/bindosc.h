@@ -22,7 +22,7 @@
 namespace bipscript {
 
 namespace osc {
-class OscMessage;
+class Message;
 }
 
 namespace binding
@@ -31,7 +31,7 @@ namespace binding
     extern HSQOBJECT OscInputObject;
     extern HSQOBJECT OscMessageObject;
     extern HSQOBJECT OscOutputObject;
-    osc::OscMessage *getOscMessage(HSQUIRRELVM &vm, int index);
+    osc::Message *getOscMessage(HSQUIRRELVM &vm, int index);
     // release hooks for types in this package
     SQInteger OscMessageRelease(SQUserPointer p, SQInteger size);
     // method to bind this package

@@ -25,7 +25,7 @@
 namespace bipscript {
 
 namespace transport {
-class TransportMaster;
+class Master;
 }
 
 class AudioEngine
@@ -38,7 +38,7 @@ class AudioEngine
     jack_nframes_t runningFrame;
 
     // transport
-    transport::TransportMaster *transportMaster;
+    transport::Master *transportMaster;
     unsigned int multiplePeriodRestart;
     transport::TimeSignature currentTimeSignature;
 
@@ -115,7 +115,7 @@ public:
     void transportRelocate(jack_nframes_t frame) {
         jack_transport_locate(client, frame);
     }
-    transport::TransportMaster *getTransportMaster(double bpm, float beatsPerBar, float beatUnit);
+    transport::Master *getTransportMaster(double bpm, float beatsPerBar, float beatUnit);
     void releaseTransportMaster();
 };
 

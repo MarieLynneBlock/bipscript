@@ -29,7 +29,7 @@
 namespace bipscript {
 namespace audio {
 
-class AudioInputPort : public AudioSource
+class AudioInputPort : public Source
 {
     jack_port_t* port;
     AudioConnection connection;
@@ -40,7 +40,7 @@ public:
         AudioEngine::instance().connectPort(name, port);
     }
     // Source interface
-    bool connectsTo(Source *) { return false; }
+    bool connectsTo(AbstractSource *) { return false; }
     void doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time) {
         connection.setBuffer((float*)jack_port_get_buffer (port, nframes));
     }
@@ -76,7 +76,7 @@ public:
     ~AudioOutputPort();
     jack_port_t* getJackPort() { return port; }
     void doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
-    void connect(AudioSource &source) {
+    void connect(Source &source) {
         connect(source.getAudioConnection(0));
     }
     void connect(AudioConnection &connection) {
@@ -112,14 +112,14 @@ class AudioStereoOutput
     AudioOutputPort *portLeft;
     AudioOutputPort *portRight;
 public:
-    void connect(AudioSource &source);
+    void connect(Source &source);
     void connect(AudioConnection &connection) {
         portLeft->connect(&connection);
     }
     AudioStereoOutput(std::string name, const char *connectLeft, const char *connectRight);
 };
 
-class AudioStereoInput : public AudioSource
+class AudioStereoInput : public Source
 {
     AudioInputPort *portLeft;
     AudioInputPort *portRight;
@@ -129,7 +129,7 @@ public:
     }
     void reset(std::string name, const char *connectLeft, const char *connectRight);
     // Source interface
-    bool connectsTo(Source *) { return false; }
+    bool connectsTo(AbstractSource *) { return false; }
     void doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
     void reposition() {}
     // AudioSource interface

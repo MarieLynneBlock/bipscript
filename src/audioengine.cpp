@@ -95,7 +95,7 @@ void AudioEngine::setBufferSize(jack_nframes_t size)
 {
     // TODO: generic size listener?
     audio::AudioConnection::setBufferSize(size);
-    lv2::Lv2PluginCache::instance().setBufferSize(size);
+    lv2::PluginCache::instance().setBufferSize(size);
 }
 
 int AudioEngine::activate(const char *clientName)
@@ -138,13 +138,13 @@ void printPorts(jack_client_t *client) {
 void timebase_callback(jack_transport_state_t state, jack_nframes_t nframes,
      jack_position_t *pos, int new_pos, void *arg)
 {
-    ((transport::TransportMaster*)arg)->setTime(state, nframes, pos, new_pos);
+    ((transport::Master*)arg)->setTime(state, nframes, pos, new_pos);
 }
 
-transport::TransportMaster *AudioEngine::getTransportMaster(double bpm, float beatsPerBar, float beatUnit)
+transport::Master *AudioEngine::getTransportMaster(double bpm, float beatsPerBar, float beatUnit)
 {
     if(!transportMaster) {
-        transportMaster = new transport::TransportMaster(bpm, beatsPerBar, beatUnit);
+        transportMaster = new transport::Master(bpm, beatsPerBar, beatUnit);
         int error = jack_set_timebase_callback(client, 0, &timebase_callback, transportMaster);
         if (error) {
             throw std::logic_error("Cannot create transport master");

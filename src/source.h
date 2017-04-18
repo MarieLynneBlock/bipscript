@@ -21,9 +21,9 @@
 
 namespace bipscript {
 
-class Source : public Processor {
+class AbstractSource : public Processor {
 public:
-    virtual bool connectsTo(Source *) = 0;
+    virtual bool connectsTo(AbstractSource *) = 0;
 };
 
 }

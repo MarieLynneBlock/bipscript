@@ -86,7 +86,7 @@ public:
 };
 
 
-class Mixer : public AudioSource
+class Mixer : public Source
 {
     float **gain;   // TODO: threadsafe?
     // audio inputs
@@ -104,16 +104,16 @@ class Mixer : public AudioSource
 public:
     Mixer(unsigned int inputs, const unsigned int outputs);
     ~Mixer();
-    void connect(AudioSource &source, ScriptArray &gains);
-    void connect(AudioSource &source, float gain);
-    void connect(AudioSource &source) {
+    void connect(Source &source, ScriptArray &gains);
+    void connect(Source &source, float gain);
+    void connect(Source &source) {
         connect(source, 1.0);
     }
-    void addGainController(midi::MidiSource &source, unsigned int cc, unsigned int input, unsigned int output);
+    void addGainController(midi::Source &source, unsigned int cc, unsigned int input, unsigned int output);
     void scheduleGain(uint32_t input, uint32_t output, float gain, uint32_t bar, uint32_t position, uint32_t division);
     void restore();
     // Source interface
-    bool connectsTo(Source *source);
+    bool connectsTo(AbstractSource *source);
     void doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
     void reposition();
     // AudioSource interface

@@ -97,7 +97,7 @@ AudioStereoOutput::AudioStereoOutput(std::string name, const char *connectLeft, 
     portRight = AudioOutputPortCache::instance().getAudioOutputPort((name + "R").c_str(), connectRight);
 }
 
-void AudioStereoOutput::connect(AudioSource &source) {
+void AudioStereoOutput::connect(Source &source) {
     if(source.getAudioOutputCount() == 1) {
         portLeft->connect(source.getAudioConnection(0));
         portRight->connect(source.getAudioConnection(0));

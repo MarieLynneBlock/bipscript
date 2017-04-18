@@ -20,7 +20,6 @@ name : Audio
 interfaces:
 
     - name: Source
-      cppname: AudioSource
       include: audioconnection
       methods:
         - name: output
@@ -30,6 +29,7 @@ interfaces:
           release: none
 
     - name: Sink
+      implicit: true
       methods:
         - name: connect
           parameters:

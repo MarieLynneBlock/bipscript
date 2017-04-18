@@ -21,8 +21,10 @@
 
 namespace bipscript {
 
+namespace audio {
+
 void BeatTracker::reset(double bpm, float beatsPerBar, float beatUnit) {
-    master = transport::TransportMasterCache::instance().getTransportMaster(bpm, beatsPerBar, beatUnit);
+    master = transport::MasterCache::instance().getTransportMaster(bpm, beatsPerBar, beatUnit);
     btrack.setTempo(bpm);
 }
 
@@ -69,11 +71,14 @@ BeatTracker *BeatTrackerCache::getBeatTracker(float bpm, float beatsPerBar, floa
     return tracker;
 }
 
+}
+
+namespace midi {
 
 /**
  * process thread
  */
-void MidiBeatTracker::countInEvent(midi::MidiEvent *nextEvent, jack_position_t &pos, jack_nframes_t time)
+void BeatTracker::countInEvent(midi::Event *nextEvent, jack_position_t &pos, jack_nframes_t time)
 {
     if(countInCount) {
 
@@ -115,7 +120,7 @@ void MidiBeatTracker::countInEvent(midi::MidiEvent *nextEvent, jack_position_t &
 /**
  * process thread
  */
-void MidiBeatTracker::detectCountIn(jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time, uint32_t eventCount, midi::MidiConnection *connection)
+void BeatTracker::detectCountIn(jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time, uint32_t eventCount, midi::MidiConnection *connection)
 {
     // count-in scheduled start
     if(countInCount == 4 && time + nframes >= countStartTime) {
@@ -135,11 +140,11 @@ void MidiBeatTracker::detectCountIn(jack_position_t &pos, jack_nframes_t nframes
     else {
         uint8_t note = countInNote.load();
         if(note && countInCount < 4) {
-            midi::MidiEvent *nextEvent = eventCount ? connection->getEvent(0) : 0;
+            Event *nextEvent = eventCount ? connection->getEvent(0) : 0;
             uint32_t eventIndex = 1;
             while(nextEvent) {
                 // TODO: configurable velocity
-                if(nextEvent->matches(midi::MidiEvent::TYPE_NOTE_ON, note, 72, 127)) {
+                if(nextEvent->matches(Event::TYPE_NOTE_ON, note, 72, 127)) {
                     countInEvent(nextEvent, pos, time);
                 }
                 nextEvent = eventIndex < eventCount ? connection->getEvent(eventIndex++) : 0;
@@ -151,7 +156,7 @@ void MidiBeatTracker::detectCountIn(jack_position_t &pos, jack_nframes_t nframes
 /**
  * process thread
  */
-void MidiBeatTracker::stopIfSilent(bool rolling, jack_position_t &pos, jack_nframes_t time)
+void BeatTracker::stopIfSilent(bool rolling, jack_position_t &pos, jack_nframes_t time)
 {
     // update last event time if not rolling
     if(!rolling) {
@@ -172,7 +177,7 @@ void MidiBeatTracker::stopIfSilent(bool rolling, jack_position_t &pos, jack_nfra
     }
 }
 
-void MidiBeatTracker::onBeat(ScriptFunction &handler)
+void BeatTracker::onBeat(ScriptFunction &handler)
 {
     if(handler.getNumargs() != 2) {
         throw std::logic_error("onBeat handler should take one argument");
@@ -180,7 +185,7 @@ void MidiBeatTracker::onBeat(ScriptFunction &handler)
     onBeatHandler.store(new ScriptFunction(handler));
 }
 
-void MidiBeatTracker::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
+void BeatTracker::doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time)
 {
     // process MIDI input
     midi::MidiConnection *connection = midiInput.load();
@@ -196,13 +201,13 @@ void MidiBeatTracker::doProcess(bool rolling, jack_position_t &pos, jack_nframes
     }
 
     // loop over frames
-    midi::MidiEvent *nextEvent = eventCount ? connection->getEvent(0) : 0;
+    midi::Event *nextEvent = eventCount ? connection->getEvent(0) : 0;
     uint32_t eventIndex = 1;
     for(jack_nframes_t i = 0; i < nframes; i++) {
 
         // add events at this frame to current onset
         while(nextEvent && nextEvent->getFrameOffset() == i) {
-            if(nextEvent->matches(midi::MidiEvent::TYPE_NOTE_ON)) {
+            if(nextEvent->matches(Event::TYPE_NOTE_ON)) {
                 currentOnset += nextEvent->getDatabyte2() * noteWeight[nextEvent->getDatabyte1()];
                 lastEventTime = time;
             }
@@ -233,7 +238,7 @@ void MidiBeatTracker::doProcess(bool rolling, jack_position_t &pos, jack_nframes
     stopIfSilent(rolling, pos, time);
 }
 
-void MidiBeatTracker::dispatchCountInEvent(uint32_t count)
+void BeatTracker::dispatchCountInEvent(uint32_t count)
 {
     ScriptFunction *handler = onCountHandler.load();
     if(handler) {
@@ -241,7 +246,7 @@ void MidiBeatTracker::dispatchCountInEvent(uint32_t count)
     }
 }
 
-void MidiBeatTracker::setNoteWeight(uint32_t note, float weight)
+void BeatTracker::setNoteWeight(uint32_t note, float weight)
 {
     if(note > 127) {
         throw std::logic_error("onCount handler should take one argument");
@@ -249,7 +254,7 @@ void MidiBeatTracker::setNoteWeight(uint32_t note, float weight)
     noteWeight[note] = weight;
 }
 
-void MidiBeatTracker::onCount(ScriptFunction &handler)
+void BeatTracker::onCount(ScriptFunction &handler)
 {
     if(handler.getNumargs() != 2) {
         throw std::logic_error("onCount handler should take one argument");
@@ -257,10 +262,10 @@ void MidiBeatTracker::onCount(ScriptFunction &handler)
     onCountHandler.store(new ScriptFunction(handler));
 }
 
-void MidiBeatTracker::reset(double bpm, float beatsPerBar, float beatUnit)
+void BeatTracker::reset(double bpm, float beatsPerBar, float beatUnit)
 {
     // set bpm on btrack and transport master
-    master = transport::TransportMasterCache::instance().getTransportMaster(bpm, beatsPerBar, beatUnit);
+    master = transport::MasterCache::instance().getTransportMaster(bpm, beatsPerBar, beatUnit);
     btrack.setTempo(bpm);
     // reset note weights
     for(int i = 0; i < 128; i++) {
@@ -278,16 +283,16 @@ void MidiBeatTracker::reset(double bpm, float beatsPerBar, float beatUnit)
 /**
  * runs in script thread
  */
-MidiBeatTracker *MidiBeatTrackerCache::getMidiBeatTracker(float bpm, float beatsPerBar, float beatUnit)
+BeatTracker *BeatTrackerCache::getMidiBeatTracker(float bpm, float beatsPerBar, float beatUnit)
 {
-    MidiBeatTracker *tracker = findObject(1); // TODO: allow multiple
+    BeatTracker *tracker = findObject(1); // TODO: allow multiple
     if(tracker) {
         tracker->reset(bpm, beatsPerBar, beatUnit);
     } else {
-        tracker = new MidiBeatTracker(bpm, beatsPerBar, beatUnit);
+        tracker = new BeatTracker(bpm, beatsPerBar, beatUnit);
         registerObject(1, tracker);
     }    
     return tracker;
 }
 
-}
+}}

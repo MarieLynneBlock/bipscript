@@ -32,11 +32,9 @@ methods:
 interfaces:
 
     - name: Message
-      cppname: MidiMessage
       include: midimessage
 
     - name: Source
-      cppname: MidiSource
       include: midiconnection
       methods:
         - name: midiOutput
@@ -52,7 +50,7 @@ interfaces:
           parameters: { name: handler, type: function, args: [Midi.NoteOff, Transport.Position] }
 
     - name: Sink
-      cppname: MidiSink
+      implicit: true
       include: midisink
       methods:
         - name: midiChannel
@@ -230,7 +228,6 @@ classes :
             - {name: amount, type: integer}
 
     - name: Tune
-      cppname: MidiTune
       include: miditune
       ctor:
         parameters: { name: tracks, type: integer }
@@ -272,14 +269,13 @@ classes :
           - {name: program, type: integer}
 
     - name: BeatTracker
-      cppname: MidiBeatTracker
       include: beattracker
       ctor:
         parameters:
           - { name: bpm, type: float }
           - { name: numerator, type: integer, optional: true }
           - { name: denominator, type: integer, optional: true }
-        expression: MidiBeatTrackerCache::instance().getMidiBeatTracker
+        expression: midi::BeatTrackerCache::instance().getMidiBeatTracker
       methods:
         - name: connectMidi
           parameters:

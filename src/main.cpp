@@ -47,7 +47,7 @@ void signal_handler(int sig)
 {
     std::cerr << "caught signal " << sig << ", exiting" << std::endl;
     ExtensionManager::instance().shutdown();
-    osc::OscOutputFactory::instance().shutdown();
+    osc::OutputFactory::instance().shutdown();
     AudioEngine::instance().shutdown();
     exit(0);
 }
@@ -84,14 +84,14 @@ int main(int argc, char **argv)
                             &audio::AudioOutputPortCache::instance(),
                             &audio::AudioStereoInputCache::instance(),
                             &audio::MixerCache::instance(),
-                            &lv2::Lv2PluginCache::instance(),
+                            &lv2::PluginCache::instance(),
                             &midi::MidiInputPortCache::instance(),
                             &midi::MidiOutputPortCache::instance(),
-                            &transport::TransportMasterCache::instance(),
-                            &BeatTrackerCache::instance(),
-                            &MidiBeatTrackerCache::instance(),
-                            &osc::OscInputFactory::instance(),
-                            &osc::OscOutputFactory::instance(),
+                            &transport::MasterCache::instance(),
+                            &audio::BeatTrackerCache::instance(),
+                            &midi::BeatTrackerCache::instance(),
+                            &osc::InputFactory::instance(),
+                            &osc::OutputFactory::instance(),
                             &audio::OnsetDetectorCache::instance()
                             };
     host.setObjectCaches(13, caches);
@@ -113,14 +113,14 @@ int main(int argc, char **argv)
 
     // sample rate now valid
     jack_nframes_t sampleRate = audioEngine.getSampleRate();
-    lv2::Lv2PluginCache::instance().setSampleRate(sampleRate);
+    lv2::PluginCache::instance().setSampleRate(sampleRate);
 
     // run script
     status = host.run();
 
     // script has ended
     ExtensionManager::instance().shutdown();
-    osc::OscOutputFactory::instance().shutdown();
+    osc::OutputFactory::instance().shutdown();
     audioEngine.shutdown();
     return status;
 }

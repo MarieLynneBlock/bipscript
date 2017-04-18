@@ -395,7 +395,7 @@ SQInteger MidiABCReaderreadTune(HSQUIRRELVM vm)
     }
 
     // return value
-    midi::MidiTune* ret;
+    midi::Tune* ret;
     // call the implementation
     try {
         ret = obj->readTune(abc);
@@ -1947,7 +1947,7 @@ SQInteger MidiPatterntranspose(HSQUIRRELVM vm)
 //
 SQInteger MidiTuneRelease(SQUserPointer p, SQInteger size)
 {
-    delete static_cast<MidiTune*>(p);
+    delete static_cast<Tune*>(p);
 }
 
 SQInteger MidiTuneCtor(HSQUIRRELVM vm)
@@ -1966,10 +1966,10 @@ SQInteger MidiTuneCtor(HSQUIRRELVM vm)
         return sq_throwerror(vm, "argument 1 \"tracks\" is not of type integer");
     }
 
-    MidiTune *obj;
+    Tune *obj;
     // call the implementation
     try {
-        obj = new MidiTune(tracks);
+        obj = new Tune(tracks);
     }
     catch(std::exception const& e) {
         return sq_throwerror(vm, e.what());
@@ -1987,7 +1987,7 @@ SQInteger MidiTuneClone(HSQUIRRELVM vm)
     SQUserPointer userPtr;
     sq_getinstanceup(vm, 2, &userPtr, 0);
     // set instance ptr to a copy
-    sq_setinstanceup(vm, 1, new MidiTune(*(MidiTune*)userPtr));
+    sq_setinstanceup(vm, 1, new Tune(*(Tune*)userPtr));
     sq_setreleasehook(vm, 1, &MidiTuneRelease);
     return 0;
 }
@@ -2007,7 +2007,7 @@ SQInteger MidiTunetimeSignature(HSQUIRRELVM vm)
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
         return sq_throwerror(vm, "timeSignature method needs an instance of Tune");
     }
-    MidiTune *obj = static_cast<MidiTune*>(userPtr);
+    Tune *obj = static_cast<Tune*>(userPtr);
     if(!obj) {
         return sq_throwerror(vm, "timeSignature method called before Midi.Tune constructor");
     }
@@ -2046,7 +2046,7 @@ SQInteger MidiTunetitle(HSQUIRRELVM vm)
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
         return sq_throwerror(vm, "title method needs an instance of Tune");
     }
-    MidiTune *obj = static_cast<MidiTune*>(userPtr);
+    Tune *obj = static_cast<Tune*>(userPtr);
     if(!obj) {
         return sq_throwerror(vm, "title method called before Midi.Tune constructor");
     }
@@ -2083,7 +2083,7 @@ SQInteger MidiTunetrack(HSQUIRRELVM vm)
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
         return sq_throwerror(vm, "track method needs an instance of Tune");
     }
-    MidiTune *obj = static_cast<MidiTune*>(userPtr);
+    Tune *obj = static_cast<Tune*>(userPtr);
     if(!obj) {
         return sq_throwerror(vm, "track method called before Midi.Tune constructor");
     }
@@ -2128,7 +2128,7 @@ SQInteger MidiTunetrackCount(HSQUIRRELVM vm)
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
         return sq_throwerror(vm, "trackCount method needs an instance of Tune");
     }
-    MidiTune *obj = static_cast<MidiTune*>(userPtr);
+    Tune *obj = static_cast<Tune*>(userPtr);
     if(!obj) {
         return sq_throwerror(vm, "trackCount method called before Midi.Tune constructor");
     }
@@ -2478,7 +2478,7 @@ SQInteger MidiSystemOutschedule(HSQUIRRELVM vm)
         // void method, returns no value
         return 0;
     }
-    else if(midi::MidiMessage *message = getMidiMessage(vm, 2)) {
+    else if(midi::Message *message = getMidiMessage(vm, 2)) {
         SQInteger numargs = sq_gettop(vm);
         // check parameter count
         if(numargs > 6) {
@@ -2711,7 +2711,7 @@ SQInteger MidiBeatTrackerCtor(HSQUIRRELVM vm)
         return sq_throwerror(vm, "argument 1 \"bpm\" is not of type float");
     }
 
-    MidiBeatTracker *obj;
+    BeatTracker *obj;
     // 2 parameters passed in
     if(numargs == 3) {
 
@@ -2723,7 +2723,7 @@ SQInteger MidiBeatTrackerCtor(HSQUIRRELVM vm)
 
         // call the implementation
         try {
-            obj = MidiBeatTrackerCache::instance().getMidiBeatTracker(bpm, numerator);
+            obj = midi::BeatTrackerCache::instance().getMidiBeatTracker(bpm, numerator);
         }
         catch(std::exception const& e) {
             return sq_throwerror(vm, e.what());
@@ -2747,7 +2747,7 @@ SQInteger MidiBeatTrackerCtor(HSQUIRRELVM vm)
 
         // call the implementation
         try {
-            obj = MidiBeatTrackerCache::instance().getMidiBeatTracker(bpm, numerator, denominator);
+            obj = midi::BeatTrackerCache::instance().getMidiBeatTracker(bpm, numerator, denominator);
         }
         catch(std::exception const& e) {
             return sq_throwerror(vm, e.what());
@@ -2757,7 +2757,7 @@ SQInteger MidiBeatTrackerCtor(HSQUIRRELVM vm)
     else {
         // call the implementation
         try {
-            obj = MidiBeatTrackerCache::instance().getMidiBeatTracker(bpm);
+            obj = midi::BeatTrackerCache::instance().getMidiBeatTracker(bpm);
         }
         catch(std::exception const& e) {
             return sq_throwerror(vm, e.what());
@@ -2787,12 +2787,12 @@ SQInteger MidiBeatTrackerconnectMidi(HSQUIRRELVM vm)
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
         return sq_throwerror(vm, "connectMidi method needs an instance of BeatTracker");
     }
-    MidiBeatTracker *obj = static_cast<MidiBeatTracker*>(userPtr);
+    BeatTracker *obj = static_cast<BeatTracker*>(userPtr);
     if(!obj) {
         return sq_throwerror(vm, "connectMidi method called before Midi.BeatTracker constructor");
     }
     // get parameter 1 "source" as Midi.Source
-    midi::MidiSource *source = getMidiSource(vm, 2);
+    midi::Source *source = getMidiSource(vm, 2);
     if(source == 0) {
         return sq_throwerror(vm, "argument 1 \"source\" is not of type Midi.Source");
     }
@@ -2827,7 +2827,7 @@ SQInteger MidiBeatTrackercountIn(HSQUIRRELVM vm)
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
         return sq_throwerror(vm, "countIn method needs an instance of BeatTracker");
     }
-    MidiBeatTracker *obj = static_cast<MidiBeatTracker*>(userPtr);
+    BeatTracker *obj = static_cast<BeatTracker*>(userPtr);
     if(!obj) {
         return sq_throwerror(vm, "countIn method called before Midi.BeatTracker constructor");
     }
@@ -2867,7 +2867,7 @@ SQInteger MidiBeatTrackernoteWeight(HSQUIRRELVM vm)
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
         return sq_throwerror(vm, "noteWeight method needs an instance of BeatTracker");
     }
-    MidiBeatTracker *obj = static_cast<MidiBeatTracker*>(userPtr);
+    BeatTracker *obj = static_cast<BeatTracker*>(userPtr);
     if(!obj) {
         return sq_throwerror(vm, "noteWeight method called before Midi.BeatTracker constructor");
     }
@@ -2913,7 +2913,7 @@ SQInteger MidiBeatTrackeronBeat(HSQUIRRELVM vm)
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
         return sq_throwerror(vm, "onBeat method needs an instance of BeatTracker");
     }
-    MidiBeatTracker *obj = static_cast<MidiBeatTracker*>(userPtr);
+    BeatTracker *obj = static_cast<BeatTracker*>(userPtr);
     if(!obj) {
         return sq_throwerror(vm, "onBeat method called before Midi.BeatTracker constructor");
     }
@@ -2960,7 +2960,7 @@ SQInteger MidiBeatTrackeronCount(HSQUIRRELVM vm)
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
         return sq_throwerror(vm, "onCount method needs an instance of BeatTracker");
     }
-    MidiBeatTracker *obj = static_cast<MidiBeatTracker*>(userPtr);
+    BeatTracker *obj = static_cast<BeatTracker*>(userPtr);
     if(!obj) {
         return sq_throwerror(vm, "onCount method called before Midi.BeatTracker constructor");
     }
@@ -3007,7 +3007,7 @@ SQInteger MidiBeatTrackerstopOnSilence(HSQUIRRELVM vm)
     if (SQ_FAILED(sq_getinstanceup(vm, 1, &userPtr, 0))) {
         return sq_throwerror(vm, "stopOnSilence method needs an instance of BeatTracker");
     }
-    MidiBeatTracker *obj = static_cast<MidiBeatTracker*>(userPtr);
+    BeatTracker *obj = static_cast<BeatTracker*>(userPtr);
     if(!obj) {
         return sq_throwerror(vm, "stopOnSilence method called before Midi.BeatTracker constructor");
     }

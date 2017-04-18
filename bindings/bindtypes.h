@@ -21,18 +21,16 @@
 
 namespace bipscript {
 
-namespace audio { class AudioSource; }
-namespace midi { class MidiMessage; }
-namespace midi { class MidiSource; }
-namespace midi { class MidiSink; }
+namespace audio { class Source; }
+namespace midi { class Message; }
+namespace midi { class Source; }
 
 namespace binding
 {
     // type conversion methods
-    audio::AudioSource *getAudioSource(HSQUIRRELVM &vm, int index);
-    midi::MidiMessage *getMidiMessage(HSQUIRRELVM &vm, int index);
-    midi::MidiSource *getMidiSource(HSQUIRRELVM &vm, int index);
-    midi::MidiSink *getMidiSink(HSQUIRRELVM &vm, int index);
+    audio::Source *getAudioSource(HSQUIRRELVM &vm, int index);
+    midi::Message *getMidiMessage(HSQUIRRELVM &vm, int index);
+    midi::Source *getMidiSource(HSQUIRRELVM &vm, int index);
 }
 }
 #endif // BINDTYPES_H

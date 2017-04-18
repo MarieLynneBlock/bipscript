@@ -30,12 +30,14 @@ namespace bipscript {
 
 const unsigned int BT_HOP_SIZE = 512;
 
+namespace audio {
+
 class BeatTracker : public Processor
 {
     BTrack btrack;
     double *btbuffer;
     unsigned int index;
-    transport::TransportMaster *master;
+    transport::Master *master;
     std::atomic<audio::AudioConnection *> audioInput;
 public:
     BeatTracker(double bpm, float beatsPerBar, float beatUnit)
@@ -43,7 +45,7 @@ public:
         btbuffer = new double[BT_HOP_SIZE];
         reset(bpm, beatsPerBar, beatUnit);
     }
-    void connect(audio::AudioSource &source) {
+    void connect(audio::Source &source) {
         this->audioInput.store(source.getAudioConnection(0));
     }
     void connect(audio::AudioConnection &connection) {
@@ -70,6 +72,8 @@ public:
     }
 };
 
+}
+
 class OnCountClosure : public EventClosure {
     int count;
 protected:
@@ -88,11 +92,13 @@ public:
         EventClosure(function), bpm(bpm) {}
 };
 
-class MidiBeatTracker : public Processor {
+namespace midi {
+
+class BeatTracker : public Processor {
     BTrack btrack;
     uint32_t frameIndex;
     double currentOnset;
-    transport::TransportMaster *master;
+    transport::Master *master;
     std::atomic<midi::MidiConnection*> midiInput;
     float noteWeight[128];
     std::atomic<ScriptFunction*> onBeatHandler;
@@ -106,12 +112,12 @@ class MidiBeatTracker : public Processor {
     std::atomic<uint32_t> stopSeconds;
     jack_nframes_t lastEventTime;
 public:
-    MidiBeatTracker(double bpm, float beatsPerBar, float beatUnit)
+    BeatTracker(double bpm, float beatsPerBar, float beatUnit)
         : frameIndex(0), currentOnset(0), onBeatHandler(0), countInNote(0),
           countInCount(0), onCountHandler(0), lastEventTime(0) {
         reset(bpm, beatsPerBar, beatUnit);
     }
-    void connectMidi(midi::MidiSource &source) {
+    void connectMidi(midi::Source &source) {
         this->midiInput.store(source.getMidiConnection(0));
     }
     void setNoteWeight(uint32_t note, float weight);
@@ -125,25 +131,25 @@ public:
 private:
     void dispatchCountInEvent(uint32_t count);
     void detectCountIn(jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time, uint32_t eventCount, midi::MidiConnection *connection);
-    void countInEvent(midi::MidiEvent *nextEvent, jack_position_t &pos, jack_nframes_t time);
+    void countInEvent(midi::Event *nextEvent, jack_position_t &pos, jack_nframes_t time);
     void stopIfSilent(bool rolling, jack_position_t &pos, jack_nframes_t time);
 };
 
-class MidiBeatTrackerCache : public ProcessorCache<MidiBeatTracker> {
+class BeatTrackerCache : public ProcessorCache<BeatTracker> {
 public:
-    static MidiBeatTrackerCache &instance() {
-        static MidiBeatTrackerCache instance;
+    static BeatTrackerCache &instance() {
+        static BeatTrackerCache instance;
         return instance;
     }
-    MidiBeatTracker *getMidiBeatTracker(float bpm, float beatsPerBar, float beatUnit);
-    MidiBeatTracker *getMidiBeatTracker(float bpm, float beatsPerBar) {
+    BeatTracker *getMidiBeatTracker(float bpm, float beatsPerBar, float beatUnit);
+    BeatTracker *getMidiBeatTracker(float bpm, float beatsPerBar) {
         return getMidiBeatTracker(bpm, beatsPerBar, 4);
     }
-    MidiBeatTracker *getMidiBeatTracker(float bpm) {
+    BeatTracker *getMidiBeatTracker(float bpm) {
         return getMidiBeatTracker(bpm, 4);
     }
 };
 
-}
+}}
 
 #endif // BEATTRACKER_H

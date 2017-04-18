@@ -35,9 +35,9 @@ class MidiInputConnection : public MidiConnection
 {
     jack_port_t* jackPort;
     void *buffer;
-    MidiEvent lastEvent;
+    Event lastEvent;
 public:
-    MidiInputConnection(MidiSource *source, jack_port_t *jackPort)
+    MidiInputConnection(Source *source, jack_port_t *jackPort)
         : MidiConnection(source), jackPort(jackPort) {}
     void process(jack_nframes_t nframes) {
         buffer = jack_port_get_buffer(jackPort, nframes);
@@ -48,10 +48,10 @@ public:
     void systemConnect(const char *name) {
         AudioEngine::instance().connectPort(name, jackPort);
     }
-    MidiEvent *getEvent(uint32_t i);
+    Event *getEvent(uint32_t i);
 };
 
-class MidiInputPort : public MidiSource
+class MidiInputPort : public Source
 {
     MidiInputConnection connection;
 public:
@@ -65,7 +65,7 @@ public:
     }
     unsigned int getMidiOutputCount() { return 1; }
     // Source interface
-    bool connectsTo(Source *) { return false; }
+    bool connectsTo(AbstractSource *) { return false; }
     void doProcess(bool, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t) {
         connection.process(nframes);
         fireMidiEvents(pos);
@@ -86,16 +86,16 @@ public:
     }
 };
 
-class MidiOutputPort : public Processor, public MidiSink
+class MidiOutputPort : public Processor, public Sink
 {
     jack_port_t* jackPort;
-    EventBuffer<MidiEvent> buffer;
+    EventBuffer<Event> buffer;
     std::string connected;
 public:
     MidiOutputPort(jack_port_t *jackPort) : jackPort(jackPort) {}
     ~MidiOutputPort();
     void systemConnect(const char *connection);
-    void addMidiEvent(MidiEvent* evt)  { buffer.addEvent(evt);}
+    void addMidiEvent(Event* evt)  { buffer.addEvent(evt);}
     // Processor interface
     void doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
     void reposition() { buffer.recycleRemaining(); }

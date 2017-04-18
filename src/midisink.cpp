@@ -20,16 +20,16 @@
 namespace bipscript {
 namespace midi {
 
-void MidiSink::scheduleNote(const Note &note, Position &position, unsigned char channel)
+void Sink::scheduleNote(const Note &note, Position &position, unsigned char channel)
 {
-    MidiEvent* evt = new MidiEvent(position, note.pitch(), note.velocity(), 0x90, channel - 1);
+    Event* evt = new Event(position, note.pitch(), note.velocity(), 0x90, channel - 1);
     addMidiEvent(evt);
     Position endPosition = position + note.duration;
-    MidiEvent* offevt = new MidiEvent(endPosition, note.pitch(), 0, 0x80, channel - 1);
+    Event* offevt = new Event(endPosition, note.pitch(), 0, 0x80, channel - 1);
     addMidiEvent(offevt);
 }
 
-void MidiSink::schedule(Pattern &pattern, Position &position, unsigned char channel)
+void Sink::schedule(Pattern &pattern, Position &position, unsigned char channel)
 {
     if(channel < 1 || channel > 16) {
         throw std::logic_error("MIDI channel must be between 1 and 16");
@@ -42,12 +42,12 @@ void MidiSink::schedule(Pattern &pattern, Position &position, unsigned char chan
     }
 }
 
-void MidiSink::schedule(MidiMessage &mesg, Position &position, unsigned char channel)
+void Sink::schedule(Message &mesg, Position &position, unsigned char channel)
 {
     if(channel < 1 || channel > 16) {
         throw std::logic_error("MIDI channel must be between 1 and 16");
     }
-    MidiEvent* evt = new MidiEvent(position, mesg.byte(0), mesg.byte(1), mesg.type(), channel - 1);
+    Event* evt = new Event(position, mesg.byte(0), mesg.byte(1), mesg.type(), channel - 1);
     addMidiEvent(evt);
 }
 

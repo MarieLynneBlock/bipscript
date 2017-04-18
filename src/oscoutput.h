@@ -28,25 +28,25 @@
 namespace bipscript {
 namespace osc {
 
-class OscOutput : public Processor
+class Output : public Processor
 {
     pthread_t thread;
     lo_address loAddress;
     std::atomic<bool> repositionNeeded;
     std::atomic<bool> cancelled;
-    EventBuffer<OscEvent> eventBuffer;
+    EventBuffer<Event> eventBuffer;
 public:
-    OscOutput(const char *host, int port);
-    void schedule(OscMessage &message, int bar, int position, int division);
-    void schedule(OscMessage &message, int bar, int position) {
+    Output(const char *host, int port);
+    void schedule(Message &message, int bar, int position, int division);
+    void schedule(Message &message, int bar, int position) {
         schedule(message, bar, position, 4); // TODO: current time signature?
     }
-    void schedule(OscMessage &message, int bar) {
+    void schedule(Message &message, int bar) {
         schedule(message, bar, 0);
     }
-    void send(OscMessage &message) {
+    void send(Message &message) {
         Position pos;
-        eventBuffer.addEvent(new OscEvent(pos, message));
+        eventBuffer.addEvent(new Event(pos, message));
     }
     void run();
     void reset();
@@ -56,16 +56,16 @@ public:
     void cancel() { cancelled.store(true); }
 };
 
-class OscOutputFactory : public ProcessorCache<OscOutput>
+class OutputFactory : public ProcessorCache<Output>
 {
 public:
-    static OscOutputFactory &instance() {
-        static OscOutputFactory instance;
+    static OutputFactory &instance() {
+        static OutputFactory instance;
         return instance;
     }
-    OscOutput *getOscOutput(const char *host, int port);
+    Output *getOscOutput(const char *host, int port);
     void shutdown() { removeAll(); }
-    void removeObject(OscOutput *obj) { obj->cancel(); }
+    void removeObject(Output *obj) { obj->cancel(); }
 };
 
 }}

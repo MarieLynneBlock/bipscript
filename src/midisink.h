@@ -25,10 +25,10 @@
 namespace bipscript {
 namespace midi {
 
-class MidiSink {
+class Sink {
     unsigned char defaultChannel;
 public:
-    MidiSink() : defaultChannel(1) {}
+    Sink() : defaultChannel(1) {}
     unsigned char midiChannel() {
         return this->defaultChannel;
     }
@@ -70,21 +70,21 @@ public:
     }
     void schedule(Pattern &pattern, Position &position, unsigned char channel);
     // Midi messages
-    void schedule(MidiMessage &mesg, unsigned int bar, unsigned int position, unsigned int division, unsigned char channel) {
+    void schedule(Message &mesg, unsigned int bar, unsigned int position, unsigned int division, unsigned char channel) {
         Position pos(bar, position, division);
         schedule(mesg, pos, channel);
     }
-    void schedule(MidiMessage &mesg, unsigned int bar, unsigned int position, unsigned int division) {
+    void schedule(Message &mesg, unsigned int bar, unsigned int position, unsigned int division) {
         schedule(mesg, bar, position, division, defaultChannel);
     }
-    void schedule(MidiMessage &mesg, unsigned int bar, unsigned int position) {
+    void schedule(Message &mesg, unsigned int bar, unsigned int position) {
         schedule(mesg, bar, position, 4); // TODO: current time signature
     }
-    void schedule(MidiMessage &mesg, unsigned int bar) {
+    void schedule(Message &mesg, unsigned int bar) {
         schedule(mesg, bar, 0);
     }
-    void schedule(MidiMessage &message, Position &position, unsigned char channel);
-    virtual void addMidiEvent(MidiEvent* evt) = 0;
+    void schedule(Message &message, Position &position, unsigned char channel);
+    virtual void addMidiEvent(Event* evt) = 0;
 private:
     void scheduleNote(const Note &note, Position &position, unsigned char channel);
 };

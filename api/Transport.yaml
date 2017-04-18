@@ -38,14 +38,13 @@ methods:
 classes:
 
     - name: Master
-      cppname: TransportMaster
       include: transportmaster
       ctor:
         parameters:
           - { name: bpm, type: float }
           - { name: numerator, type: integer, optional: true }
           - { name: denominator, type: integer, optional: true }
-        expression: TransportMasterCache::instance().getTransportMaster
+        expression: transport::MasterCache::instance().getTransportMaster
       methods:
         - name: timeSignature
           cppname: setTimeSignature

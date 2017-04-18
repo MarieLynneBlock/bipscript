@@ -121,7 +121,7 @@ Pattern *ABCReader::read(const char *abc, const char *key, const char *noteLengt
         throw std::logic_error(error());
     }
     // remove and delete tunes
-    MidiTune *tune = tunes.back();
+    Tune *tune = tunes.back();
     while(tunes.size() > 1) {
         tunes.pop_back();
         delete tune;
@@ -139,7 +139,7 @@ Pattern *ABCReader::read(const char *abc, const char *key, const char *noteLengt
     return ret;
 }
 
-MidiTune *ABCReader::readTune(const char *abc)
+Tune *ABCReader::readTune(const char *abc)
 {
     activeParser = this;
     errors.clear();
@@ -148,7 +148,7 @@ MidiTune *ABCReader::readTune(const char *abc)
         throw std::logic_error(error());
     }
     // delete additional tunes
-    MidiTune *tune = tunes.back();
+    Tune *tune = tunes.back();
     while(tunes.size() > 1) {
         tunes.pop_back();
         delete tune;
@@ -165,7 +165,7 @@ void ABCReader::startSequence(int format, int ntracks, int division)
     ticksPerQuarter = division;
     ticksPerBeat = ticksPerQuarter * 4 / beatUnit;
 	// create new MidiTune
-    tunes.push_back(new MidiTune(ntracks));
+    tunes.push_back(new Tune(ntracks));
 }
 
 void ABCReader::startTrack(uint32_t track) {
@@ -198,11 +198,11 @@ int ABCReader::writeMidiEvent(long delta_time, int type, int chan, char *data, i
 {
     // printf("got midi event type:0x%x delta:%ld [%d:%d]\n", type, delta_time, data[0], data[1]);
     currentPosition += Duration(0, delta_time, ticksPerBeat * beatsPerBar);
-    if(type == MidiEvent::TYPE_NOTE_ON) {
+    if(type == Event::TYPE_NOTE_ON) {
         int key = data[0] | chan << 8;
         activeNote.insert(std::pair<int,Note>(key, Note(data[0], data[1], chan)));
         noteStart[key] = currentPosition;
-    } else if(type == MidiEvent::TYPE_NOTE_OFF) {
+    } else if(type == Event::TYPE_NOTE_OFF) {
         int key = data[0] | chan << 8;
         auto it = activeNote.find(key);
         if(it != activeNote.end()) {

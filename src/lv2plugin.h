@@ -42,7 +42,7 @@ namespace lv2 {
 
 typedef std::map<std::string, uint32_t> Lv2UridMap;
 
-class Lv2UridMapper
+class UridMapper
 {
     Lv2UridMap uridMap;
 public:
@@ -50,17 +50,17 @@ public:
     const char *idToUri(LV2_URID urid);
 };
 
-class Lv2PathMapper
+class PathMapper
 {
 public:
     char *mapAbsolutePath(const char *abstractPath);
     char *mapAbstractPath(const char *absolutePath);
 };
 
-class Lv2Constants
+class Constants
 {
 public:
-    Lv2Constants(LilvWorld *);
+    Constants(LilvWorld *);
     // port types
     LilvNode *lv2AtomPort;
     LilvNode *lv2AudioPort;
@@ -82,7 +82,7 @@ public:
     LilvNode *lv2RdfsLabel;
 };
 
-class Lv2AtomTypes
+class AtomTypes
 {
 public:
     LV2_URID doubleType;
@@ -92,39 +92,39 @@ public:
     LV2_URID stringType;
 };
 
-class Lv2MidiEvent {
+class MidiEvent {
 public:
     static uint32_t midiEventTypeId;
     LV2_Atom_Event event;
     uint8_t buffer[3];
-    Lv2MidiEvent() {
+    MidiEvent() {
         event.body.type = midiEventTypeId;
         event.body.size = 3;
     }
 };
 
-class Lv2MidiInput : public Listable
+class MidiInput : public Listable
 {
     const u_int32_t CAPACITY = 1024;
     LV2_Atom_Sequence *atomSequence;
     midi::MidiConnector eventConnector;
-    EventBuffer<midi::MidiEvent> eventBuffer;
+    EventBuffer<midi::Event> eventBuffer;
     bool localRolling;
 public:
-    Lv2MidiInput() : localRolling(false) {
+    MidiInput() : localRolling(false) {
         atomSequence = static_cast<LV2_Atom_Sequence *>(malloc(sizeof(LV2_Atom_Sequence) + CAPACITY));
     }
     LV2_Atom_Sequence *getAtomSequence() {
         return atomSequence;
     }
-    void connect(midi::MidiConnection *connection, Source *source) {
+    void connect(midi::MidiConnection *connection, midi::Source *source) {
         eventConnector.setConnection(connection, source);
     }
-    bool connectsTo(Source *source) {
+    bool connectsTo(AbstractSource *source) {
         midi::MidiConnection *connection = eventConnector.getConnection();
         return connection && connection->getSource()->connectsTo(source);
     }
-    void addEvent(midi::MidiEvent *evt) {
+    void addEvent(midi::Event *evt) {
         eventBuffer.addEvent(evt);
     }
     void reset() {
@@ -136,13 +136,13 @@ public:
     }
 };
 
-class Lv2MidiOutput : public Listable, public midi::MidiConnection
+class MidiOutput : public Listable, public midi::MidiConnection
 {
     const u_int32_t CAPACITY = 1024;
     LV2_Atom_Sequence *atomSequence;    
-    midi::MidiEvent event;
+    midi::Event event;
 public:
-    Lv2MidiOutput(midi::MidiSource *source) : midi::MidiConnection(source) {
+    MidiOutput(midi::Source *source) : midi::MidiConnection(source) {
         atomSequence = (LV2_Atom_Sequence *)malloc(sizeof(LV2_Atom_Sequence) + CAPACITY);
         atomSequence->atom.size = CAPACITY;
     }
@@ -154,25 +154,25 @@ public:
     }
     // EventConnection interface
     uint32_t getEventCount();
-    midi::MidiEvent *getEvent(uint32_t i);
+    midi::Event *getEvent(uint32_t i);
 };
 
-class Lv2ControlPort {
+class ControlPort {
 public:
-    Lv2ControlPort() : value(0) {}
+    ControlPort() : value(0) {}
     float value;
     float dfault;
     float minimum;
     float maximum;
 };
 
-class Lv2ControlEvent : public Event {
-    Lv2ControlPort *port;
+class ControlEvent : public Event {
+    ControlPort *port;
     float value;
 public:
-    Lv2ControlEvent(Lv2ControlPort *port, float value, unsigned int bar, unsigned int position, unsigned int division) :
+    ControlEvent(ControlPort *port, float value, unsigned int bar, unsigned int position, unsigned int division) :
         Event(bar, position, division), port(port), value(value) {}
-    Lv2ControlPort *getPort() {
+    ControlPort *getPort() {
         return port;
     }
     float getValue() {
@@ -180,24 +180,24 @@ public:
     }
 };
 
-class Lv2ControlConnection;
+class ControlConnection;
 
-class Lv2ControlMapping : public Listable
+class ControlMapping : public Listable
 {
-    Lv2ControlConnection *const connection;
+    ControlConnection *const connection;
     const uint8_t cc;
-    Lv2ControlPort *const port;
+    ControlPort *const port;
     const float minimum;
     const float maximum;
     float getScaled(unsigned char midiValue) {
         return minimum + (maximum - minimum) * midiValue / 127;
     }
 public:
-    Lv2ControlMapping(Lv2ControlConnection *connection, unsigned int cc,
-                      Lv2ControlPort *port, float minimum, float maximum) :
+    ControlMapping(ControlConnection *connection, unsigned int cc,
+                      ControlPort *port, float minimum, float maximum) :
         connection(connection), cc(cc), port(port), minimum(minimum), maximum(maximum) {
     }
-    Lv2ControlConnection *getConnection() {
+    ControlConnection *getConnection() {
         return connection;
     }
     void update(uint8_t cc, uint8_t value) {
@@ -207,29 +207,29 @@ public:
     }
 };
 
-class Lv2ControlConnection : public Listable
+class ControlConnection : public Listable
 {
-    List<Lv2ControlMapping> mappings;
+    List<ControlMapping> mappings;
     midi::MidiConnection *connection;
 public:
-    Lv2ControlConnection(midi::MidiConnection *connection) :
+    ControlConnection(midi::MidiConnection *connection) :
         connection(connection) {}
-    void addMapping(Lv2ControlMapping *mapping) { mappings.add(mapping); }
+    void addMapping(ControlMapping *mapping) { mappings.add(mapping); }
     void process(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
     void reset();
 };
 
-class Lv2State
+class State
 {
     std::map<uint32_t, std::string> stateMap;
 public:
-    Lv2State(const char *filename);
-    Lv2State(ScriptHashIterator &state);
+    State(const char *filename);
+    State(ScriptHashIterator &state);
     const void* retrieveState(uint32_t key, size_t* size, uint32_t* type, uint32_t* flags);
     const int getHash();
 };
 
-class Lv2Worker
+class Worker
 {
     LV2_Handle handle;
     LV2_Worker_Interface *interface;
@@ -239,7 +239,7 @@ class Lv2Worker
     pthread_t thread;
     sem_t semaphore;
 public:
-    Lv2Worker();
+    Worker();
     void start();
     void run();
     LV2_Worker_Status scheduleWork(const void *, uint32_t size);
@@ -248,15 +248,15 @@ public:
     void setInstance(LilvInstance *instance);
 };
 
-class Lv2Plugin : public audio::AudioSource, public midi::MidiSource, public midi::MidiSink
+class Plugin : public audio::Source, public midi::Source, public midi::Sink
 {
     const LilvPlugin *plugin;
     LilvInstance *instance;
     // event inputs
-    List<Lv2MidiInput> midiInputList;
+    List<MidiInput> midiInputList;
     // event outputs
     uint32_t midiOutputCount;
-    List<Lv2MidiOutput> midiOutputList;
+    List<MidiOutput> midiOutputList;
     // audio inputs
     uint32_t audioInputCount;
     uint32_t *audioInputIndex;
@@ -266,33 +266,33 @@ class Lv2Plugin : public audio::AudioSource, public midi::MidiSource, public mid
     uint32_t *audioOutputIndex;
     audio::AudioConnection **audioOutput;
     // control ports
-    EventBuffer<Lv2ControlEvent> controlBuffer;
-    std::map<std::string, Lv2ControlPort *> controlMap;
+    EventBuffer<ControlEvent> controlBuffer;
+    std::map<std::string, ControlPort *> controlMap;
     // worker
-    Lv2Worker *worker;
+    Worker *worker;
     // control connections
-    std::map<midi::MidiConnection*,Lv2ControlConnection*> controlConnectionMap;
-    QueueList<Lv2ControlConnection> controlConnections;
-    boost::lockfree::spsc_queue<Lv2ControlMapping*> newControlMappingsQueue;
+    std::map<midi::MidiConnection*,ControlConnection*> controlConnectionMap;
+    QueueList<ControlConnection> controlConnections;
+    boost::lockfree::spsc_queue<ControlMapping*> newControlMappingsQueue;
 public:
-    static Lv2AtomTypes atomTypes;
-    Lv2Plugin(const LilvPlugin *plugin, LilvInstance *instance, const Lv2Constants &uris, Lv2Worker *worker);
-    ~Lv2Plugin();
+    static AtomTypes atomTypes;
+    Plugin(const LilvPlugin *plugin, LilvInstance *instance, const Constants &uris, Worker *worker);
+    ~Plugin();
     // public methods
-    void connect(AudioSource &source);
+    void connect(audio::Source &source);
     void connect(audio::AudioConnection *connection, uint32_t channel);
-    void connectMidi(MidiSource &source);
+    void connectMidi(midi::Source &source);
     void setPortValue(const char*, const void*, uint32_t);
     void setControlValue(const char *symbol, float value);
     void scheduleControl(const char *symbol, float value, int bar, int position, int division);
-    void addController(MidiSource &source, unsigned int cc, const char *symbol, float minimum, float maximum);
-    void addController(MidiSource &source, unsigned int cc, const char *symbol, float minimum);
-    void addController(MidiSource &source, unsigned int cc, const char *symbol);
+    void addController(midi::Source &source, unsigned int cc, const char *symbol, float minimum, float maximum);
+    void addController(midi::Source &source, unsigned int cc, const char *symbol, float minimum);
+    void addController(midi::Source &source, unsigned int cc, const char *symbol);
     void restore();
     // MidiSink
-    void addMidiEvent(midi::MidiEvent* evt);
+    void addMidiEvent(midi::Event* evt);
     // Source interface
-    bool connectsTo(Source *source);
+    bool connectsTo(AbstractSource *source);
     // Processor interface
     void doProcess(bool rolling, jack_position_t &pos, jack_nframes_t nframes, jack_nframes_t time);
     void reposition();
@@ -305,17 +305,17 @@ public:
     unsigned int getMidiOutputCount() { return midiOutputCount; }
     midi::MidiConnection *getMidiConnection(unsigned int index);
 private:
-    Lv2ControlPort *getPort(const char *symbol);
-    void connectPort(int index, Lv2Plugin *other, int otherIndex);
+    ControlPort *getPort(const char *symbol);
+    void connectPort(int index, Plugin *other, int otherIndex);
     void print();
 };
 
-class Lv2PluginCache : public ProcessorCache<Lv2Plugin>
+class PluginCache : public ProcessorCache<Plugin>
 {
     LilvWorld* world;
     const LilvPlugins* plugins; // lilv_world_get_all_plugins
     jack_nframes_t sampleRate; // = AudioEngine::instance()->getSampleRate();
-    const Lv2Constants lv2Constants;
+    const Constants lv2Constants;
     // for caching
     std::map<std::string, const LilvPlugin*> pluginMap;
     std::map<int, int> instanceCount;
@@ -328,20 +328,20 @@ class Lv2PluginCache : public ProcessorCache<Lv2Plugin>
     // urid features
     LV2_URID_Map map;
     LV2_URID_Unmap unmap;
-    Lv2PathMapper pathMapper;
+    PathMapper pathMapper;
     LV2_State_Map_Path mapPath;
     // worker schedule feature
     LV2_Worker_Schedule schedule;
     // use instance()
-    Lv2PluginCache();
+    PluginCache();
     void scriptReset() {
         instanceCount.clear();
     }
 public:
-    Lv2UridMapper uridMapper;
-    ~Lv2PluginCache();
-    static Lv2PluginCache &instance() {
-        static Lv2PluginCache instance;
+    UridMapper uridMapper;
+    ~PluginCache();
+    static PluginCache &instance() {
+        static PluginCache instance;
         return instance;
     }
     void setSampleRate(jack_nframes_t rate) {
@@ -350,14 +350,14 @@ public:
     void setBufferSize(jack_nframes_t size) {
         this->blockLength = size;
     }
-    Lv2Plugin *getPlugin(const char *uri, const char *preset, Lv2State *state);
-    Lv2Plugin *getPlugin(const char *uri, const char *preset) {
+    Plugin *getPlugin(const char *uri, const char *preset, State *state);
+    Plugin *getPlugin(const char *uri, const char *preset) {
         return getPlugin(uri, preset, 0);
     }
-    Lv2Plugin *getPlugin(const char *uri, Lv2State &state) {
+    Plugin *getPlugin(const char *uri, State &state) {
         return getPlugin(uri, 0, &state);
     }
-    Lv2Plugin *getPlugin(const char *uri) {
+    Plugin *getPlugin(const char *uri) {
         return getPlugin(uri, 0, 0);
     }
 };
