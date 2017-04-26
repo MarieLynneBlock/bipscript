@@ -56,7 +56,7 @@ void Output::run()
     while(!cancelled.load()) {
         // reset flag = dump all events
         if(repositionNeeded.load()) {
-            eventBuffer.recycleRemaining();
+            // eventBuffer.recycleRemaining();
             repositionNeeded.store(false);
         }
         // get current audio position
@@ -88,7 +88,7 @@ void Output::run()
             }
             lo_send_message (loAddress, event->getMessage().getPath(), mesg);
             lo_message_free (mesg);
-            ObjectCollector::scriptCollector().recycle(event);
+            // ObjectCollector::scriptCollector().recycle(event);
             event = eventBuffer.getNextEvent(rolling, jack_pos, nframes);
         }
 
