@@ -17,6 +17,7 @@
 #include "abcreader.h"
 #include "audioengine.h"
 #include <iostream>
+#include <math.h>
 
 using namespace bipscript;
 using namespace midi;

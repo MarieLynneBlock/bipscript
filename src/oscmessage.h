@@ -21,6 +21,7 @@
 #include "scripttypes.h"
 
 #include <string>
+#include <vector>
 #include <cstring>
 
 namespace bipscript {
